@@ -1,6 +1,6 @@
 {
-    "name": "ndtest",
-    "short_name": "ndtest",
+    "name": "app_notificador",
+    "short_name": "app_notificador",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

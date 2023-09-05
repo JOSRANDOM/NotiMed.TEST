@@ -1,14 +1,14 @@
 # Project-level configuration.
 cmake_minimum_required(VERSION 3.14)
-project(ndtest LANGUAGES CXX)
+project(app_notificador LANGUAGES CXX)
 
 # The name of the executable created for the application. Change this to change
 # the on-disk name of your application.
-set(BINARY_NAME "ndtest")
+set(BINARY_NAME "app_notificador")
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
-cmake_policy(VERSION 3.14...3.25)
+cmake_policy(SET CMP0063 NEW)
 
 # Define build configuration option.
 get_property(IS_MULTICONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
