@@ -3,7 +3,7 @@
 import 'dart:convert';
 import 'dart:core';
 import 'package:app_notificador/src/models/user.dart';
-import 'package:app_notificador/src/pages/others/utill/Datos_card.dart';
+import 'package:app_notificador/src/others/utill/Datos_card.dart';
 import 'package:app_notificador/src/session/navegatorBar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,9 +11,9 @@ import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../models/login.dart';
-import '../../services/provider.dart';
-import '../../services/push_notification_services.dart';
+import '../models/login.dart';
+import '../services/provider.dart';
+import '../services/push_notification_services.dart';
 
 Future<void> main() async {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);

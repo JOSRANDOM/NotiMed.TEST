@@ -4,19 +4,28 @@ import 'package:app_notificador/src/session/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:permission_handler/permission_handler.dart';
+//import 'package:permission_handler/permission_handler.dart';
 
 import 'src/session/navegatorBar.dart';
 
-void main() async{
-    WidgetsFlutterBinding.ensureInitialized();
-
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+/*
   // Solicita permisos de notificación
-  final status = await Permission.notification.status;
-  if (!status.isGranted) {
+  final notificationStatus = await Permission.notification.status;
+  if (!notificationStatus.isGranted) {
     await Permission.notification.request();
   }
 
+
+  // Solicita permisos de systemAlertWindows
+  final windowsStatus = await Permission.systemAlertWindow.status;
+  if (!windowsStatus.isGranted) {
+    await Permission.systemAlertWindow.request();
+  }
+*/
+
+  // Resto de tu código...
   await PushNotificatonServices.initializeApp();
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,13 +50,14 @@ void main() async{
         title: "NOTIMED",
         initialRoute: initialRoute,
         routes: {
-          'login': (_) => const LoginPage (),
+          'login': (_) => const LoginPage(),
           '/second': (_) => const homePage(),
         },
       ),
     ),
   );
 }
+
 
 
 class MyApp extends StatefulWidget {

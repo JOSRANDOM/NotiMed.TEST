@@ -2,8 +2,8 @@
 
 import 'dart:convert';
 
-//import 'package:app_notificador/src/pages/ListPatient.dart';
-import 'package:app_notificador/src/pages/others/UserPage.dart';
+import 'package:app_notificador/src/pages/ListPatient.dart';
+import 'package:app_notificador/src/pages/UserPage.dart';
 import 'package:app_notificador/src/services/provider.dart';
 import 'package:app_notificador/src/pages/ConsultationPage.dart';
 //import 'package:app_notificador/src/pages/PendingPage.dart';
@@ -136,8 +136,8 @@ class _homePage extends State<homePage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
-        initialIndex: 0, //LLAMAR A HOME COMO PAGINA PRINCIPAL
-        length: 2, //DETERMINAS CUANTAS PAGINAS SERAN
+        initialIndex: 1, //LLAMAR A HOME COMO PAGINA PRINCIPAL
+        length: 3, //DETERMINAS CUANTAS PAGINAS SERAN
         child: Scaffold(
           /*floatingActionButton: FloatingActionButton(
                       onPressed: () {
@@ -193,10 +193,6 @@ class _homePage extends State<homePage> {
               indicatorColor: Colors.deepPurple,
               unselectedLabelColor: Colors.orange,
               tabs: [
-                //PAGINA DE INICIO - HORARIO DEL PERSONNAL
-                Tab(
-                  icon: Icon(Icons.home, color: Colors.deepPurple),
-                ),
 
                //PAGINA INTERCONSULTAS
                 Tab(
@@ -205,10 +201,16 @@ class _homePage extends State<homePage> {
                   ),
                 ),
 
+                //PAGINA DE INICIO - HORARIO DEL PERSONNAL
+                Tab(
+                  icon: Icon(Icons.home, color: Colors.deepPurple),
+                ),
+
+
                 //PAGINA DE PACINETES HOSPITALIZADOS - INACTIVO POR AHORA
-               /* Tab(
+                Tab(
                   icon: Icon(Icons.person_pin_sharp, color: Colors.deepPurple),
-                ),*/
+                ),
               ],
             ),
             elevation: 0.0,
@@ -336,7 +338,7 @@ class _homePage extends State<homePage> {
             ),
           ),
           body: const TabBarView(
-            children: [ Home(),Interconsulta(),/*, ListPatient()*/], // DEFINES LAS PAGINAS
+            children: [ Interconsulta(),Home(), ListPatient()], // DEFINES LAS PAGINAS
           ),
         ),
       ),
