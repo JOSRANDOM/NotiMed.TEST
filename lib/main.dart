@@ -1,5 +1,6 @@
 import 'package:app_notificador/src/services/provider.dart';
 import 'package:app_notificador/src/services/push_notification_services.dart';
+import 'package:app_notificador/src/session/IntoPage.dart';
 import 'package:app_notificador/src/session/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,20 +25,19 @@ void main() async {
     await Permission.systemAlertWindow.request();
   }
 */
+  // Obtén una instancia de SharedPreferences
+  SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  // Resto de tu código...
   await PushNotificatonServices.initializeApp();
 
   WidgetsFlutterBinding.ensureInitialized();
   await PushNotificatonServices.initializeApp();
 
-  // Obtén una instancia de SharedPreferences
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+  // Verifica si la página de introducción ya se ha mostrado antes
+  bool isIntroShown = prefs.getBool('isIntroShown') ?? false;
 
-  // Verifica si la sesión está activa
-  bool isSessionActive = prefs.getBool('isSessionActive') ?? false;
-
-  String initialRoute = isSessionActive ? '/second' : 'login';
+  // Decide qué ruta inicial mostrar
+  String initialRoute = isIntroShown ? 'login' : '/intro';
 
   runApp(
     MultiProvider(
@@ -52,40 +52,33 @@ void main() async {
         routes: {
           'login': (_) => const LoginPage(),
           '/second': (_) => const homePage(),
+          '/intro': (_) =>const IntoPage(), // Agrega la ruta de la página de introducción
         },
       ),
     ),
   );
 }
 
-
-
 class MyApp extends StatefulWidget {
-   const MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  
-
-@override
+  @override
   void initState() {
-    
     super.initState();
 
     PushNotificatonServices.messagesStream.listen((message) {
       // ignore: avoid_print
-      print('MyApp: $message' );
-
+      print('MyApp: $message');
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    
     throw UnimplementedError();
   }
-
 }

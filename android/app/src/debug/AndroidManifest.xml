@@ -3,21 +3,15 @@
          the Flutter tool needs it to communicate with the running application
          to allow setting breakpoints, to provide hot reload, etc.
     -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INTERNET"/>
 
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<!--
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-
-    <!-- Configuración para mostrar notificaciones en la pantalla de inicio -->
     <uses-permission android:name="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE" />
-
-<!-- Configuración para mostrar notificaciones en la pantalla de bloqueo -->
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
-
-<!-- Configuración para mostrar ventanas emergentes mientras se ejecuta en segundo plano -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
-
+-->
 
 </manifest>
