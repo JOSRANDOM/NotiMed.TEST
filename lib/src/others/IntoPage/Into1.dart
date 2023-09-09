@@ -10,7 +10,7 @@ class IntoPage1 extends StatelessWidget {
       color: Colors.deepPurple.shade100,
       child: Center(
         child: Lottie.network(
-          'https://lottie.host/91a2256d-5433-407c-afa3-2bcf8278c1b2/aFtpk2L1bL.json', // URL de la animación Lottie
+          'https://lottie.host/91a2256d-5433-407c-afa3-2bcf8278c1b2/aFtpk2L1bL.json',
           width: 200,
           height: 200,
           fit: BoxFit.cover,

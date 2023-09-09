@@ -1,6 +1,5 @@
 import 'package:app_notificador/src/services/provider.dart';
 import 'package:app_notificador/src/services/push_notification_services.dart';
-import 'package:app_notificador/src/session/IntoPage.dart';
 import 'package:app_notificador/src/session/login.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -9,35 +8,20 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'src/session/navegatorBar.dart';
 
-void main() async {
+void main() async{
+    WidgetsFlutterBinding.ensureInitialized();
+  await PushNotificatonServices.initializeApp();
+
   WidgetsFlutterBinding.ensureInitialized();
-/*
-  // Solicita permisos de notificación
-  final notificationStatus = await Permission.notification.status;
-  if (!notificationStatus.isGranted) {
-    await Permission.notification.request();
-  }
+  await PushNotificatonServices.initializeApp();
 
-
-  // Solicita permisos de systemAlertWindows
-  final windowsStatus = await Permission.systemAlertWindow.status;
-  if (!windowsStatus.isGranted) {
-    await Permission.systemAlertWindow.request();
-  }
-*/
   // Obtén una instancia de SharedPreferences
   SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  await PushNotificatonServices.initializeApp();
+  // Verifica si la sesión está activa
+  bool isSessionActive = prefs.getBool('isSessionActive') ?? false;
 
-  WidgetsFlutterBinding.ensureInitialized();
-  await PushNotificatonServices.initializeApp();
-
-  // Verifica si la página de introducción ya se ha mostrado antes
-  bool isIntroShown = prefs.getBool('isIntroShown') ?? false;
-
-  // Decide qué ruta inicial mostrar
-  String initialRoute = isIntroShown ? 'login' : '/intro';
+  String initialRoute = isSessionActive ? '/second' : 'login';
 
   runApp(
     MultiProvider(
@@ -50,35 +34,41 @@ void main() async {
         title: "NOTIMED",
         initialRoute: initialRoute,
         routes: {
-          'login': (_) => const LoginPage(),
+          'login': (_) => const LoginPage (),
           '/second': (_) => const homePage(),
-          '/intro': (_) =>const IntoPage(), // Agrega la ruta de la página de introducción
         },
       ),
     ),
   );
 }
 
+
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+   const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  @override
+  
+
+@override
   void initState() {
+    
     super.initState();
 
     PushNotificatonServices.messagesStream.listen((message) {
       // ignore: avoid_print
-      print('MyApp: $message');
+      print('MyApp: $message' );
+
     });
   }
-
+  
   @override
   Widget build(BuildContext context) {
+    
     throw UnimplementedError();
   }
+
 }
