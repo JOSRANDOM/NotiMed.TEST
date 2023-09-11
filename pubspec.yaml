@@ -53,6 +53,9 @@ dependencies:
   liquid_pull_to_refresh: ^3.0.1
   url_launcher: ^6.1.13
   smooth_page_indicator: ^1.1.0
+  flutter_html: ^3.0.0-beta.2
+  webview_flutter: ^4.2.4
+  
 
 dev_dependencies:
   flutter_test:

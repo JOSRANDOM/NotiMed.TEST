@@ -39,7 +39,7 @@ class LoginPageState extends State<LoginPage> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     const url =
-        'http://interconsulting.sanpablo.com.pe/api/auth/login'; // Reemplaza con la URL de tu endpoint de inicio de sesión en localhost
+        'https://notimed.sanpablo.com.pe:8443/api/auth/login'; // Reemplaza con la URL de tu endpoint de inicio de sesión en localhost
 
     final usernameDM = usernameController.text;
     final passwordDM = passwordController.text;
@@ -164,20 +164,6 @@ class LoginPageState extends State<LoginPage> {
                     'lib/src/images/NotiMed.png',
                     width: 150,
                   ),
-
-                   /*const Icon(
-                  Icons.notifications_active,
-                  size: 100,
-                  color: Colors.deepPurple,
-                ),
-                const Text(
-                  'NOTIMED',
-                  style: TextStyle(
-                    color: Colors.deepPurple,
-                    fontSize: 40,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),*/
 
                   const SizedBox(
                       height: 20), // Espacio entre la imagen y los TextField

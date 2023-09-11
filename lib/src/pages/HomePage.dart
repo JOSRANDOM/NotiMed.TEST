@@ -94,7 +94,7 @@ class _HomeState extends State<Home> {
 
   Future<void> _postTurnoConFecha(
       BuildContext context, DateTime fechaSeleccionada) async {
-    const url = 'http://interconsulting.sanpablo.com.pe/api/schedules';
+    const url = 'https://notimed.sanpablo.com.pe:8443/api/schedules';
 
     final String? tokenBD = await _loadLoginData();
 

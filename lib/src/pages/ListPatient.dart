@@ -64,7 +64,7 @@ class _ListPatient extends State<ListPatient> {
   late Future<List<Patient>> _patient;
 
   Future<List<Patient>> _postPaciente(BuildContext context) async {
-    const url = 'http://interconsulting.sanpablo.com.pe/api/data/hospitalized';
+    const url = 'https://notimed.sanpablo.com.pe:8443/api/data/hospitalized';
 
     final String? tokenBD = await _loadLoginData();
 
@@ -134,7 +134,7 @@ class _ListPatient extends State<ListPatient> {
                         return const Center(
                           child: CircularProgressIndicator(
                             valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.purple),
+                            AlwaysStoppedAnimation<Color>(Colors.purple),
                           ),
                         );
                       } else if (snapshot.hasError) {
@@ -155,7 +155,7 @@ class _ListPatient extends State<ListPatient> {
                               ),
                               const SizedBox(
                                   height:
-                                      20), // Espacio entre la animación y el texto
+                                  20), // Espacio entre la animación y el texto
                               const Text(
                                 'SIN CONEXIÓN', // Mensaje de texto
                                 style: TextStyle(
@@ -183,7 +183,7 @@ class _ListPatient extends State<ListPatient> {
                               ),
                               const SizedBox(
                                   height:
-                                      20), // Espacio entre la animación y el texto
+                                  20), // Espacio entre la animación y el texto
                               const Text(
                                 'No tiene pacientes hospitalizados', // Mensaje de texto
                                 style: TextStyle(
@@ -231,7 +231,7 @@ class _ListPatient extends State<ListPatient> {
                 child: Container(
                   width: double.infinity,
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                   decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(20)),
                     color: Colors.deepPurple,

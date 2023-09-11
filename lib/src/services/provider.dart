@@ -18,7 +18,7 @@ class LoginProvider with ChangeNotifier {
 Future<void> loadLoginData(BuildContext context) async  {
 
     const url =
-        'http://interconsulting.sanpablo.com.pe/api/auth/login'; // Reemplaza con la URL de tu endpoint de inicio de sesión en localhost
+        'https://notimed.sanpablo.com.pe:8443/api/auth/login'; // Reemplaza con la URL de tu endpoint de inicio de sesión en localhost
 
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
     final username = loginProvider.loginData?.username;

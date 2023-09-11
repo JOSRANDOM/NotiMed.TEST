@@ -14,6 +14,8 @@ import '../services/provider.dart';
 import '../services/push_notification_services.dart';
 import 'package:lottie/lottie.dart';
 
+import 'package:flutter_html/flutter_html.dart';
+
 class Interconsulta extends StatefulWidget {
   const Interconsulta({Key? key}) : super(key: key);
 
@@ -65,7 +67,7 @@ class _HomeState extends State<Interconsulta> {
   late Future<List<Paciente>> _paciente;
 
   Future<List<Paciente>> _postPaciente(BuildContext context) async {
-    const url = 'http://interconsulting.sanpablo.com.pe/api/data/earrings';
+    const url = 'https://notimed.sanpablo.com.pe:8443/api/data/earrings';
 
     final String? tokenBD = await _loadLoginData();
 
@@ -100,6 +102,7 @@ class _HomeState extends State<Interconsulta> {
                   pacienteData['patient_age'],
                   pacienteData['room'],
                   pacienteData['last_notification_at'],
+                  pacienteData['description'],
                   clinicName,
                 ));
               });
@@ -166,12 +169,12 @@ class _HomeState extends State<Interconsulta> {
                               Container(
                                 width: 200,
                                 height: 150,
-                                child: Lottie.asset(
-                                  'lib/src/images/Animation - 1692969973403.gif', // URL de la animación Lottie
-                                  width: 200,
-                                  height: 200,
-                                  fit: BoxFit.cover,
-                                ),
+                                child: Lottie.network(
+                                'https://lottie.host/18d935ef-9547-4a4c-b38e-09787ed6dbac/l5OvPNglfK.json', // URL de la animación Lottie
+                                width: 200,
+                                height: 200,
+                                fit: BoxFit.cover,
+                              ),
                               ),
                               const SizedBox(
                                   height:
@@ -234,103 +237,149 @@ List<Widget> _pacientes(List<Paciente> data) {
   for (var pacienteData in data) {
     Widget pacienteWidget = Padding(
       padding: const EdgeInsets.all(4),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(color: Colors.deepPurple, width: 0),
-        ),
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  color: Colors.deepPurple,
-                ),
-                child: const Text(
-                  'INTERCONSULTA PENDIENTE',
-                  style: TextStyle(color: Colors.white),
+      child: GestureDetector(
+        onTap: () {
+          _showDialog(context, pacienteData);
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: Colors.deepPurple, width: 0),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    color: Colors.deepPurple,
+                  ),
+                  child: const Text(
+                    'INTERCONSULTA PENDIENTE',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ),
-            ),
 
-            // Llama al nombre de la clínica
-            Row(
-              children: [
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      pacienteData.clinicName, // Usa clinic_name aquí
-                      style: const TextStyle(
-                        color: Colors.deepPurple,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            // Llama al número de HC
-            Row(
-              children: [
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'HC: ${pacienteData.clinic_history}',
-                      style: const TextStyle(
-                        color: Colors.purple,
-                        fontSize: 15,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            // Llama al nombre del paciente
-            Row(
-              children: [
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.all(10),
+              // Llama al nombre de la clínica
+              Row(
+                children: [
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
                       child: Text(
-                        pacienteData.patient_name,
+                        pacienteData.clinicName, // Usa clinic_name aquí
                         style: const TextStyle(
-                          fontSize: 17,
-                          color: Colors.black,
+                          color: Colors.deepPurple,
+                          fontSize: 16,
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
 
-            // Llama a la habitación del paciente
-            Row(
-              children: [
-                const SizedBox(width: 20),
-                if (pacienteData.room != null)
+              // Llama al número de HC
+              Row(
+                children: [
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'HC: ${pacienteData.clinic_history}',
+                        style: const TextStyle(
+                          color: Colors.purple,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              // Llama al nombre del paciente
+              Row(
+                children: [
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Text(
+                          pacienteData.patient_name,
+                          style: const TextStyle(
+                            fontSize: 17,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              // Llama a la habitación del paciente
+              Row(
+                children: [
+                  const SizedBox(width: 20),
+                  if (pacienteData.room != null)
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Column(
+                          children: [
+                            Text(
+                              'HABITACION:  ${pacienteData.room} ',
+                              style: const TextStyle(
+                                color: Colors.black,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+
+              // Llama donde se originó la notificación (HOSPITALIZACIÓN - URGENCIA)
+              Row(
+                children: [
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'ORIGEN: ${pacienteData.episode_type_name}',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              // Llama al tipo de interconsulta
+              Row(
+                children: [
+                  const SizedBox(width: 20),
                   Expanded(
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Column(
                         children: [
                           Text(
-                            'HABITACION:  ${pacienteData.room} ',
+                            'TIPO:  ${pacienteData.interconsulting_type_name} ',
                             style: const TextStyle(
+                              fontSize: 12,
                               color: Colors.black,
                             ),
                           ),
@@ -338,95 +387,54 @@ List<Widget> _pacientes(List<Paciente> data) {
                       ),
                     ),
                   ),
-              ],
-            ),
+                ],
+              ),
 
-            // Llama donde se originó la notificación (HOSPITALIZACIÓN - URGENCIA)
-            Row(
-              children: [
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'ORIGEN: ${pacienteData.episode_type_name}',
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 15,
+              // Llama a la fecha de creación
+              Row(
+                children: [
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'FECHA Y HORA DE INTERCONSULTA: ${pacienteData.order_at}',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
 
-            // Llama al tipo de interconsulta
-            Row(
-              children: [
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Column(
-                      children: [
-                        Text(
-                          'TIPO:  ${pacienteData.interconsulting_type_name} ',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: Colors.black,
+             const Text(''),
+
+              // Llama a la especialidad solicitada
+              Row(
+                children: [
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Column(
+                        children: [
+                          Text(
+                            ' ${pacienteData.solicited_service}',
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            // Llama a la fecha de creación
-            Row(
-              children: [
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'FECHA Y HORA DE INTERCONSULTA: ${pacienteData.order_at}',
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 12,
+                        ],
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-
-           const Text(''),
-
-            // Llama a la especialidad solicitada
-            Row(
-              children: [
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Column(
-                      children: [
-                        Text(
-                          ' ${pacienteData.solicited_service}',
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -436,5 +444,57 @@ List<Widget> _pacientes(List<Paciente> data) {
 
   return pacienteWidgets;
 }
+
+//FUNCION DE INFORMAACION ADICIONAL
+  void _showDialog(BuildContext context, Paciente pacienteData) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          title: Text('Detalles de la Interconsulta'),
+          content: Container(
+            width: 300, // Ancho deseado
+            height: 250, // Altura deseada
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(10.0)), // Borde redondeado
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('${pacienteData.patient_name}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text('Origen: ${pacienteData.episode_type_name}'),
+                  Text('Habitación: ${pacienteData.room ?? ""}'),
+                  SizedBox(height: 10), // Espacio entre los datos y el contenido HTML
+                  Html(data: pacienteData.description),
+                ],
+              ),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'Cerrar',
+                style: TextStyle(
+                  color: Colors.deepPurple,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
 }

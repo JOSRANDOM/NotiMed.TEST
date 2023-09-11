@@ -14,7 +14,7 @@ void main() async{
 
   WidgetsFlutterBinding.ensureInitialized();
   await PushNotificatonServices.initializeApp();
-
+ 
   // Obtén una instancia de SharedPreferences
   SharedPreferences prefs = await SharedPreferences.getInstance();
 

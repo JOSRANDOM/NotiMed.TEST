@@ -92,7 +92,7 @@ class _homePage extends State<homePage> {
   }
 
   Future<List<Usuario>> _postUsuario() async {
-    const url = 'http://interconsulting.sanpablo.com.pe/api/profile';
+    const url = 'https://notimed.sanpablo.com.pe:8443/api/profile';
 
     final String? tokenBD = await _loadLoginData();
 

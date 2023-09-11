@@ -89,7 +89,7 @@ class _UserPage extends State<UserPage> {
   late Future<List<Usuario>> _usuario;
 
   Future<List<Usuario>> _postUsuario() async {
-    const url = 'http://interconsulting.sanpablo.com.pe/api/profile';
+    const url = 'https://notimed.sanpablo.com.pe:8443/api/profile';
 
     final String? tokenBD = await _loadLoginData();
 
@@ -511,7 +511,7 @@ class _UserPage extends State<UserPage> {
 
                 final response = await http.post(
                   Uri.parse(
-                      'http://interconsulting.sanpablo.com.pe/api/profile/update'),
+                      'https://notimed.sanpablo.com.pe:8443/api/profile/update'),
                   headers: {
                     'Authorization': 'Bearer $tokenBD',
                     'Content-Type': 'application/json',

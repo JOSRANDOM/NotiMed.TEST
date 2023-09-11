@@ -26,6 +26,7 @@ class Paciente {
   String? room = 'null';
   // ignore: non_constant_identifier_names
   String last_notification_at ;
+  String description ;
   final String clinicName;
   
   Paciente(
@@ -42,6 +43,7 @@ class Paciente {
      this.patient_age,
      this.room,
      this.last_notification_at, 
+     this.description,
      this.clinicName,
 
   );
