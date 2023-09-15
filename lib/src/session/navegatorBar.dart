@@ -1,12 +1,9 @@
-// ignore_for_file: file_names, use_build_context_synchronously, avoid_print, non_constant_identifier_names, deprecated_member_use
-
 import 'dart:convert';
-
 import 'package:app_notificador/src/pages/ListPatient.dart';
 import 'package:app_notificador/src/pages/UserPage.dart';
+import 'package:app_notificador/src/pages/messager.dart';
 import 'package:app_notificador/src/services/provider.dart';
 import 'package:app_notificador/src/pages/ConsultationPage.dart';
-//import 'package:app_notificador/src/pages/PendingPage.dart';
 import 'package:app_notificador/src/session/login.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -18,10 +15,10 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import '../models/login.dart';
 import '../models/user.dart';
+import '../pages/EditCalendar.dart';
 import '../pages/HomePage.dart';
 import '../services/push_notification_services.dart';
-//import 'package:url_launcher/url_launcher.dart';
- 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
@@ -40,18 +37,16 @@ Future<void> main() async {
       )));
 }
 
-// ignore: camel_case_types
 class homePage extends StatefulWidget {
-  const homePage({super.key});
+  const homePage({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _homePage createState() => _homePage();
 }
 
-// ignore: camel_case_types
 class _homePage extends State<homePage> {
   late Future<List<Usuario>> _usuario;
+  bool isExpanded = false;
 
   @override
   void initState() {
@@ -109,9 +104,6 @@ class _homePage extends State<homePage> {
 
       print(jsonData['data']);
 
-      //jsonData['data'].values.forEach((data) {
-      //if (data['data'] != null) {
-
       usuarios.add(Usuario(
         jsonData['data']['name'],
         jsonData['data']['cmp'],
@@ -119,8 +111,7 @@ class _homePage extends State<homePage> {
         jsonData['data']['email'],
         jsonData['data']['phone'],
       ));
-      //}
-      //});
+
       print('body: ${response.body}');
       print('reques: ${response.request}');
       print('headers: ${response.headers}');
@@ -136,16 +127,80 @@ class _homePage extends State<homePage> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
-        initialIndex: 1, //LLAMAR A HOME COMO PAGINA PRINCIPAL
-        length: 3, //DETERMINAS CUANTAS PAGINAS SERAN
+        initialIndex: 0,
+        length: 3,
         child: Scaffold(
-          /*floatingActionButton: FloatingActionButton(
-                      onPressed: () {
-            _WhatsAppSG();
-          },
-          backgroundColor: Colors.white,
-          child: Image.asset('lib/src/images/fdd89706e35f9bc4493559caef4f1122.png'),
-          ),*/
+          //BOTON FLOTANTE
+          floatingActionButton: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              // Botón principal que controla la expansión
+              FloatingActionButton(
+                onPressed: () {
+                  setState(() {
+                    isExpanded = !isExpanded; // Cambiar el estado de expansión
+                  });
+                },
+                backgroundColor: Colors.white, // Color de fondo blanco
+                foregroundColor: Colors.black, // Color del icono negro
+                tooltip: 'Mostrar/Ocultar',
+                child: Icon(isExpanded
+                    ? Icons.close
+                    : Icons.add), // Cambiar el ícono según el estado
+              ),
+              SizedBox(height: 16.0), // Espacio entre los botones flotantes
+
+              // Botón 1 - Editar Calendario
+              AnimatedContainer(
+                duration:
+                    Duration(milliseconds: 300), // Duración de la animación
+                height: isExpanded
+                    ? 56.0
+                    : 0.0, // Altura 0 para ocultar, 56 para mostrar
+                child: Visibility(
+                  visible: isExpanded, // Controlar la visibilidad
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const EditCalendar()));
+                    },
+                    backgroundColor: Colors.white, // Color de fondo blanco
+                    foregroundColor: Colors.black, // Color del icono negro
+                    tooltip: 'Editar Calendario',
+                    child: Icon(Icons.calendar_month),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16.0), // Espacio entre los botones flotantes
+
+              // Botón 2 - Messenger SP
+              AnimatedContainer(
+                duration:
+                    Duration(milliseconds: 300), // Duración de la animación
+                height: isExpanded
+                    ? 56.0
+                    : 0.0, // Altura 0 para ocultar, 56 para mostrar
+                child: Visibility(
+                  visible: isExpanded, // Controlar la visibilidad
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const MessagerSP()));
+                    },
+                    backgroundColor: Colors.white, // Color de fondo blanco
+                    foregroundColor: Colors.black, // Color del icono negro
+                    tooltip: 'Messenger SP',
+                    child: Icon(Icons.message),
+                  ),
+                ),
+              ),
+            ],
+          ),
+
           appBar: AppBar(
             backgroundColor: Colors.white,
             iconTheme: const IconThemeData(color: Colors.deepPurple),
@@ -193,23 +248,35 @@ class _homePage extends State<homePage> {
               indicatorColor: Colors.deepPurple,
               unselectedLabelColor: Colors.orange,
               tabs: [
-
-               //PAGINA INTERCONSULTAS
-                Tab(
-                  icon: Icon(
-                    Icons.bookmark, color: Colors.deepPurple,
-                  ),
-                ),
-
-                //PAGINA DE INICIO - HORARIO DEL PERSONNAL
                 Tab(
                   icon: Icon(Icons.home, color: Colors.deepPurple),
+                  child: Text(
+                    'PRINCIPAL',
+                    style: TextStyle(
+                      color: Colors.deepPurple,
+                      fontSize: 12,
+                    ),
+                  ),
                 ),
-
-
-                //PAGINA DE PACINETES HOSPITALIZADOS - INACTIVO POR AHORA
+                Tab(
+                  icon: Icon(Icons.bookmark, color: Colors.deepPurple),
+                  child: Text(
+                    'INTERCONSULTAS',
+                    style: TextStyle(
+                      color: Colors.deepPurple,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
                 Tab(
                   icon: Icon(Icons.person_pin_sharp, color: Colors.deepPurple),
+                  child: Text(
+                    'HOSPITALIZACION',
+                    style: TextStyle(
+                      color: Colors.deepPurple,
+                      fontSize: 12,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -226,13 +293,6 @@ class _homePage extends State<homePage> {
                     margin: const EdgeInsets.only(top: 50, bottom: 10),
                     child: Image.asset('lib/src/images/NotiMed.png'),
                   ),
-                  /*const Text(
-                    'SAN PABLO - NOTIMED',
-                    style: TextStyle(
-                        color: Colors.deepPurple,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
-                  ),*/
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -244,27 +304,25 @@ class _homePage extends State<homePage> {
                       margin: const EdgeInsets.only(top: 30),
                       padding: const EdgeInsets.all(20),
                       width: 300,
-                      decoration: const  BoxDecoration(
-                          color: Colors.deepPurple,
-                          borderRadius:
-                               BorderRadius.all(Radius.circular(12))),
+                      decoration: const BoxDecoration(
+                        color: Colors.deepPurple,
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                      ),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             'DATOS DEL USUARIO',
                             style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15),
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
                           ),
                           Icon(
-                            Icons
-                                .account_circle_rounded, // Cambia Icons.add_circle con el icono que desees utilizar
-                            color: Colors
-                                .white, // Cambia Colors.blue con el color deseado para el icono
-                            size:
-                                24, // Ajusta el tamaño del icono según tus necesidades
+                            Icons.account_circle_rounded,
+                            color: Colors.white,
+                            size: 24,
                           ),
                         ],
                       ),
@@ -282,26 +340,59 @@ class _homePage extends State<homePage> {
                       padding: const EdgeInsets.all(20),
                       width: 300,
                       decoration: const BoxDecoration(
-                          color: Colors.deepPurple,
-                          borderRadius:
-                               BorderRadius.all(Radius.circular(12))),
+                        color: Colors.deepPurple,
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                      ),
                       child: const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             '¿Quiénes Somos?',
                             style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15),
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
                           ),
                           Icon(
-                            Icons
-                                .co_present_rounded, // Cambia Icons.add_circle con el icono que desees utilizar
-                            color: Colors
-                                .white, // Cambia Colors.blue con el color deseado para el icono
-                            size:
-                                24, // Ajusta el tamaño del icono según tus necesidades
+                            Icons.co_present_rounded,
+                            color: Colors.white,
+                            size: 24,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      _IDI(context);
+                    },
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 2),
+                      padding: const EdgeInsets.all(20),
+                      width: 300,
+                      decoration: const BoxDecoration(
+                        color: Colors.deepPurple,
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                      ),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Registro de Horario',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
+                          Icon(
+                            Icons.add_circle_rounded,
+                            color: Colors.white,
+                            size: 24,
                           ),
                         ],
                       ),
@@ -311,24 +402,23 @@ class _homePage extends State<homePage> {
                   GestureDetector(
                     onTap: () {
                       _logout(context);
-                      // Lógica que deseas ejecutar cuando se toque el Container
-                      // Por ejemplo, cerrar la sesión del usuario
                     },
                     child: Container(
                       margin: const EdgeInsets.only(top: 2),
                       padding: const EdgeInsets.all(20),
                       width: 250,
                       decoration: const BoxDecoration(
-                          color: Colors.deepPurple,
-                          borderRadius:
-                               BorderRadius.all(Radius.circular(12))),
+                        color: Colors.deepPurple,
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
+                      ),
                       alignment: Alignment.center,
                       child: const Text(
                         'CERRAR SESIÓN',
                         style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
                       ),
                     ),
                   ),
@@ -338,113 +428,95 @@ class _homePage extends State<homePage> {
             ),
           ),
           body: const TabBarView(
-            children: [ Interconsulta(),Home(), ListPatient()], // DEFINES LAS PAGINAS
+            children: [Home(), Interconsulta(), ListPatient()],
           ),
         ),
       ),
     );
   }
 
-/*void _WhatsAppSG() async {
-  const phoneNumber = "+51972990952"; // Reemplaza con el número de teléfono deseado
+  void _logout(BuildContext context) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  String url = "whatsapp://send?phone=$phoneNumber";
+      await Future.wait([
+        prefs.clear(),
+        DefaultCacheManager().emptyCache(),
+        FirebaseMessaging.instance.deleteToken(),
+      ]);
 
-  launchUrl(Uri.parse(url));
+      context.read<LoginProvider>().setLoginData(null);
 
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    print('error al hipervincular');
+      Navigator.popUntil(context, (route) => route.isFirst);
+
+      Navigator.pushReplacementNamed(context, 'login');
+    } catch (e) {
+      print("Error during logout: $e");
+    }
   }
-}*/
 
-}
-
-Future<void> _logout(BuildContext context) async {
-  try {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    await Future.wait([
-      prefs.clear(),
-      DefaultCacheManager().emptyCache(),
-      FirebaseMessaging.instance.deleteToken(),
-    ]);
-
-    context.read<LoginProvider>().setLoginData(null);
-
-    // Utilizar Navigator.popUntil para eliminar todas las rutas anteriores
-    Navigator.popUntil(context, (route) => route.isFirst);
-
-    Navigator.pushReplacementNamed(context, 'login');
-  } catch (e) {
-    print("Error during logout: $e");
-  }
-}
-
-void _IDI(BuildContext context) {
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: const Row(
-          children: [
-            Icon(Icons.info_outline, color: Colors.deepPurple),
-            SizedBox(width: 10),
-            Text(
-              '¿Quiénes somos?',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          ],
-        ),
-        content: const Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
+  void _IDI(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Row(
             children: [
-
-              //DESARROLLADORES Y RESPONSABLES DE LA CREACION DEL APLICATIVO
+              Icon(Icons.info_outline, color: Colors.deepPurple),
+              SizedBox(width: 10),
               Text(
-                '-Investigación, Desarrollo e Innovación (IDI)-',
+                '¿Quiénes somos?',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              Text(''),
-              Text('Líder de Proyecto: Renzo Silva'),
-              Text(''),
-              Text('Desarrollador: Joseph Mori'),
-              Text(''),
-              Text(
-                '-Una división de Informática Biomédica- ',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(''),
-              Text('Jefe de Área: Oscar Huapaya'),
-              Text(''),
-              Text(
-                '-En colaboración con las siguientes áreas-',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              Text(''),
-              Text('Backend: Christopher Vergara - HOSMED'),
-              Text(''),
-              Text('Desing: Andrea Agreda - HCE'),
-              Text(''),
-              Text(''),
-              Text(''),
-
-              //LICENCIA DE DERECHOS DE AUTOR
-              Text('Copyright © 2023 Grupo San Pablo - Investigación,Desarrollo e Innovación', 
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 10),
-                ),
             ],
           ),
-        ),
-      );
-    },
-  );
+          content: const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '-Investigación, Desarrollo e Innovación (IDI)-',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(''),
+                Text('Líder de Proyecto: Renzo Silva'),
+                Text(''),
+                Text('Desarrollador: Joseph Mori'),
+                Text(''),
+                Text(
+                  '-Una división de Informática Biomédica- ',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(''),
+                Text('Jefe de Área: Oscar Huapaya'),
+                Text(''),
+                Text(
+                  '-En colaboración con las siguientes áreas-',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Text(''),
+                Text('Backend: Christopher Vergara - HOSMED'),
+                Text(''),
+                Text('Desing: Andrea Agreda - HCE'),
+                Text(''),
+                Text(''),
+                Text(''),
+                Text(
+                  'Copyright © 2023 Grupo San Pablo - Investigación,Desarrollo e Innovación',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 10,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
 }

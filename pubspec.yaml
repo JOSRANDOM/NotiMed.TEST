@@ -55,6 +55,7 @@ dependencies:
   smooth_page_indicator: ^1.1.0
   flutter_html: ^3.0.0-beta.2
   webview_flutter: ^4.2.4
+  flutter_windowmanager: ^0.2.0
   
 
 dev_dependencies:

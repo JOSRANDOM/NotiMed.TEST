@@ -134,7 +134,7 @@ class _ListPatient extends State<ListPatient> {
                         return const Center(
                           child: CircularProgressIndicator(
                             valueColor:
-                            AlwaysStoppedAnimation<Color>(Colors.purple),
+                                AlwaysStoppedAnimation<Color>(Colors.purple),
                           ),
                         );
                       } else if (snapshot.hasError) {
@@ -155,9 +155,9 @@ class _ListPatient extends State<ListPatient> {
                               ),
                               const SizedBox(
                                   height:
-                                  20), // Espacio entre la animación y el texto
+                                      20), // Espacio entre la animación y el texto
                               const Text(
-                                'SIN CONEXIÓN', // Mensaje de texto
+                                'SIN CONEXIÓN',
                                 style: TextStyle(
                                   fontSize: 18,
                                   color: Colors.black,
@@ -183,7 +183,7 @@ class _ListPatient extends State<ListPatient> {
                               ),
                               const SizedBox(
                                   height:
-                                  20), // Espacio entre la animación y el texto
+                                      20), // Espacio entre la animación y el texto
                               const Text(
                                 'No tiene pacientes hospitalizados', // Mensaje de texto
                                 style: TextStyle(
@@ -208,240 +208,224 @@ class _ListPatient extends State<ListPatient> {
   }
 
 //llamada a la consulta
-  List<Widget> _pacientes(List<Patient> data) {
-    List<Widget> pacienteWidgets = [];
+List<Widget> _pacientes(List<Patient> data) {
+  List<Widget> pacienteWidgets = [];
 
-    for (var pacienteData in data) {
-      Widget pacienteWidget = Padding(
-        padding: const EdgeInsets.all(4),
-        child: Container(
-          constraints: const BoxConstraints(
-            maxHeight: 200,
-          ),
-          width: MediaQuery.of(context).size.width * 0.8,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.deepPurple, width: 0),
-          ),
-          child: Column(
-            children: [
-              Expanded(child: Container()),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  width: double.infinity,
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                    color: Colors.deepPurple,
-                  ),
-                  child: const Text(
-                    'PACIENTE HOSPITALIZADO',
-                    style: TextStyle(color: Colors.white),
-                  ),
+  for (var pacienteData in data) {
+    Widget pacienteWidget = Padding(
+      padding: const EdgeInsets.all(4),
+      child: Container(
+        constraints: const BoxConstraints(
+          maxHeight: 200,
+        ),
+        width: MediaQuery.of(context).size.width * 0.8,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: Colors.blue, width: 0),
+        ),
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  color: Colors.blue.shade200,
+                ),
+                child: const Text(
+                  'PACIENTE HOSPITALIZADO',
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
-
-              //llama al nombre de la clinica
-
-              Row(
-                children: [
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
+            ),
+            //llama al nombre de la clinica
+            Row(
+              children: [
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      pacienteData.clinic_name, // Usa clinic_name aquí
+                      style: const TextStyle(
+                        color: Colors.blue,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            //llama al numero de HC
+            Row(
+              children: [
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'HC: ${pacienteData.clinic_history}',
+                      style: const TextStyle(
+                        color: Colors.purple,
+                        fontSize: 15,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            //llama al nombre del paciente
+            Row(
+              children: [
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.all(10),
                       child: Text(
-                        pacienteData.clinic_name, // Usa clinic_name aquí
+                        pacienteData.patient_name,
                         style: const TextStyle(
-                          color: Colors.deepPurple,
-                          fontSize: 16,
+                          fontSize: 17,
+                          color: Colors.black,
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
-
-              //llama al numero de HC
-
-              Row(
-                children: [
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'HC: ${pacienteData.clinic_history}',
-                        style: const TextStyle(
-                          color: Colors.purple,
-                          fontSize: 15,
-                        ),
+                ),
+              ],
+            ),
+            //llama donde se origino la notificacion (HOSIPITALIZACION - URGENCIA)
+            Row(
+              children: [
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'HABITACIÓN: ${pacienteData.room}',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
                       ),
                     ),
                   ),
-                ],
-              ),
-
-              //llama al nombre del paciente
-
-              Row(
-                children: [
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
-                        child: Text(
-                          pacienteData.patient_name,
+                ),
+              ],
+            ),
+            // SEXO DEL PACIENTE
+            Row(
+              children: [
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'SEXO: ${pacienteData.patient_sex}',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            //EDAD DEL PACIENTE
+            Row(
+              children: [
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'EDAD: ${pacienteData.patient_age}',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            //FECHA DE INGRESO
+            Row(
+              children: [
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      children: [
+                        Text(
+                          'FECHA:  ${pacienteData.date_at} ',
                           style: const TextStyle(
-                            fontSize: 17,
+                            fontSize: 12,
                             color: Colors.black,
                           ),
                         ),
-                      ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-
-              //llama donde se origino la notificacion (HOSIPITALIZACION - URGENCIA)
-
-              Row(
-                children: [
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'HABITACIÓN: ${pacienteData.room}',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              // SEXO DEL PACIENTE
-              Row(
-                children: [
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'SEXO: ${pacienteData.patient_sex}',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              //EDAD DEL PACIENTE
-              Row(
-                children: [
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'EDAD: ${pacienteData.patient_age}',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              //FECHA DE INGRESO
-
-              Row(
-                children: [
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Column(
-                        children: [
-                          Text(
-                            'FECHA:  ${pacienteData.date_at} ',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.black,
-                            ),
+                ),
+              ],
+            ),
+            //HORA DE INGRESO
+            Row(
+              children: [
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Column(
+                      children: [
+                        Text(
+                          'HORA:  ${pacienteData.hour_at} ',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.black,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-
-              //HORA DE INGRESO
-              Row(
-                children: [
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Column(
-                        children: [
-                          Text(
-                            'HORA:  ${pacienteData.hour_at} ',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.black,
-                            ),
+                ),
+              ],
+            ),
+            // llama a la espacialidad solicitada
+            Row(
+              children: [
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Column(
+                      children: [
+                        Text(
+                          ' ${pacienteData.specialty}',
+                          style: const TextStyle(
+                            color: Colors.black,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ),
-
-              // llama a la espacialidad solicitada
-
-              Expanded(child: Container()),
-              Row(
-                children: [
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Column(
-                        children: [
-                          Text(
-                            ' ${pacienteData.specialty}',
-                            style: const TextStyle(
-                              color: Colors.black,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              Expanded(child: Container()),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
-      );
+      ),
+    );
 
-      pacienteWidgets.add(pacienteWidget);
-    }
-
-    return pacienteWidgets;
+    pacienteWidgets.add(pacienteWidget);
   }
+
+  return pacienteWidgets;
+}
+
 }
