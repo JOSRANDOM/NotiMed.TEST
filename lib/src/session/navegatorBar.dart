@@ -8,6 +8,7 @@ import 'package:app_notificador/src/session/login.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -57,6 +58,7 @@ class _homePage extends State<homePage> {
     });
     _usuario = _postUsuario();
     _loadLoginData();
+    secureScreen();
   }
 
   Future<String?> _loadLoginData() async {
@@ -121,6 +123,12 @@ class _homePage extends State<homePage> {
       throw Exception('Error en la solicitud HTTP: ${response.statusCode}');
     }
   }
+
+  secureScreen() async {
+    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_KEEP_SCREEN_ON);
+  }
+
 
   @override
   Widget build(BuildContext context) {

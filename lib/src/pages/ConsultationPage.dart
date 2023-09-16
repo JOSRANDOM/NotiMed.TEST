@@ -295,7 +295,7 @@ List<Widget> _pacientes(List<Paciente> data) {
                         'HC: ${pacienteData.clinic_history}',
                         style: const TextStyle(
                           color: Colors.purple,
-                          fontSize: 15,
+                          fontSize: 18,
                         ),
                       ),
                     ),
@@ -304,7 +304,7 @@ List<Widget> _pacientes(List<Paciente> data) {
               ),
 
               // Llama al nombre del paciente
-              Row(
+             /* Row(
                 children: [
                   const SizedBox(width: 10),
                   Expanded(
@@ -323,7 +323,7 @@ List<Widget> _pacientes(List<Paciente> data) {
                     ),
                   ),
                 ],
-              ),
+              ),*/
 
               // Llama a la habitación del paciente
               Row(

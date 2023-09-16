@@ -146,13 +146,6 @@ class _HomeState extends State<Home> {
     await _loadLoginData();
     await _postTurnoConFecha(context, _selectedDay);
 
-    // Aquí podrías realizar _postTurnoConFecha en paralelo usando Future.wait
-    // Por ejemplo:
-    // List<Future<void>> postTasks = _groupedTurnos.entries.map((entry) =>
-    //   _postTurnoConFecha(context, _selectedDay, clinicName: entry.key)
-    // ).toList();
-    // await Future.wait(postTasks);
-
     // Generar los widgets después de realizar las operaciones asincrónicas
     List<Widget> turnoCards = _groupedTurnos.entries
         .map((entry) => _buildClinicTurnos(entry.key, entry.value))
