@@ -56,6 +56,9 @@ dependencies:
   flutter_html: ^3.0.0-beta.2
   webview_flutter: ^4.2.4
   flutter_windowmanager: ^0.2.0
+  syncfusion_flutter_calendar: ^23.1.36
+  flutter_localizations:
+    sdk: flutter
   
 
 dev_dependencies:

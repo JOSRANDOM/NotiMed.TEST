@@ -1,9 +1,9 @@
 import 'dart:convert';
-import 'package:app_notificador/src/pages/ListPatient.dart';
-import 'package:app_notificador/src/pages/UserPage.dart';
-import 'package:app_notificador/src/pages/messager.dart';
+import 'package:app_notificador/src/MVC_MED/pages/ListPatient.dart';
+import 'package:app_notificador/src/MVC_MED/pages/UserPage.dart';
+import 'package:app_notificador/src/MVC_MED/pages/messager.dart';
 import 'package:app_notificador/src/services/provider.dart';
-import 'package:app_notificador/src/pages/ConsultationPage.dart';
+import 'package:app_notificador/src/MVC_MED/pages/ConsultationPage.dart';
 import 'package:app_notificador/src/session/login.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +16,10 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import '../models/login.dart';
 import '../models/user.dart';
-import '../pages/EditCalendar.dart';
-import '../pages/HomePage.dart';
+import 'pages/EditCalendar.dart';
+import 'pages/HomePage.dart';
+
+//import '../pages/syncfusion_calendar.dart';
 import '../services/push_notification_services.dart';
 
 Future<void> main() async {

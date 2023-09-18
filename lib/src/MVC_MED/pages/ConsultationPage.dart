@@ -9,9 +9,9 @@ import 'package:http/http.dart' as http;
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/login.dart';
-import '../services/provider.dart';
-import '../services/push_notification_services.dart';
+import '../../models/login.dart';
+import '../../services/provider.dart';
+import '../../services/push_notification_services.dart';
 import 'package:lottie/lottie.dart';
 
 import 'package:flutter_html/flutter_html.dart';

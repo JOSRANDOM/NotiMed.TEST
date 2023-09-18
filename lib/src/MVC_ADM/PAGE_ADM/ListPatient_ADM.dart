@@ -8,19 +8,19 @@ import 'package:http/http.dart' as http;
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/login.dart';
-import '../services/provider.dart';
-import '../services/push_notification_services.dart';
+import '../../models/login.dart';
+import '../../services/provider.dart';
+import '../../services/push_notification_services.dart';
 import 'package:lottie/lottie.dart';
 
-class ListPatient extends StatefulWidget {
-  const ListPatient({Key? key}) : super(key: key);
+class ListPatientADM extends StatefulWidget {
+  const ListPatientADM({Key? key}) : super(key: key);
 
   @override
-  State<ListPatient> createState() => _ListPatient();
+  State<ListPatientADM> createState() => _ListPatient();
 }
 
-class _ListPatient extends State<ListPatient> {
+class _ListPatient extends State<ListPatientADM> {
   @override
   void initState() {
     super.initState();

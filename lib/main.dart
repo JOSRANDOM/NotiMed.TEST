@@ -2,11 +2,12 @@ import 'package:app_notificador/src/services/provider.dart';
 import 'package:app_notificador/src/services/push_notification_services.dart';
 import 'package:app_notificador/src/session/login.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:permission_handler/permission_handler.dart';
 
-import 'src/session/navegatorBar.dart';
+import 'src/MVC_MED/navegatorBar_MED.dart';
 
 void main() async{
     WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +24,7 @@ void main() async{
 
   String initialRoute = isSessionActive ? '/second' : 'login';
 
+  initializeDateFormatting().then((_) =>   
   runApp(
     MultiProvider(
       providers: [
@@ -39,7 +41,9 @@ void main() async{
         },
       ),
     ),
-  );
+  ));
+
+
 
 }
 

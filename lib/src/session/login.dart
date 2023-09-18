@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/provider.dart';
 import 'package:provider/provider.dart';
-import 'navegatorBar.dart';
+import '../MVC_MED/navegatorBar_MED.dart';
 
 void main() async {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);

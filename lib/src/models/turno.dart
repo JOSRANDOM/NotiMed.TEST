@@ -4,10 +4,10 @@ class Turno {
   String? clinic_name;
   String clinic_name_short;
   String clinic_color;
-  String? service_name;
-  String? init_date_at;
+  String service_name;
+  String init_date_at;
   String? init_hour_at;
-  String? end_date_at;
+  String end_date_at;
   String? end_hour_at;
 
   Turno(

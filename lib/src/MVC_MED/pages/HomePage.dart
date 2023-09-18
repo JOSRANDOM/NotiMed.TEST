@@ -10,26 +10,24 @@ import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
-import 'package:intl/date_symbol_data_local.dart';
 import 'package:intl/intl.dart';
-import '../models/login.dart';
-import '../services/provider.dart';
-import '../services/push_notification_services.dart';
+import '../../models/login.dart';
+import '../../services/provider.dart';
+import '../../services/push_notification_services.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
+
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await PushNotificatonServices.initializeApp();
 
-  // Inicializa las configuraciones de idioma español
-  await initializeDateFormatting('es');
 
   runApp(
     ChangeNotifierProvider(
       create: (context) => LoginProvider(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: "NOTIMEDL",
+        title: "NOTIMED",
         initialRoute: 'home',
         routes: {
           'home': (_) => const Home(),
@@ -197,6 +195,7 @@ class _HomeState extends State<Home> {
                   color: Colors.white,
                 ),
                 child: TableCalendar(
+                  locale: 'es_Es',
                   focusedDay: _selectedDay,
                   firstDay: DateTime.now().subtract(const Duration(days: 365)),
                   lastDay: DateTime.now().add(const Duration(days: 365)),
@@ -401,6 +400,5 @@ Widget _buildTurnoCard(BuildContext context, Turno turnoData) {
     ),
   );
 }
-
 
 }
