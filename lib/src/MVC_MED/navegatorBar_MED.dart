@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, camel_case_types, library_private_types_in_public_api, avoid_print, non_constant_identifier_names, use_build_context_synchronously
+
 import 'dart:convert';
 import 'package:app_notificador/src/MVC_MED/pages/ListPatient.dart';
 import 'package:app_notificador/src/MVC_MED/pages/UserPage.dart';
@@ -34,20 +36,20 @@ Future<void> main() async {
         title: "NOTIMED - HOME",
         initialRoute: 'home',
         routes: {
-          'home': (_) => const homePage(),
+          'home': (_) => const homePageMD(),
           'login': (_) => const LoginPage(),
         },
       )));
 }
 
-class homePage extends StatefulWidget {
-  const homePage({Key? key}) : super(key: key);
+class homePageMD extends StatefulWidget {
+  const homePageMD({Key? key}) : super(key: key);
 
   @override
-  _homePage createState() => _homePage();
+  _homePageMD createState() => _homePageMD();
 }
 
-class _homePage extends State<homePage> {
+class _homePageMD extends State<homePageMD> {
   late Future<List<Usuario>> _usuario;
   bool isExpanded = false;
 
@@ -75,8 +77,9 @@ class _homePage extends State<homePage> {
     String? phone = prefs.getString('phone');
     String? email = prefs.getString('email');
     String? cmp = prefs.getString('cmp');
+    int? type_doctor = prefs.getInt('type_doctor');
 
-    if (username != null &&
+     if (username != null &&
         name != null &&
         tokenBD != null &&
         password != null &&
@@ -84,7 +87,7 @@ class _homePage extends State<homePage> {
         dni != null &&
         phone != null) {
       final loginData = LoginData(
-          username, name, tokenBD, password, tokenFB, dni, phone, cmp, email);
+          username, name, tokenBD, password, tokenFB, dni, phone, cmp, email, type_doctor!);
       context.read<LoginProvider>().setLoginData(loginData);
     }
     return tokenBD;
@@ -158,12 +161,12 @@ class _homePage extends State<homePage> {
                     ? Icons.close
                     : Icons.add), // Cambiar el ícono según el estado
               ),
-              SizedBox(height: 16.0), // Espacio entre los botones flotantes
+              const SizedBox(height: 16.0), // Espacio entre los botones flotantes
 
               // Botón 1 - Editar Calendario
               AnimatedContainer(
                 duration:
-                    Duration(milliseconds: 300), // Duración de la animación
+                    const Duration(milliseconds: 300), // Duración de la animación
                 height: isExpanded
                     ? 56.0
                     : 0.0, // Altura 0 para ocultar, 56 para mostrar
@@ -179,16 +182,16 @@ class _homePage extends State<homePage> {
                     backgroundColor: Colors.white, // Color de fondo blanco
                     foregroundColor: Colors.black, // Color del icono negro
                     tooltip: 'Editar Calendario',
-                    child: Icon(Icons.calendar_month),
+                    child: const Icon(Icons.calendar_month),
                   ),
                 ),
               ),
-              SizedBox(height: 16.0), // Espacio entre los botones flotantes
+              const SizedBox(height: 16.0), // Espacio entre los botones flotantes
 
               // Botón 2 - Messenger SP
               AnimatedContainer(
                 duration:
-                    Duration(milliseconds: 300), // Duración de la animación
+                    const Duration(milliseconds: 300), // Duración de la animación
                 height: isExpanded
                     ? 56.0
                     : 0.0, // Altura 0 para ocultar, 56 para mostrar
@@ -204,7 +207,7 @@ class _homePage extends State<homePage> {
                     backgroundColor: Colors.white, // Color de fondo blanco
                     foregroundColor: Colors.black, // Color del icono negro
                     tooltip: 'Messenger SP',
-                    child: Icon(Icons.message),
+                    child: const Icon(Icons.message),
                   ),
                 ),
               ),

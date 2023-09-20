@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously, non_constant_identifier_names
+
 import 'dart:convert';
 
 //import 'package:app_notificador/src/services/push_notification_services.dart';
@@ -7,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../MVC_ADM/navegatorBar_ADM.dart';
 import '../services/provider.dart';
 import 'package:provider/provider.dart';
 import '../MVC_MED/navegatorBar_MED.dart';
@@ -21,7 +24,7 @@ void main() async {
         initialRoute: 'login',
         routes: {
           'login': (_) => const LoginPage(),
-          '/second': (_) => const homePage(),
+          '/second': (_) => const homePageMD(),
         },
       )));
 }
@@ -59,11 +62,12 @@ class LoginPageState extends State<LoginPage> {
       var dni = responseBody['user']['document_number'];
       var email = responseBody['user']['email'];
       var phone = responseBody['user']['phone'];
+      var type_doctor = responseBody['user']['type_doctor'];
       var tokenBD = responseBody['token'];
+      
 
       final loginData = LoginData(usernameDM, name, cmp, passwordDM, tokenFB,
-          dni, email, phone, tokenBD);
-      // ignore: use_build_context_synchronously
+    dni, email, phone, tokenBD, type_doctor);
       final loginProvider = Provider.of<LoginProvider>(context, listen: false);
       loginProvider.setLoginData(loginData);
 
@@ -77,10 +81,23 @@ class LoginPageState extends State<LoginPage> {
       await prefs.setString('phone', phone);
       await prefs.setString('token', tokenBD!);
       await prefs.setString('cmp', cmp);
+      await prefs.setInt('type_doctor', type_doctor);
+
       await prefs.setBool('isSessionActive', true);
 
-      // ignore: use_build_context_synchronously
-      Navigator.pushReplacementNamed(context, '/second');
+          if (type_doctor == 1) {
+      // Si type_doctor es 1, navega a homePageMD
+      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const homePageMD()));
+    } else if (type_doctor == 2) {
+      // Si type_doctor es 2, navega a homePageADM
+      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const homePageADM()));
+    }
 
       // La solicitud fue exitosa
       // ignore: avoid_print
@@ -94,7 +111,6 @@ class LoginPageState extends State<LoginPage> {
       // ignore: avoid_print
       print(loginData.name);
     } else {
-      // ignore: use_build_context_synchronously
       _mostrarAlerta(context);
 
       // Ocurrió un error en la solicitud

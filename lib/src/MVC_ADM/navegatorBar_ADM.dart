@@ -1,3 +1,5 @@
+// ignore_for_file: file_names, camel_case_types, library_private_types_in_public_api, avoid_print, non_constant_identifier_names, use_build_context_synchronously
+
 import 'dart:convert';
 import 'package:app_notificador/src/MVC_ADM/PAGE_ADM/ConsultationPage_ADM.dart';
 import 'package:app_notificador/src/MVC_ADM/PAGE_ADM/ListPatient_ADM.dart';
@@ -70,6 +72,7 @@ class _homePageADM extends State<homePageADM> {
     String? phone = prefs.getString('phone');
     String? email = prefs.getString('email');
     String? cmp = prefs.getString('cmp');
+    int? type_doctor = prefs.getInt('type_doctor');
 
     if (username != null &&
         name != null &&
@@ -79,7 +82,7 @@ class _homePageADM extends State<homePageADM> {
         dni != null &&
         phone != null) {
       final loginData = LoginData(
-          username, name, tokenBD, password, tokenFB, dni, phone, cmp, email);
+          username, name, tokenBD, password, tokenFB, dni, phone, cmp, email, type_doctor!);
       context.read<LoginProvider>().setLoginData(loginData);
     }
     return tokenBD;

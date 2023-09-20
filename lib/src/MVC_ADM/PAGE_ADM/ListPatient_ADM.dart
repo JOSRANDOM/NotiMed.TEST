@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, no_leading_underscores_for_local_identifiers, avoid_print, sized_box_for_whitespace
+// ignore_for_file: file_names, no_leading_underscores_for_local_identifiers, avoid_print, sized_box_for_whitespace, non_constant_identifier_names
 
 import 'dart:convert';
 import 'dart:core';
@@ -45,6 +45,7 @@ class _ListPatient extends State<ListPatientADM> {
     String? phone = prefs.getString('phone');
     String? email = prefs.getString('email');
     String? cmp = prefs.getString('cmp');
+    int? type_doctor = prefs.getInt('type_doctor');
 
     if (username != null &&
         name != null &&
@@ -54,7 +55,7 @@ class _ListPatient extends State<ListPatientADM> {
         dni != null &&
         phone != null) {
       final loginData = LoginData(
-          username, name, tokenBD, password, tokenFB, dni, phone, cmp, email);
+          username, name, tokenBD, password, tokenFB, dni, phone, cmp, email, type_doctor!);
       // ignore: use_build_context_synchronously
       context.read<LoginProvider>().setLoginData(loginData);
     }
@@ -233,7 +234,7 @@ List<Widget> _pacientes(List<Patient> data) {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderRadius: const BorderRadius.all(Radius.circular(20)),
                   color: Colors.blue.shade200,
                 ),
                 child: const Text(

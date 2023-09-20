@@ -37,7 +37,7 @@ void main() async{
         initialRoute: initialRoute,
         routes: {
           'login': (_) => const LoginPage (),
-          '/second': (_) => const homePage(),
+          '/second': (_) => const homePageMD(),
         },
       ),
     ),

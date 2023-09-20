@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, avoid_print, sized_box_for_whitespace
+// ignore_for_file: file_names, avoid_print, sized_box_for_whitespace, non_constant_identifier_names, prefer_const_constructors, unnecessary_string_interpolations
 
 import 'dart:convert';
 import 'dart:core';
@@ -48,6 +48,7 @@ class _HomeState extends State<InterconsultaADM> {
     String? phone = prefs.getString('phone');
     String? email = prefs.getString('email');
     String? cmp = prefs.getString('cmp');
+    int? type_doctor = prefs.getInt('type_doctor');
 
     if (username != null &&
         name != null &&
@@ -57,7 +58,7 @@ class _HomeState extends State<InterconsultaADM> {
         dni != null &&
         phone != null) {
       final loginData = LoginData(
-          username, name, tokenBD, password, tokenFB, dni, phone, cmp, email);
+          username, name, tokenBD, password, tokenFB, dni, phone, cmp, email, type_doctor!);
       // ignore: use_build_context_synchronously
       context.read<LoginProvider>().setLoginData(loginData);
     }

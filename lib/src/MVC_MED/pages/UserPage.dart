@@ -70,6 +70,7 @@ class _UserPage extends State<UserPage> {
     String? phone = prefs.getString('phone');
     String? email = prefs.getString('email');
     String? cmp = prefs.getString('cmp');
+    int? type_doctor = prefs.getInt('type_doctor');
 
     if (username != null &&
         name != null &&
@@ -79,7 +80,7 @@ class _UserPage extends State<UserPage> {
         dni != null &&
         phone != null) {
       final loginData = LoginData(
-          username, name, tokenBD, password, tokenFB, dni, phone, cmp, email);
+          username, name, tokenBD, password, tokenFB, dni, phone, cmp, email, type_doctor!);
       // ignore: use_build_context_synchronously
       context.read<LoginProvider>().setLoginData(loginData);
     }
@@ -201,7 +202,7 @@ class _UserPage extends State<UserPage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const homePage()));
+                              builder: (context) => const homePageMD()));
                     },
                     child: Container(
                         padding: const EdgeInsets.all(12),

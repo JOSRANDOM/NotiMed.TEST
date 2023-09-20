@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 class LoginData {
    String? username;
    String name;
@@ -8,6 +10,7 @@ class LoginData {
    String? email;
    String? phone;
    String? tokenBD;
+   int type_doctor;
 
 
 
@@ -21,6 +24,7 @@ class LoginData {
     this.dni,
     this.email,
     this.phone,
-    this.tokenBD
+    this.tokenBD,
+    this.type_doctor
     );
 }

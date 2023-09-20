@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'dart:convert';
 
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -43,9 +45,10 @@ Future<void> loadLoginData(BuildContext context) async  {
       var dni =  responseBody['user']['document_number'];
       var email =  responseBody['user']['email'];
       var phone =  responseBody['user']['phone'];
+      var type_doctor = responseBody['user']['type_doctor'];
       var tokenBD =  responseBody['token'];
 
-     final loginData = LoginData(username, name,cmp,passwordDM , tokenFB, dni, email, phone,tokenBD );
+     final loginData = LoginData(username, name,cmp,passwordDM , tokenFB, dni, email, phone,tokenBD,type_doctor! );
       // ignore: use_build_context_synchronously
       final loginProvider = Provider.of<LoginProvider>(context, listen: false);
       loginProvider.setLoginData(loginData);
@@ -61,6 +64,7 @@ Future<void> loadLoginData(BuildContext context) async  {
       await prefs.setString('phone', phone );
       await prefs.setString('token', tokenBD!);
       await prefs.setString('cmp', cmp );
+      await prefs.setInt('type_doctor', type_doctor);
       await prefs.setBool('isSessionActive', true);
 
 
