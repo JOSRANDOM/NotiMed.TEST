@@ -3,6 +3,7 @@
 import 'dart:convert';
 
 //import 'package:app_notificador/src/services/push_notification_services.dart';
+import 'package:app_notificador/src/MVC_HOSP/navegatorBar_HOSP.dart';
 import 'package:app_notificador/src/models/login.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -64,10 +65,9 @@ class LoginPageState extends State<LoginPage> {
       var phone = responseBody['user']['phone'];
       var type_doctor = responseBody['user']['type_doctor'];
       var tokenBD = responseBody['token'];
-      
 
       final loginData = LoginData(usernameDM, name, cmp, passwordDM, tokenFB,
-    dni, email, phone, tokenBD, type_doctor);
+          dni, email, phone, tokenBD, type_doctor);
       final loginProvider = Provider.of<LoginProvider>(context, listen: false);
       loginProvider.setLoginData(loginData);
 
@@ -85,19 +85,19 @@ class LoginPageState extends State<LoginPage> {
 
       await prefs.setBool('isSessionActive', true);
 
-          if (type_doctor == 1) {
-      // Si type_doctor es 1, navega a homePageMD
-      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const homePageMD()));
-    } else if (type_doctor == 2) {
-      // Si type_doctor es 2, navega a homePageADM
-      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const homePageADM()));
-    }
+      if (type_doctor == 1) {
+        // Si type_doctor es 1, navega a homePageMD
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const homePageMD()));
+      } else if (type_doctor == 2) {
+        // Si type_doctor es 2, navega a homePageADM
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const homePageADM()));
+      }else if (type_doctor == 3) {
+        // Si type_doctor es 2, navega a homePageADM
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const homePageHP()));
+      }
 
       // La solicitud fue exitosa
       // ignore: avoid_print
@@ -163,7 +163,7 @@ class LoginPageState extends State<LoginPage> {
         body: Center(
           // Envuelve el Container en un Center
           child: Container(
-            decoration:  BoxDecoration(
+            decoration: BoxDecoration(
               color: Colors.deepPurple.shade100,
             ),
             constraints: const BoxConstraints(

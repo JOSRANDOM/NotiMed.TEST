@@ -100,6 +100,7 @@ class _HomeState extends State<InterconsultaADM> {
                   pacienteData['request_specialist'],
                   pacienteData['solicited_service'],
                   pacienteData['patient_name'],
+                  pacienteData['patient_name_short'],
                   pacienteData['patient_age'],
                   pacienteData['room'],
                   pacienteData['last_notification_at'],
@@ -305,7 +306,7 @@ List<Widget> _pacientes(List<Paciente> data) {
               ),
 
               // Llama al nombre del paciente
-             /* Row(
+              Row(
                 children: [
                   const SizedBox(width: 10),
                   Expanded(
@@ -324,7 +325,7 @@ List<Widget> _pacientes(List<Paciente> data) {
                     ),
                   ),
                 ],
-              ),*/
+              ),
 
               // Llama a la habitación del paciente
               Row(

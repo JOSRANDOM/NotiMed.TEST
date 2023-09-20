@@ -3,6 +3,7 @@
 class Patient {
   String? date_origin_at ;
   String patient_name;
+  String patient_name_short;
   String room;
   String patient_sex ;
   String patient_age ;
@@ -16,6 +17,7 @@ class Patient {
   Patient(
     this.date_origin_at,
     this.patient_name,
+    this.patient_name_short,
     this.room,
     this.patient_sex,
     this.patient_age,

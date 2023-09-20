@@ -21,6 +21,7 @@ class Paciente {
   String solicited_service;
   // ignore: non_constant_identifier_names
   String patient_name;
+  String patient_name_short;
   // ignore: non_constant_identifier_names
   int patient_age;
   String? room = 'null';
@@ -40,6 +41,7 @@ class Paciente {
      this.request_specialist,
      this.solicited_service,
      this.patient_name,
+     this.patient_name_short,
      this.patient_age,
      this.room,
      this.last_notification_at, 

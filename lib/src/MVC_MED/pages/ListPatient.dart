@@ -84,6 +84,7 @@ class _ListPatient extends State<ListPatient> {
         _patient.add(Patient(
           element['date_origin_at'],
           element['patient_name'],
+          element['patient_name_short'],
           element['room'],
           element['patient_sex'],
           element['patient_age'],
@@ -280,7 +281,7 @@ List<Widget> _pacientes(List<Patient> data) {
               ],
             ),
             //llama al nombre del paciente
-           /* Row(
+            Row(
               children: [
                 const SizedBox(width: 10),
                 Expanded(
@@ -289,7 +290,7 @@ List<Widget> _pacientes(List<Patient> data) {
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: Text(
-                        pacienteData.patient_name,
+                        pacienteData.patient_name_short,
                         style: const TextStyle(
                           fontSize: 17,
                           color: Colors.black,
@@ -299,7 +300,7 @@ List<Widget> _pacientes(List<Patient> data) {
                   ),
                 ),
               ],
-            ),*/
+            ),
 
             //llama donde se origino la notificacion (HOSIPITALIZACION - URGENCIA)
             Row(

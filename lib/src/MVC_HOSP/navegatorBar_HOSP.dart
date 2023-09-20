@@ -1,11 +1,11 @@
-// ignore_for_file: file_names, camel_case_types, library_private_types_in_public_api, avoid_print
+// ignore_for_file: file_names, camel_case_types, library_private_types_in_public_api, avoid_print, non_constant_identifier_names, use_build_context_synchronously
 
 import 'dart:convert';
 import 'package:app_notificador/src/MVC_MED/pages/ListPatient.dart';
 import 'package:app_notificador/src/MVC_MED/pages/UserPage.dart';
-import 'package:app_notificador/src/MVC_MED/pages/messager.dart';
+//import 'package:app_notificador/src/MVC_MED/pages/messager.dart';
 import 'package:app_notificador/src/services/provider.dart';
-import 'package:app_notificador/src/MVC_MED/pages/ConsultationPage.dart';
+//import 'package:app_notificador/src/MVC_MED/pages/ConsultationPage.dart';
 import 'package:app_notificador/src/session/login.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -18,7 +18,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import '../models/login.dart';
 import '../models/user.dart';
-import 'pages/EditCalendar.dart';
+//import 'pages/EditCalendar.dart';
 import 'pages/HomePage.dart';
 
 //import '../pages/syncfusion_calendar.dart';
@@ -36,20 +36,20 @@ Future<void> main() async {
         title: "NOTIMED - HOME",
         initialRoute: 'home',
         routes: {
-          'home': (_) => const homePageMD(),
+          'home': (_) => const homePageHP(),
           'login': (_) => const LoginPage(),
         },
       )));
 }
 
-class homePageMD extends StatefulWidget {
-  const homePageMD({Key? key}) : super(key: key);
+class homePageHP extends StatefulWidget {
+  const homePageHP({Key? key}) : super(key: key);
 
   @override
-  _homePageMD createState() => _homePageMD();
+  _homePageHP createState() => _homePageHP();
 }
 
-class _homePageMD extends State<homePageMD> {
+class _homePageHP extends State<homePageHP> {
   late Future<List<Usuario>> _usuario;
   bool isExpanded = false;
 
@@ -79,15 +79,15 @@ class _homePageMD extends State<homePageMD> {
     String? cmp = prefs.getString('cmp');
     int? type_doctor = prefs.getInt('type_doctor');
 
-     if (username != null &&
+    if (username != null &&
         name != null &&
         tokenBD != null &&
         password != null &&
         tokenFB != null &&
         dni != null &&
         phone != null) {
-      final loginData = LoginData(
-          username, name, tokenBD, password, tokenFB, dni, phone, cmp, email, type_doctor!);
+      final loginData = LoginData(username, name, tokenBD, password, tokenFB,
+          dni, phone, cmp, email, type_doctor!);
       context.read<LoginProvider>().setLoginData(loginData);
     }
     return tokenBD;
@@ -131,9 +131,9 @@ class _homePageMD extends State<homePageMD> {
 
   secureScreen() async {
     await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
-    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_KEEP_SCREEN_ON);
+    await FlutterWindowManager.addFlags(
+        FlutterWindowManager.FLAG_KEEP_SCREEN_ON);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +144,7 @@ class _homePageMD extends State<homePageMD> {
         length: 3,
         child: Scaffold(
           //BOTON FLOTANTE
-          floatingActionButton: Column(
+          /*floatingActionButton: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               // Botón principal que controla la expansión
@@ -161,12 +161,12 @@ class _homePageMD extends State<homePageMD> {
                     ? Icons.close
                     : Icons.add), // Cambiar el ícono según el estado
               ),
-              SizedBox(height: 16.0), // Espacio entre los botones flotantes
+              const SizedBox(height: 16.0), // Espacio entre los botones flotantes
 
               // Botón 1 - Editar Calendario
               AnimatedContainer(
                 duration:
-                    Duration(milliseconds: 300), // Duración de la animación
+                    const Duration(milliseconds: 300), // Duración de la animación
                 height: isExpanded
                     ? 56.0
                     : 0.0, // Altura 0 para ocultar, 56 para mostrar
@@ -182,16 +182,16 @@ class _homePageMD extends State<homePageMD> {
                     backgroundColor: Colors.white, // Color de fondo blanco
                     foregroundColor: Colors.black, // Color del icono negro
                     tooltip: 'Editar Calendario',
-                    child: Icon(Icons.calendar_month),
+                    child: const Icon(Icons.calendar_month),
                   ),
                 ),
               ),
-              SizedBox(height: 16.0), // Espacio entre los botones flotantes
+              const SizedBox(height: 16.0), // Espacio entre los botones flotantes
 
               // Botón 2 - Messenger SP
               AnimatedContainer(
                 duration:
-                    Duration(milliseconds: 300), // Duración de la animación
+                    const Duration(milliseconds: 300), // Duración de la animación
                 height: isExpanded
                     ? 56.0
                     : 0.0, // Altura 0 para ocultar, 56 para mostrar
@@ -207,12 +207,12 @@ class _homePageMD extends State<homePageMD> {
                     backgroundColor: Colors.white, // Color de fondo blanco
                     foregroundColor: Colors.black, // Color del icono negro
                     tooltip: 'Messenger SP',
-                    child: Icon(Icons.message),
+                    child: const Icon(Icons.message),
                   ),
                 ),
               ),
             ],
-          ),
+          ),*/
 
           appBar: AppBar(
             backgroundColor: Colors.white,
@@ -235,18 +235,19 @@ class _homePageMD extends State<homePageMD> {
                           fontSize: 18),
                       children: [
                         const TextSpan(text: ' '),
-                        const TextSpan(
-                          text: 'Dr. ',
-                          style: TextStyle(
-                            color: Colors.deepPurple,
-                            fontSize: 18,
-                          ),
-                        ),
                         TextSpan(
                           text: userName,
                           style: const TextStyle(
                             color: Colors.deepPurple,
                             fontSize: 18,
+                          ),
+                        ),
+                        const TextSpan(text: ' '),
+                        const TextSpan(
+                          text: 'usuarios hospitalario',
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 13,
                           ),
                         ),
                       ],
@@ -271,7 +272,8 @@ class _homePageMD extends State<homePageMD> {
                     ),
                   ),
                 ),
-                Tab(
+
+                /*Tab(
                   icon: Icon(Icons.bookmark, color: Colors.deepPurple),
                   child: Text(
                     'INTERCONSULTAS',
@@ -280,7 +282,8 @@ class _homePageMD extends State<homePageMD> {
                       fontSize: 12,
                     ),
                   ),
-                ),
+                ),*/
+
                 Tab(
                   icon: Icon(Icons.person_pin_sharp, color: Colors.deepPurple),
                   child: Text(
@@ -441,7 +444,7 @@ class _homePageMD extends State<homePageMD> {
             ),
           ),
           body: const TabBarView(
-            children: [Home(), Interconsulta(), ListPatient()],
+            children: [Home(), /*Interconsulta(),*/ ListPatient()],
           ),
         ),
       ),

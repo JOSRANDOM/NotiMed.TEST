@@ -306,7 +306,7 @@ List<Widget> _pacientes(List<Paciente> data) {
               ),
 
               // Llama al nombre del paciente
-              Row(
+             /* Row(
                 children: [
                   const SizedBox(width: 10),
                   Expanded(
@@ -315,7 +315,7 @@ List<Widget> _pacientes(List<Paciente> data) {
                       child: Padding(
                         padding: const EdgeInsets.all(10),
                         child: Text(
-                          pacienteData.patient_name_short,
+                          pacienteData.patient_name,
                           style: const TextStyle(
                             fontSize: 17,
                             color: Colors.black,
@@ -325,7 +325,7 @@ List<Widget> _pacientes(List<Paciente> data) {
                     ),
                   ),
                 ],
-              ),
+              ),*/
 
               // Llama a la habitación del paciente
               Row(

@@ -13,14 +13,14 @@ import '../../services/provider.dart';
 import '../../services/push_notification_services.dart';
 import 'package:lottie/lottie.dart';
 
-class ListPatientADM extends StatefulWidget {
-  const ListPatientADM({Key? key}) : super(key: key);
+class ListPatient extends StatefulWidget {
+  const ListPatient({Key? key}) : super(key: key);
 
   @override
-  State<ListPatientADM> createState() => _ListPatient();
+  State<ListPatient> createState() => _ListPatient();
 }
 
-class _ListPatient extends State<ListPatientADM> {
+class _ListPatient extends State<ListPatient> {
   @override
   void initState() {
     super.initState();
@@ -281,7 +281,7 @@ List<Widget> _pacientes(List<Patient> data) {
               ],
             ),
             //llama al nombre del paciente
-            Row(
+           /* Row(
               children: [
                 const SizedBox(width: 10),
                 Expanded(
@@ -290,7 +290,7 @@ List<Widget> _pacientes(List<Patient> data) {
                     child: Padding(
                       padding: const EdgeInsets.all(10),
                       child: Text(
-                        pacienteData.patient_name_short,
+                        pacienteData.patient_name,
                         style: const TextStyle(
                           fontSize: 17,
                           color: Colors.black,
@@ -300,7 +300,7 @@ List<Widget> _pacientes(List<Patient> data) {
                   ),
                 ),
               ],
-            ),
+            ),*/
 
             //llama donde se origino la notificacion (HOSIPITALIZACION - URGENCIA)
             Row(
