@@ -2,8 +2,9 @@
 
 import 'dart:convert';
 import 'dart:core';
+import 'package:app_notificador/src/MVC_HOSP/pages/ListPatient.dart';
 import 'package:app_notificador/src/models/user.dart';
-import 'package:app_notificador/src/others/utill/Datos_card.dart';
+import 'package:app_notificador/src/utill/Datos_card.dart';
 //import 'package:app_notificador/src/MVC_MED/navegatorBar_MED.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,7 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/login.dart';
 import '../../services/provider.dart';
 import '../../services/push_notification_services.dart';
-import '../navegatorBar_HOSP.dart';
+//import '../navegatorBar_HOSP.dart';
 
 Future<void> main() async {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
@@ -203,7 +204,7 @@ class _UserPage extends State<UserPage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const homePageHP()));
+                              builder: (context) => const ListPatient()));
                     },
                     child: Container(
                         padding: const EdgeInsets.all(12),

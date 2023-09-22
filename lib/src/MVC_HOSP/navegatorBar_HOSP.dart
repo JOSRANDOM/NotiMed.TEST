@@ -19,7 +19,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import '../models/login.dart';
 import '../models/user.dart';
 //import 'pages/EditCalendar.dart';
-import 'pages/HomePage.dart';
+//import 'pages/HomePage.dart';
 
 //import '../pages/syncfusion_calendar.dart';
 import '../services/push_notification_services.dart';
@@ -141,7 +141,7 @@ class _homePageHP extends State<homePageHP> {
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         initialIndex: 0,
-        length: 3,
+        length: 1,
         child: Scaffold(
           //BOTON FLOTANTE
           /*floatingActionButton: Column(
@@ -262,21 +262,10 @@ class _homePageHP extends State<homePageHP> {
               indicatorColor: Colors.deepPurple,
               unselectedLabelColor: Colors.orange,
               tabs: [
-                Tab(
+                /*Tab(
                   icon: Icon(Icons.home, color: Colors.deepPurple),
                   child: Text(
                     'PRINCIPAL',
-                    style: TextStyle(
-                      color: Colors.deepPurple,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),
-
-                /*Tab(
-                  icon: Icon(Icons.bookmark, color: Colors.deepPurple),
-                  child: Text(
-                    'INTERCONSULTAS',
                     style: TextStyle(
                       color: Colors.deepPurple,
                       fontSize: 12,
@@ -294,6 +283,18 @@ class _homePageHP extends State<homePageHP> {
                     ),
                   ),
                 ),
+                
+                /*Tab(
+                  icon: Icon(Icons.bookmark, color: Colors.deepPurple),
+                  child: Text(
+                    'INTERCONSULTAS',
+                    style: TextStyle(
+                      color: Colors.deepPurple,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),*/
+
               ],
             ),
             elevation: 0.0,
@@ -444,7 +445,7 @@ class _homePageHP extends State<homePageHP> {
             ),
           ),
           body: const TabBarView(
-            children: [Home(), /*Interconsulta(),*/ ListPatient()],
+            children: [/*Home(), Interconsulta(),*/ ListPatient()],
           ),
         ),
       ),

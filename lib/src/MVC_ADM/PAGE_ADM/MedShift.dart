@@ -1,22 +1,19 @@
-// ignore_for_file: file_names
-
+// ignore_for_file: unused_element, non_constant_identifier_names
 import 'package:flutter/material.dart';
 
-void main() => runApp(const MedShift());
 
-class MedShift extends StatelessWidget {
+void main() => runApp(const MedShift());
+ class MedShift extends StatefulWidget {
   const MedShift({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'NOTIMED',
-      home: Scaffold(
-        body: Center(
-          child: Text('LISTA MEDICOS DE TURNO'),
-        ),
-      ),
-    );
-  }
+  State<MedShift> createState() => _MedShiftState();
 }
+
+
+class _MedShiftState extends State<MedShift> {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+} 

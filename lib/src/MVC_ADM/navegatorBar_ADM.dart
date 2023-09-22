@@ -18,6 +18,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import '../models/login.dart';
 import '../models/user.dart';
 import '../services/push_notification_services.dart';
+import 'PAGE_ADM/MedShift.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -136,7 +137,7 @@ class _homePageADM extends State<homePageADM> {
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         initialIndex: 0,
-        length: 2,
+        length: 3,
         child: Scaffold(
           //BOTON FLOTANTE
          /* floatingActionButton: Column(
@@ -262,7 +263,17 @@ class _homePageADM extends State<homePageADM> {
               unselectedLabelColor: Colors.orange,
               tabs: [
                 Tab(
-                  icon: Icon(Icons.bookmark, color: Colors.deepPurple),
+                  icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
+                  child: Text(
+                    'TURNOS GLOBAL',
+                    style: TextStyle(
+                      color: Colors.deepPurple,
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+                Tab(
+                  icon: Icon(Icons.add_alert_sharp, color: Colors.deepPurple),
                   child: Text(
                     'INTERCONSULTAS',
                     style: TextStyle(
@@ -431,7 +442,7 @@ class _homePageADM extends State<homePageADM> {
             ),
           ),
           body: const TabBarView(
-            children: [InterconsultaADM(), ListPatientADM()],
+            children: [MedShift(), InterconsultaADM(), ListPatientADM()],
           ),
         ),
       ),

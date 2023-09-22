@@ -3,7 +3,7 @@
 import 'dart:convert';
 import 'dart:core';
 import 'package:app_notificador/src/models/user.dart';
-import 'package:app_notificador/src/others/utill/Datos_card.dart';
+import 'package:app_notificador/src/utill/Datos_card.dart';
 import 'package:app_notificador/src/MVC_MED/navegatorBar_MED.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
