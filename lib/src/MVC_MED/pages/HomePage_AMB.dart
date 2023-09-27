@@ -185,127 +185,132 @@ class _HomeState extends State<Home> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'NOTIMED',
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        body: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  color: Colors.white,
-                ),
-                child: TableCalendar(
-                  locale: 'es_Es',
-                  focusedDay: _selectedDay,
-                  firstDay: DateTime.now().subtract(const Duration(days: 365)),
-                  lastDay: DateTime.now().add(const Duration(days: 365)),
-                  selectedDayPredicate: (day) {
-                    return isSameDay(_selectedDay, day);
-                  },
-                  availableCalendarFormats: const {
-                    CalendarFormat.month: 'mes',
-                    CalendarFormat.week: 'semana',
-                  },
-                  headerStyle: HeaderStyle(
-                    headerPadding: EdgeInsets.zero,
-                    formatButtonVisible: false,
-                    titleTextFormatter: (DateTime date, dynamic locale) {
-                      return DateFormat.MMMM(locale)
-                          .format(date); // Mostrar solo el nombre del mes
-                    },
-                    titleTextStyle:
-                        const TextStyle(color: Colors.deepPurple, fontSize: 20),
-                    titleCentered: true,
-                    leftChevronIcon: const Icon(Icons.chevron_left,
-                        color: Colors
-                            .deepPurple), // Cambiar el color de la flecha izquierda
-                    rightChevronIcon: const Icon(Icons.chevron_right,
-                        color: Colors
-                            .deepPurple), // Cambiar el color de la flecha derecha
+      home: WillPopScope(
+      onWillPop: () async {  
+        return false;
+      },
+      child: Scaffold(
+          backgroundColor: Colors.white,
+          body: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    color: Colors.white,
                   ),
-                  calendarStyle: CalendarStyle(
-                      outsideDaysVisible: true,
-                      selectedDecoration: const BoxDecoration(
-                        color: Colors.deepPurple,
-                        shape: BoxShape.circle,
-                      ),
-                      selectedTextStyle: TextStyle(color: Colors.white),
-                      todayDecoration: BoxDecoration(
-                          color: Colors.deepPurple.shade200,
-                          shape: BoxShape.circle)),
-                  onDaySelected: (fechaSeleccionada, _) {
-                    setState(() {
-                      _selectedDay = fechaSeleccionada;
-                    });
-                    refreshData; // Obtener datos para la nueva fecha seleccionada
-                  },
+                  child: TableCalendar(
+                    locale: 'es_Es',
+                    focusedDay: _selectedDay,
+                    firstDay: DateTime.now().subtract(const Duration(days: 365)),
+                    lastDay: DateTime.now().add(const Duration(days: 365)),
+                    selectedDayPredicate: (day) {
+                      return isSameDay(_selectedDay, day);
+                    },
+                    availableCalendarFormats: const {
+                      CalendarFormat.month: 'mes',
+                      CalendarFormat.week: 'semana',
+                    },
+                    headerStyle: HeaderStyle(
+                      headerPadding: EdgeInsets.zero,
+                      formatButtonVisible: false,
+                      titleTextFormatter: (DateTime date, dynamic locale) {
+                        return DateFormat.MMMM(locale)
+                            .format(date); // Mostrar solo el nombre del mes
+                      },
+                      titleTextStyle:
+                          const TextStyle(color: Colors.deepPurple, fontSize: 20),
+                      titleCentered: true,
+                      leftChevronIcon: const Icon(Icons.chevron_left,
+                          color: Colors
+                              .deepPurple), // Cambiar el color de la flecha izquierda
+                      rightChevronIcon: const Icon(Icons.chevron_right,
+                          color: Colors
+                              .deepPurple), // Cambiar el color de la flecha derecha
+                    ),
+                    calendarStyle: CalendarStyle(
+                        outsideDaysVisible: true,
+                        selectedDecoration: const BoxDecoration(
+                          color: Colors.deepPurple,
+                          shape: BoxShape.circle,
+                        ),
+                        selectedTextStyle: TextStyle(color: Colors.white),
+                        todayDecoration: BoxDecoration(
+                            color: Colors.deepPurple.shade200,
+                            shape: BoxShape.circle)),
+                    onDaySelected: (fechaSeleccionada, _) {
+                      setState(() {
+                        _selectedDay = fechaSeleccionada;
+                      });
+                      refreshData; // Obtener datos para la nueva fecha seleccionada
+                    },
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: LiquidPullToRefresh(
-                onRefresh: refreshData,
-                color: Colors.white,
-                backgroundColor: Colors.deepPurple,
-                height: 100,
-                animSpeedFactor: 2,
-                showChildOpacityTransition: false,
-                child: FutureBuilder(
-                  future: refreshData(), // Llamada a refreshData solo aquí
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.purple),
-                        ),
-                      );
-                    } else if (snapshot.hasError) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 200,
-                              height: 150,
-                              child: Lottie.network(
-                                'https://lottie.host/18d935ef-9547-4a4c-b38e-09787ed6dbac/l5OvPNglfK.json', // URL de la animación Lottie
+              Expanded(
+                child: LiquidPullToRefresh(
+                  onRefresh: refreshData,
+                  color: Colors.white,
+                  backgroundColor: Colors.deepPurple,
+                  height: 100,
+                  animSpeedFactor: 2,
+                  showChildOpacityTransition: false,
+                  child: FutureBuilder(
+                    future: refreshData(), // Llamada a refreshData solo aquí
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.purple),
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
                                 width: 200,
-                                height: 200,
-                                fit: BoxFit.cover,
+                                height: 150,
+                                child: Lottie.network(
+                                  'https://lottie.host/18d935ef-9547-4a4c-b38e-09787ed6dbac/l5OvPNglfK.json', // URL de la animación Lottie
+                                  width: 200,
+                                  height: 200,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                                height:
-                                    20), // Espacio entre la animación y el texto
-                            Text(
-                              'SIN CONEXIÓN', // Mensaje de texto
-                              style: TextStyle(
-                                fontSize: 18,
-                                color: Colors.black,
+                              SizedBox(
+                                  height:
+                                      20), // Espacio entre la animación y el texto
+                              Text(
+                                'SIN CONEXIÓN', // Mensaje de texto
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: Colors.black,
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      );
-                    } else {
-                      return ListView.builder(
-                        // Usar ListView.builder para una mejor eficiencia
-                        itemCount: _groupedTurnos.length,
-                        itemBuilder: (context, index) {
-                          var clinicName = _groupedTurnos.keys.elementAt(index);
-                          var turnos = _groupedTurnos[clinicName];
-                          return _buildClinicTurnos(clinicName, turnos!);
-                        },
-                      );
-                    }
-                  },
+                            ],
+                          ),
+                        );
+                      } else {
+                        return ListView.builder(
+                          // Usar ListView.builder para una mejor eficiencia
+                          itemCount: _groupedTurnos.length,
+                          itemBuilder: (context, index) {
+                            var clinicName = _groupedTurnos.keys.elementAt(index);
+                            var turnos = _groupedTurnos[clinicName];
+                            return _buildClinicTurnos(clinicName, turnos!);
+                          },
+                        );
+                      }
+                    },
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

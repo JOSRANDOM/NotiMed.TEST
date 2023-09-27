@@ -57,6 +57,7 @@ dependencies:
   webview_flutter: ^4.2.4
   flutter_windowmanager: ^0.2.0
   syncfusion_flutter_calendar: ^23.1.36
+  audioplayers: ^5.1.0
   flutter_localizations:
     sdk: flutter
   

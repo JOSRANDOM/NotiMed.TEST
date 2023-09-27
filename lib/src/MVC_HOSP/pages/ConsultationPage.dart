@@ -138,93 +138,98 @@ class _HomeState extends State<Interconsulta> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'NOTIMED',
-      home: Scaffold(
-        backgroundColor: Colors.white,
-        body: Center(
-          child: Expanded(
-            child: SizedBox(
-              width: 370, // Establece un ancho máximo de 200
-              child: LiquidPullToRefresh(
-                  onRefresh: refreshData,
-                  color: Colors.white,
-                  backgroundColor: Colors.deepPurple,
-                  height: 100,
-                  animSpeedFactor: 2,
-                  showChildOpacityTransition: false,
-                  child: FutureBuilder<List<Paciente>>(
-                    future: _paciente,
-                    builder: (BuildContext context,
-                        AsyncSnapshot<List<Paciente>> snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.purple),
-                          ),
-                        );
-                      } else if (snapshot.hasError) {
-                        print(snapshot.error);
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 200,
-                                height: 150,
-                                child: Lottie.network(
-                                'https://lottie.host/18d935ef-9547-4a4c-b38e-09787ed6dbac/l5OvPNglfK.json', // URL de la animación Lottie
-                                width: 200,
-                                height: 200,
-                                fit: BoxFit.cover,
-                              ),
-                              ),
-                              const SizedBox(
-                                  height:
-                                      20), // Espacio entre la animación y el texto
-                             const Text(
-                                'SIN CONEXIÓN', // Mensaje de texto
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                        return Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Container(
-                                width: 200,
-                                height: 150,
-                                child: Lottie.network(
-                                  'https://lottie.host/69025247-2fa4-44ba-900b-0c8095da728f/rEY38pWAPN.json', // URL de la animación Lottie
+      home: WillPopScope(
+      onWillPop: () async {  
+        return false;
+      },
+      child:Scaffold(
+          backgroundColor: Colors.white,
+          body: Center(
+            child: Expanded(
+              child: SizedBox(
+                width: 370, // Establece un ancho máximo de 200
+                child: LiquidPullToRefresh(
+                    onRefresh: refreshData,
+                    color: Colors.white,
+                    backgroundColor: Colors.deepPurple,
+                    height: 100,
+                    animSpeedFactor: 2,
+                    showChildOpacityTransition: false,
+                    child: FutureBuilder<List<Paciente>>(
+                      future: _paciente,
+                      builder: (BuildContext context,
+                          AsyncSnapshot<List<Paciente>> snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return const Center(
+                            child: CircularProgressIndicator(
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.purple),
+                            ),
+                          );
+                        } else if (snapshot.hasError) {
+                          print(snapshot.error);
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: 200,
+                                  height: 150,
+                                  child: Lottie.network(
+                                  'https://lottie.host/18d935ef-9547-4a4c-b38e-09787ed6dbac/l5OvPNglfK.json', // URL de la animación Lottie
                                   width: 200,
                                   height: 200,
                                   fit: BoxFit.cover,
                                 ),
-                              ),
-                              const SizedBox(
-                                  height:
-                                      20), // Espacio entre la animación y el texto
-                              const Text(
-                                'No hay interconsulta pendiente', // Mensaje de texto
-                                style: TextStyle(
-                                    fontSize: 18, color: Colors.black),
-                              ),
-                            ],
-                          ),
-                        );
-                      } else {
-                        print('envío correcto');
-                        return ListView(
-                          children: _pacientes(snapshot.data!),
-                        );
-                      }
-                    },
-                  )),
+                                ),
+                                const SizedBox(
+                                    height:
+                                        20), // Espacio entre la animación y el texto
+                               const Text(
+                                  'SIN CONEXIÓN', // Mensaje de texto
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                          return Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: 200,
+                                  height: 150,
+                                  child: Lottie.network(
+                                    'https://lottie.host/69025247-2fa4-44ba-900b-0c8095da728f/rEY38pWAPN.json', // URL de la animación Lottie
+                                    width: 200,
+                                    height: 200,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(
+                                    height:
+                                        20), // Espacio entre la animación y el texto
+                                const Text(
+                                  'No hay interconsulta pendiente', // Mensaje de texto
+                                  style: TextStyle(
+                                      fontSize: 18, color: Colors.black),
+                                ),
+                              ],
+                            ),
+                          );
+                        } else {
+                          print('envío correcto');
+                          return ListView(
+                            children: _pacientes(snapshot.data!),
+                          );
+                        }
+                      },
+                    )),
+              ),
             ),
           ),
         ),

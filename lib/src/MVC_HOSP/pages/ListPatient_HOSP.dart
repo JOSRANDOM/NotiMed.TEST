@@ -1,8 +1,8 @@
-// ignore_for_file: file_names, no_leading_underscores_for_local_identifiers, avoid_print, sized_box_for_whitespace, non_constant_identifier_names
+// ignore_for_file: file_names, no_leading_underscores_for_local_identifiers, avoid_print, sized_box_for_whitespace, non_constant_identifier_names, unused_element
 
 import 'dart:convert';
 import 'dart:core';
-import 'package:app_notificador/src/MVC_HOSP/pages/UserPage.dart';
+import 'package:app_notificador/src/MVC_HOSP/pages/UserPage_HOP.dart';
 import 'package:app_notificador/src/models/PatinetHospitalized.dart';
 //import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -19,14 +19,14 @@ import 'package:lottie/lottie.dart';
 import '../../utill/IDI.dart';
 import '../../utill/Logout.dart';
 
-class ListPatient extends StatefulWidget {
-  const ListPatient({Key? key}) : super(key: key);
+class ListPatientHOSP extends StatefulWidget {
+  const ListPatientHOSP({Key? key}) : super(key: key);
 
   @override
-  State<ListPatient> createState() => _ListPatient();
+  State<ListPatientHOSP> createState() => _ListPatient();
 }
 
-class _ListPatient extends State<ListPatient> {
+class _ListPatient extends State<ListPatientHOSP> {
   late Future<List<Usuario>> _usuario;
   @override
   void initState() {
@@ -395,7 +395,11 @@ class _ListPatient extends State<ListPatient> {
                       } else {
                         print('envío correcto');
                         return ListView(
-                          children: _pacientes(snapshot.data!),
+                          children: [
+                            _buildPacientesList(snapshot.data!),
+                            ..._pacientes(snapshot
+                                .data!), // Agregar pacientes después del título
+                          ],
                         );
                       }
                     },
@@ -404,6 +408,24 @@ class _ListPatient extends State<ListPatient> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildPacientesList(List<Patient> data) {
+    return const Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
+            'Mi Lista de Pacientes',
+            style: TextStyle(
+              color: Colors.deepPurple,
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -418,7 +440,7 @@ class _ListPatient extends State<ListPatient> {
           width: MediaQuery.of(context).size.width * 0.8,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.blue, width: 0),
+            border: Border.all(color: Colors.deepPurple, width: 0),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch, // Añade esta línea
@@ -429,33 +451,18 @@ class _ListPatient extends State<ListPatient> {
                   width: double.infinity,
                   padding:
                       const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(20)),
-                    color: Colors.blue.shade200,
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    color: Colors.deepPurple,
                   ),
-                  child: const Text(
-                    'PACIENTE HOSPITALIZADO',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-              //llama al nombre de la clinica
-              Row(
-                children: [
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
+                  child: Text(
                         pacienteData.clinic_name, // Usa clinic_name aquí
                         style: const TextStyle(
-                          color: Colors.blue,
+                          color: Colors.white,
                           fontSize: 16,
                         ),
                       ),
-                    ),
-                  ),
-                ],
+                ),
               ),
               //llama al numero de HC
               Row(
@@ -467,7 +474,7 @@ class _ListPatient extends State<ListPatient> {
                       child: Text(
                         'HC: ${pacienteData.clinic_history}',
                         style: const TextStyle(
-                          color: Colors.purple,
+                          color: Colors.blue,
                           fontSize: 18,
                         ),
                       ),
@@ -625,5 +632,4 @@ class _ListPatient extends State<ListPatient> {
 
     return pacienteWidgets;
   }
-
 }

@@ -3,26 +3,20 @@
 import 'dart:convert';
 import 'package:app_notificador/src/MVC_MED/pages/ListPatient.dart';
 import 'package:app_notificador/src/MVC_MED/pages/UserPage.dart';
-//import 'package:app_notificador/src/MVC_MED/pages/messager.dart';
 import 'package:app_notificador/src/services/provider.dart';
-//import 'package:app_notificador/src/MVC_MED/pages/ConsultationPage.dart';
-import 'package:app_notificador/src/session/login.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:app_notificador/src/utill/Logout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import '../models/login.dart';
 import '../models/user.dart';
-//import 'pages/EditCalendar.dart';
-//import 'pages/HomePage.dart';
 
-//import '../pages/syncfusion_calendar.dart';
 import '../services/push_notification_services.dart';
+import '../utill/IDI.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -37,7 +31,6 @@ Future<void> main() async {
         initialRoute: 'home',
         routes: {
           'home': (_) => const homePageHP(),
-          'login': (_) => const LoginPage(),
         },
       )));
 }
@@ -142,398 +135,350 @@ class _homePageHP extends State<homePageHP> {
       home: DefaultTabController(
         initialIndex: 0,
         length: 1,
-        child: Scaffold(
-          //BOTON FLOTANTE
-          /*floatingActionButton: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              // Botón principal que controla la expansión
-              FloatingActionButton(
-                onPressed: () {
-                  setState(() {
-                    isExpanded = !isExpanded; // Cambiar el estado de expansión
-                  });
-                },
-                backgroundColor: Colors.white, // Color de fondo blanco
-                foregroundColor: Colors.black, // Color del icono negro
-                tooltip: 'Mostrar/Ocultar',
-                child: Icon(isExpanded
-                    ? Icons.close
-                    : Icons.add), // Cambiar el ícono según el estado
-              ),
-              const SizedBox(height: 16.0), // Espacio entre los botones flotantes
-
-              // Botón 1 - Editar Calendario
-              AnimatedContainer(
-                duration:
-                    const Duration(milliseconds: 300), // Duración de la animación
-                height: isExpanded
-                    ? 56.0
-                    : 0.0, // Altura 0 para ocultar, 56 para mostrar
-                child: Visibility(
-                  visible: isExpanded, // Controlar la visibilidad
-                  child: FloatingActionButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const EditCalendar()));
-                    },
-                    backgroundColor: Colors.white, // Color de fondo blanco
-                    foregroundColor: Colors.black, // Color del icono negro
-                    tooltip: 'Editar Calendario',
-                    child: const Icon(Icons.calendar_month),
-                  ),
+        child: WillPopScope(
+          onWillPop: () async { 
+            return false;
+           },
+          child: Scaffold(
+            //BOTON FLOTANTE
+            /*floatingActionButton: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                // Botón principal que controla la expansión
+                FloatingActionButton(
+                  onPressed: () {
+                    setState(() {
+                      isExpanded = !isExpanded; // Cambiar el estado de expansión
+                    });
+                  },
+                  backgroundColor: Colors.white, // Color de fondo blanco
+                  foregroundColor: Colors.black, // Color del icono negro
+                  tooltip: 'Mostrar/Ocultar',
+                  child: Icon(isExpanded
+                      ? Icons.close
+                      : Icons.add), // Cambiar el ícono según el estado
                 ),
-              ),
-              const SizedBox(height: 16.0), // Espacio entre los botones flotantes
-
-              // Botón 2 - Messenger SP
-              AnimatedContainer(
-                duration:
-                    const Duration(milliseconds: 300), // Duración de la animación
-                height: isExpanded
-                    ? 56.0
-                    : 0.0, // Altura 0 para ocultar, 56 para mostrar
-                child: Visibility(
-                  visible: isExpanded, // Controlar la visibilidad
-                  child: FloatingActionButton(
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MessagerSP()));
-                    },
-                    backgroundColor: Colors.white, // Color de fondo blanco
-                    foregroundColor: Colors.black, // Color del icono negro
-                    tooltip: 'Messenger SP',
-                    child: const Icon(Icons.message),
-                  ),
-                ),
-              ),
-            ],
-          ),*/
-
-          appBar: AppBar(
-            backgroundColor: Colors.white,
-            iconTheme: const IconThemeData(color: Colors.deepPurple),
-            title: FutureBuilder<List<Usuario>>(
-              future: _usuario,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Text('Error');
-                } else if (snapshot.hasError) {
-                  return const Text('Error');
-                } else if (snapshot.hasData) {
-                  String? userName = snapshot.data![0].name;
-                  return RichText(
-                    text: TextSpan(
-                      text: 'Bienvenido: ',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                          fontSize: 18),
-                      children: [
-                        const TextSpan(text: ' '),
-                        TextSpan(
-                          text: userName,
-                          style: const TextStyle(
-                            color: Colors.deepPurple,
-                            fontSize: 18,
-                          ),
-                        ),
-                        const TextSpan(text: ' '),
-                        const TextSpan(
-                          text: 'usuarios hospitalario',
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                } else {
-                  return const Text('No data');
-                }
-              },
-            ),
-            bottom: const TabBar(
-              indicatorColor: Colors.deepPurple,
-              unselectedLabelColor: Colors.orange,
-              tabs: [
-                /*Tab(
-                  icon: Icon(Icons.home, color: Colors.deepPurple),
-                  child: Text(
-                    'PRINCIPAL',
-                    style: TextStyle(
-                      color: Colors.deepPurple,
-                      fontSize: 12,
-                    ),
-                  ),
-                ),*/
-
-                Tab(
-                  icon: Icon(Icons.person_pin_sharp, color: Colors.deepPurple),
-                  child: Text(
-                    'HOSPITALIZACION',
-                    style: TextStyle(
-                      color: Colors.deepPurple,
-                      fontSize: 12,
+                const SizedBox(height: 16.0), // Espacio entre los botones flotantes
+        
+                // Botón 1 - Editar Calendario
+                AnimatedContainer(
+                  duration:
+                      const Duration(milliseconds: 300), // Duración de la animación
+                  height: isExpanded
+                      ? 56.0
+                      : 0.0, // Altura 0 para ocultar, 56 para mostrar
+                  child: Visibility(
+                    visible: isExpanded, // Controlar la visibilidad
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const EditCalendar()));
+                      },
+                      backgroundColor: Colors.white, // Color de fondo blanco
+                      foregroundColor: Colors.black, // Color del icono negro
+                      tooltip: 'Editar Calendario',
+                      child: const Icon(Icons.calendar_month),
                     ),
                   ),
                 ),
-                
-                /*Tab(
-                  icon: Icon(Icons.bookmark, color: Colors.deepPurple),
-                  child: Text(
-                    'INTERCONSULTAS',
-                    style: TextStyle(
-                      color: Colors.deepPurple,
-                      fontSize: 12,
+                const SizedBox(height: 16.0), // Espacio entre los botones flotantes
+        
+                // Botón 2 - Messenger SP
+                AnimatedContainer(
+                  duration:
+                      const Duration(milliseconds: 300), // Duración de la animación
+                  height: isExpanded
+                      ? 56.0
+                      : 0.0, // Altura 0 para ocultar, 56 para mostrar
+                  child: Visibility(
+                    visible: isExpanded, // Controlar la visibilidad
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const MessagerSP()));
+                      },
+                      backgroundColor: Colors.white, // Color de fondo blanco
+                      foregroundColor: Colors.black, // Color del icono negro
+                      tooltip: 'Messenger SP',
+                      child: const Icon(Icons.message),
                     ),
                   ),
-                ),*/
-
+                ),
               ],
-            ),
-            elevation: 0.0,
-          ),
-          endDrawer: Drawer(
-            child: Container(
-              color: Colors.white,
-              child: Column(
-                children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    margin: const EdgeInsets.only(top: 50, bottom: 10),
-                    child: Image.asset('lib/src/images/NotiMed.png'),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const UserPage()));
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 30),
-                      padding: const EdgeInsets.all(20),
-                      width: 300,
-                      decoration: const BoxDecoration(
-                        color: Colors.deepPurple,
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                      ),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            ),*/
+        
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              iconTheme: const IconThemeData(color: Colors.deepPurple),
+              title: FutureBuilder<List<Usuario>>(
+                future: _usuario,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Text('Error');
+                  } else if (snapshot.hasError) {
+                    return const Text('Error');
+                  } else if (snapshot.hasData) {
+                    String? userName = snapshot.data![0].name;
+                    return RichText(
+                      text: TextSpan(
+                        text: 'Bienvenido: ',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            fontSize: 18),
                         children: [
-                          Text(
-                            'DATOS DEL USUARIO',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
+                          const TextSpan(text: ' '),
+                          TextSpan(
+                            text: userName,
+                            style: const TextStyle(
+                              color: Colors.deepPurple,
+                              fontSize: 18,
                             ),
                           ),
-                          Icon(
-                            Icons.account_circle_rounded,
-                            color: Colors.white,
-                            size: 24,
+                          const TextSpan(text: ' '),
+                          const TextSpan(
+                            text: 'usuarios hospitalario',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: 13,
+                            ),
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      _IDI(context);
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 2),
-                      padding: const EdgeInsets.all(20),
-                      width: 300,
-                      decoration: const BoxDecoration(
+                    );
+                  } else {
+                    return const Text('No data');
+                  }
+                },
+              ),
+              bottom: const TabBar(
+                indicatorColor: Colors.deepPurple,
+                unselectedLabelColor: Colors.orange,
+                tabs: [
+                  /*Tab(
+                    icon: Icon(Icons.home, color: Colors.deepPurple),
+                    child: Text(
+                      'PRINCIPAL',
+                      style: TextStyle(
                         color: Colors.deepPurple,
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                      ),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '¿Quiénes Somos?',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                          Icon(
-                            Icons.co_present_rounded,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                        ],
+                        fontSize: 12,
                       ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      _IDI(context);
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 2),
-                      padding: const EdgeInsets.all(20),
-                      width: 300,
-                      decoration: const BoxDecoration(
+                  ),*/
+        
+                  Tab(
+                    icon: Icon(Icons.person_pin_sharp, color: Colors.deepPurple),
+                    child: Text(
+                      'HOSPITALIZACION',
+                      style: TextStyle(
                         color: Colors.deepPurple,
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                      ),
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Registro de Horario',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                            ),
-                          ),
-                          Icon(
-                            Icons.add_circle_rounded,
-                            color: Colors.white,
-                            size: 24,
-                          ),
-                        ],
+                        fontSize: 12,
                       ),
                     ),
                   ),
-                  Expanded(child: Container()),
-                  GestureDetector(
-                    onTap: () {
-                      _logout(context);
-                    },
-                    child: Container(
-                      margin: const EdgeInsets.only(top: 2),
-                      padding: const EdgeInsets.all(20),
-                      width: 250,
-                      decoration: const BoxDecoration(
+                  
+                  /*Tab(
+                    icon: Icon(Icons.bookmark, color: Colors.deepPurple),
+                    child: Text(
+                      'INTERCONSULTAS',
+                      style: TextStyle(
                         color: Colors.deepPurple,
-                        borderRadius: BorderRadius.all(Radius.circular(12)),
-                      ),
-                      alignment: Alignment.center,
-                      child: const Text(
-                        'CERRAR SESIÓN',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
+                        fontSize: 12,
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
+                  ),*/
+        
                 ],
               ),
+              elevation: 0.0,
             ),
-          ),
-          body: const TabBarView(
-            children: [/*Home(), Interconsulta(),*/ ListPatient()],
+            endDrawer: Drawer(
+              child: Container(
+                color: Colors.white,
+                child: Column(
+                  children: [
+                    Container(
+                      width: 100,
+                      height: 100,
+                      margin: const EdgeInsets.only(top: 50, bottom: 10),
+                      child: Image.asset('lib/src/images/NotiMed.png'),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => const UserPage()));
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 30),
+                        padding: const EdgeInsets.all(20),
+                        width: 300,
+                        decoration: const BoxDecoration(
+                          color: Colors.deepPurple,
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'DATOS DEL USUARIO',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                            Icon(
+                              Icons.account_circle_rounded,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        IDI(context);
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 2),
+                        padding: const EdgeInsets.all(20),
+                        width: 300,
+                        decoration: const BoxDecoration(
+                          color: Colors.deepPurple,
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              '¿Quiénes Somos?',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                            Icon(
+                              Icons.co_present_rounded,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        IDI(context);
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 2),
+                        padding: const EdgeInsets.all(20),
+                        width: 300,
+                        decoration: const BoxDecoration(
+                          color: Colors.deepPurple,
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Registro de Horario',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                              ),
+                            ),
+                            Icon(
+                              Icons.add_circle_rounded,
+                              color: Colors.white,
+                              size: 24,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    Expanded(child: Container()),
+                    GestureDetector(
+                      onTap: () {
+                        ShowDialogLogout(context);
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(top: 2),
+                        padding: const EdgeInsets.all(20),
+                        width: 250,
+                        decoration: const BoxDecoration(
+                          color: Colors.deepPurple,
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                        ),
+                        alignment: Alignment.center,
+                        child: const Text(
+                          'CERRAR SESIÓN',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+            body: const TabBarView(
+              children: [/*Home(), Interconsulta(),*/ ListPatient()],
+            ),
           ),
         ),
       ),
     );
   }
 
-  void _logout(BuildContext context) async {
-    try {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      await Future.wait([
-        prefs.clear(),
-        DefaultCacheManager().emptyCache(),
-        FirebaseMessaging.instance.deleteToken(),
-      ]);
-
-      context.read<LoginProvider>().setLoginData(null);
-
-      Navigator.popUntil(context, (route) => route.isFirst);
-
-      Navigator.pushReplacementNamed(context, 'login');
-    } catch (e) {
-      print("Error during logout: $e");
-    }
-  }
-
-  void _IDI(BuildContext context) {
+  void ShowDialogLogout(BuildContext context) async {
+  try {
+    // Mostrar un cuadro de diálogo de confirmación
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: const Row(
-            children: [
-              Icon(Icons.info_outline, color: Colors.deepPurple),
-              SizedBox(width: 10),
-              Text(
-                '¿Quiénes somos?',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          content: const Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  '-Investigación, Desarrollo e Innovación (IDI)-',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(''),
-                Text('Líder de Proyecto: Renzo Silva'),
-                Text(''),
-                Text('Desarrollador: Joseph Mori'),
-                Text(''),
-                Text(
-                  '-Una división de Informática Biomédica- ',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(''),
-                Text('Jefe de Área: Oscar Huapaya'),
-                Text(''),
-                Text(
-                  '-En colaboración con las siguientes áreas-',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(''),
-                Text('Backend: Christopher Vergara - HOSMED'),
-                Text(''),
-                Text('Desing: Andrea Agreda - HCE'),
-                Text(''),
-                Text(''),
-                Text(''),
-                Text(
-                  'Copyright © 2023 Grupo San Pablo - Investigación,Desarrollo e Innovación',
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 10,
-                  ),
-                ),
-              ],
+          title: Text("Confirmar Cierre de Sesión"),
+          content: Text("¿Está seguro de que desea cerrar la sesión?"),
+          actions: [
+            TextButton(
+              child: Text("Cancelar"),
+              onPressed: () {
+                Navigator.of(context).pop(); // Cierra el cuadro de diálogo
+              },
             ),
-          ),
+            TextButton(
+              child: Text("Confirmar"),
+              onPressed: () async {
+                logout(context);
+              },
+            ),
+          ],
         );
       },
     );
+  } catch (e) {
+    print("Error durante el cierre de sesión: $e");
   }
+}
+
 }

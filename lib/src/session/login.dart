@@ -4,7 +4,7 @@ import 'dart:convert';
 
 //import 'package:app_notificador/src/services/push_notification_services.dart';
 //import 'package:app_notificador/src/MVC_HOSP/navegatorBar_HOSP.dart';
-import 'package:app_notificador/src/MVC_HOSP/pages/ListPatient.dart';
+import 'package:app_notificador/src/MVC_HOSP/pages/ListPatient_HOSP.dart';
 import 'package:app_notificador/src/models/login.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -97,7 +97,7 @@ class LoginPageState extends State<LoginPage> {
       }else if (type_doctor == 3) {
         // Si type_doctor es 2, navega a homePageADM
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const ListPatient()));
+            MaterialPageRoute(builder: (context) => const ListPatientHOSP()));
       }
 
       // La solicitud fue exitosa
