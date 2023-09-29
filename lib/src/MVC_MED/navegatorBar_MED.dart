@@ -79,15 +79,15 @@ class _homePageMD extends State<homePageMD> {
     String? cmp = prefs.getString('cmp');
     int? type_doctor = prefs.getInt('type_doctor');
 
-     if (username != null &&
+    if (username != null &&
         name != null &&
         tokenBD != null &&
         password != null &&
         tokenFB != null &&
         dni != null &&
         phone != null) {
-      final loginData = LoginData(
-          username, name, tokenBD, password, tokenFB, dni, phone, cmp, email, type_doctor!);
+      final loginData = LoginData(username, name, tokenBD, password, tokenFB,
+          dni, phone, cmp, email, type_doctor!);
       context.read<LoginProvider>().setLoginData(loginData);
     }
     return tokenBD;
@@ -131,9 +131,9 @@ class _homePageMD extends State<homePageMD> {
 
   secureScreen() async {
     await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
-    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_KEEP_SCREEN_ON);
+    await FlutterWindowManager.addFlags(
+        FlutterWindowManager.FLAG_KEEP_SCREEN_ON);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -143,10 +143,10 @@ class _homePageMD extends State<homePageMD> {
         initialIndex: 0,
         length: 3,
         child: WillPopScope(
-      onWillPop: () async {  
-        return false;
-      },
-      child: Scaffold(
+          onWillPop: () async {
+            return false;
+          },
+          child: Scaffold(
             //BOTON FLOTANTE
             floatingActionButton: Column(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -155,7 +155,8 @@ class _homePageMD extends State<homePageMD> {
                 FloatingActionButton(
                   onPressed: () {
                     setState(() {
-                      isExpanded = !isExpanded; // Cambiar el estado de expansión
+                      isExpanded =
+                          !isExpanded; // Cambiar el estado de expansión
                     });
                   },
                   backgroundColor: Colors.white, // Color de fondo blanco
@@ -166,7 +167,7 @@ class _homePageMD extends State<homePageMD> {
                       : Icons.add), // Cambiar el ícono según el estado
                 ),
                 SizedBox(height: 16.0), // Espacio entre los botones flotantes
-        
+
                 // Botón 1 - Editar Calendario
                 AnimatedContainer(
                   duration:
@@ -191,7 +192,7 @@ class _homePageMD extends State<homePageMD> {
                   ),
                 ),
                 SizedBox(height: 16.0), // Espacio entre los botones flotantes
-        
+
                 // Botón 2 - Messenger SP
                 AnimatedContainer(
                   duration:
@@ -217,7 +218,7 @@ class _homePageMD extends State<homePageMD> {
                 ),
               ],
             ),
-        
+
             appBar: AppBar(
               backgroundColor: Colors.white,
               iconTheme: const IconThemeData(color: Colors.deepPurple),
@@ -262,16 +263,18 @@ class _homePageMD extends State<homePageMD> {
                 },
               ),
               bottom: const TabBar(
+                isScrollable:
+                    true, // Esto permite que las pestañas se adapten al contenido
                 indicatorColor: Colors.deepPurple,
                 unselectedLabelColor: Colors.orange,
                 tabs: [
                   Tab(
-                    icon: Icon(Icons.home, color: Colors.deepPurple),
+                    icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
                     child: Text(
                       'PRINCIPAL',
                       style: TextStyle(
                         color: Colors.deepPurple,
-                        fontSize: 12,
+                        fontSize: 14,
                       ),
                     ),
                   ),
@@ -281,17 +284,20 @@ class _homePageMD extends State<homePageMD> {
                       'INTERCONSULTAS',
                       style: TextStyle(
                         color: Colors.deepPurple,
-                        fontSize: 12,
+                        fontSize:
+                            14, // Cambia el tamaño de fuente de esta pestaña
                       ),
                     ),
                   ),
                   Tab(
-                    icon: Icon(Icons.person_pin_sharp, color: Colors.deepPurple),
+                    icon:
+                        Icon(Icons.person_pin_sharp, color: Colors.deepPurple),
                     child: Text(
                       'HOSPITALIZACION',
                       style: TextStyle(
                         color: Colors.deepPurple,
-                        fontSize: 12,
+                        fontSize:
+                            14, // Cambia el tamaño de fuente de esta pestaña
                       ),
                     ),
                   ),
@@ -452,35 +458,35 @@ class _homePageMD extends State<homePageMD> {
       ),
     );
   }
-  void ShowDialogLogout(BuildContext context) async {
-  try {
-    // Mostrar un cuadro de diálogo de confirmación
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("Confirmar Cierre de Sesión"),
-          content: Text("¿Está seguro de que desea cerrar la sesión?"),
-          actions: [
-            TextButton(
-              child: Text("Cancelar"),
-              onPressed: () {
-                Navigator.of(context).pop(); // Cierra el cuadro de diálogo
-              },
-            ),
-            TextButton(
-              child: Text("Confirmar"),
-              onPressed: () async {
-                logout(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  } catch (e) {
-    print("Error durante el cierre de sesión: $e");
-  }
-}
 
+  void ShowDialogLogout(BuildContext context) async {
+    try {
+      // Mostrar un cuadro de diálogo de confirmación
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Confirmar Cierre de Sesión"),
+            content: Text("¿Está seguro de que desea cerrar la sesión?"),
+            actions: [
+              TextButton(
+                child: Text("Cancelar"),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Cierra el cuadro de diálogo
+                },
+              ),
+              TextButton(
+                child: Text("Confirmar"),
+                onPressed: () async {
+                  logout(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      print("Error durante el cierre de sesión: $e");
+    }
+  }
 }

@@ -3,11 +3,7 @@ class Clinic {
    String name;
    String name_short;
 
-   
-
-
-
-
+  
   Clinic(
     this.id,
     this.name,

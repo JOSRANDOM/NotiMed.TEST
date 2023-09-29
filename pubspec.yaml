@@ -60,6 +60,7 @@ dependencies:
   audioplayers: ^5.1.0
   flutter_localizations:
     sdk: flutter
+  device_info_plus: ^9.0.3
   
 
 dev_dependencies:

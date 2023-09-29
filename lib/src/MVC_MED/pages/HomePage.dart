@@ -16,11 +16,9 @@ import '../../services/provider.dart';
 import '../../services/push_notification_services.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
-
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await PushNotificatonServices.initializeApp();
-
 
   runApp(
     ChangeNotifierProvider(
@@ -84,8 +82,8 @@ class _HomeState extends State<Home> {
         tokenFB != null &&
         dni != null &&
         phone != null) {
-      final loginData = LoginData(
-          username, name, tokenBD, password, tokenFB, dni, phone, cmp, email, type_doctor!);
+      final loginData = LoginData(username, name, tokenBD, password, tokenFB,
+          dni, phone, cmp, email, type_doctor!);
       context.read<LoginProvider>().setLoginData(loginData);
     }
     return tokenBD;
@@ -114,7 +112,7 @@ class _HomeState extends State<Home> {
 
           _handleTurnoData(clinicName, element);
         }
-      } 
+      }
     } else {
       // Manejar otros códigos de estado aquí si es necesario
       print('Error en la solicitud HTTP: ${response.statusCode}');
@@ -310,96 +308,92 @@ class _HomeState extends State<Home> {
     );
   }
 
-Widget _buildTurnoCard(BuildContext context, Turno turnoData) {
-  return Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: IntrinsicHeight(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.8,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  color: Colors.deepPurple,
-                ),
+  Widget _buildTurnoCard(BuildContext context, Turno turnoData) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: IntrinsicHeight(
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.8,
+          margin: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    width: double.infinity,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      color: Colors.deepPurple,
+                    ),
+                    child: Wrap(
+                      spacing: 100, // Espacio entre los elementos
+                      children: [
+                        Text(
+                          ' ${turnoData.init_date_at}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                          ),
+                        ),
+                        Text(
+                          ' ${turnoData.clinic_name}',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                  )),
+              Padding(
+                padding: const EdgeInsets.only(left: 20, top: 5),
                 child: Row(
                   children: [
-                    Text(
-                      ' ${turnoData.init_date_at}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
-                      ),
+                    const Icon(
+                      Icons.add_circle_outline_rounded,
+                      color: Colors.deepPurple,
                     ),
-                    const SizedBox(width: 100),
+                    const SizedBox(width: 10),
                     Flexible(
                       child: Text(
-                        ' ${turnoData.clinic_name}',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.white,
+                        ' ${turnoData.service_name}',
+                        style: TextStyle(
+                          color: Colors.deepPurple.shade300,
+                          fontSize: 15,
                         ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2, // Cambia a la cantidad de líneas deseada
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, top: 5),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.add_circle_outline_rounded,
-                    color: Colors.deepPurple,
-                  ),
-                  const SizedBox(width: 10),
-                  Flexible(
-                    child: Text(
-                      ' ${turnoData.service_name}',
-                      style: TextStyle(
-                        color: Colors.deepPurple.shade300,
-                        fontSize: 15,
+              Padding(
+                padding: const EdgeInsets.only(left: 20, top: 5),
+                child: Row(
+                  children: [
+                    const SizedBox(width: 30),
+                    Text(
+                      ' ${turnoData.init_hour_at} - ${turnoData.end_hour_at}',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 12,
                       ),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2, // Cambia a la cantidad de líneas deseada
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20, top: 5),
-              child: Row(
-                children: [
-                  const SizedBox(width: 30),
-                  Text(
-                    ' ${turnoData.init_hour_at} - ${turnoData.end_hour_at}',
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
-    ),
-  );
-}
-
+    );
+  }
 }
