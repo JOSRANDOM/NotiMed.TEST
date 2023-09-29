@@ -58,33 +58,59 @@ class _homePageHP extends State<homePageHP> {
     secureScreen();
   }
 
-  Future<String?> _loadLoginData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+Future<String?> _loadLoginData() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    String? username = prefs.getString('username');
-    String? name = prefs.getString('name');
-    String? tokenBD = prefs.getString('token');
-    String? password = prefs.getString('password');
-    String? tokenFB = prefs.getString('tokenFB');
-    String? dni = prefs.getString('document_number');
-    String? phone = prefs.getString('phone');
-    String? email = prefs.getString('email');
-    String? cmp = prefs.getString('cmp');
-    int? type_doctor = prefs.getInt('type_doctor');
+  String? username = prefs.getString('username');
+  String? name = prefs.getString('name');
+  String? tokenBD = prefs.getString('token');
+  String? password = prefs.getString('password');
+  String? tokenFB = prefs.getString('tokenFB');
+  String? dni = prefs.getString('document_number');
+  String? phone = prefs.getString('phone');
+  String? email = prefs.getString('email');
+  String? cmp = prefs.getString('cmp');
+  String? clinicsJson = prefs.getString('clinics');
+  int? type_doctor = prefs.getInt('type_doctor');
 
-    if (username != null &&
-        name != null &&
-        tokenBD != null &&
-        password != null &&
-        tokenFB != null &&
-        dni != null &&
-        phone != null) {
-      final loginData = LoginData(username, name, tokenBD, password, tokenFB,
-          dni, phone, cmp, email, type_doctor!);
-      context.read<LoginProvider>().setLoginData(loginData);
+  if (username != null &&
+      name != null &&
+      tokenBD != null &&
+      password != null &&
+      tokenFB != null &&
+      dni != null &&
+      phone != null) {
+    List<Clinic> clinics = [];
+    if (clinicsJson != null) {
+      final List<dynamic> clinicData = json.decode(clinicsJson);
+      clinics = clinicData
+          .map((clinic) => Clinic(
+                clinic['id'],
+                clinic['name'],
+                clinic['name_short'],
+                clinic['color'],
+              ))
+          .toList();
     }
-    return tokenBD;
+
+    final loginData = LoginData(
+      username,
+      name,
+      tokenBD,
+      password,
+      tokenFB,
+      dni,
+      phone,
+      cmp,
+      email,
+      type_doctor!,
+      clinics, // Asigna la lista de clínicas deserializadas
+    );
+    context.read<LoginProvider>().setLoginData(loginData);
   }
+  return tokenBD;
+}
+
 
   Future<List<Usuario>> _postUsuario() async {
     const url = 'https://notimed.sanpablo.com.pe:8443/api/profile';

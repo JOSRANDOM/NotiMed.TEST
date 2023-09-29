@@ -1,15 +1,24 @@
-// ignore_for_file: file_names, no_leading_underscores_for_local_identifiers, avoid_print
-
 import 'dart:convert';
 
 import 'package:app_notificador/src/models/version.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
+//import '../../services/VersionServer_provider.dart';
 import '../../services/providerVersion.dart';
 import 'VersionLocal.dart';
 
-void main() => runApp(const VersionAPI());
+void main() => runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => VersionProvider(),
+          ),
+        ],
+        child: const VersionAPI(),
+      ),
+    );
 
 class VersionAPI extends StatefulWidget {
   const VersionAPI({super.key});
@@ -18,106 +27,118 @@ class VersionAPI extends StatefulWidget {
   State<VersionAPI> createState() => _VersionState();
 }
 
+class VersionProvider with ChangeNotifier {
+  String _apiVersion = '';
+
+  String get apiVersion => _apiVersion;
+
+  void setApiVersion(String version) {
+    _apiVersion = version;
+    notifyListeners();
+  }
+}
+
+
 class _VersionState extends State<VersionAPI> {
   late Future<List<Version>> _version;
 
-Future<List<Version>> _getVersion(BuildContext context) async {
-  final deviceType = await getDeviceInfo();
+  Future<List<Version>> _getVersion(BuildContext context) async {
+    final deviceType = await getDeviceInfo();
 
-  if (deviceType != 'Android' && deviceType != 'iOS') {
-    // Si el tipo de dispositivo no es Android ni iOS, retorna una lista vacía.
-    return [];
-  }
+    if (deviceType != 'Android' && deviceType != 'iOS') {
+      // Si el tipo de dispositivo no es Android ni iOS, retorna una lista vacía.
+      return [];
+    }
 
-  const url = 'https://notimed.sanpablo.com.pe:8443/api/version';
+    const url = 'https://notimed.sanpablo.com.pe:8443/api/version';
 
-  final response = await http.get(
-    Uri.parse(url),
-  );
+    final response = await http.get(
+      Uri.parse(url),
+    );
 
-  List<Version> _version = [];
+    List<Version> _version = [];
 
-  if (response.statusCode == 200) {
-    String body = utf8.decode(response.bodyBytes);
-    final jsonData = jsonDecode(body);
+    if (response.statusCode == 200) {
+      String body = utf8.decode(response.bodyBytes);
+      final jsonData = jsonDecode(body);
 
-    for (var element in jsonData['data']) {
-      if ((deviceType == 'Android' && element['type'] == 'ANDROID') ||
-          (deviceType == 'iOS' && element['type'] == 'IOS')) {
-        String versionFromAPI = element['version'];
-        if (versionFromAPI == GlobalData().version.toString()) {
-          // Verifica si la versión de la API es igual a la versión en GlobalData.
-          _version.add(Version(
-            element['type'],
-            element['version'],
-            element['url'],
-            element['updated_at'],
-          ));
-        } else {
-          // Si las versiones no coinciden, puedes mostrar un mensaje o realizar otra acción.
-          print('Versiones no coinciden: Versión API: $versionFromAPI, Versión local: ${GlobalData().version}');
+      for (var element in jsonData['data']) {
+    if ((deviceType == 'Android' && element['type'] == 'ANDROID') ||
+        (deviceType == 'iOS' && element['type'] == 'IOS')) {
+      String versionFromAPI = element['version'];
+      if (versionFromAPI == GlobalData().version.toString()) {
+            // Verifica si la versión de la API es igual a la versión en GlobalData.
+            _version.add(Version(
+              element['type'],
+              element['version'],
+              element['url'],
+              element['updated_at'],
+            ));
+
+        // Almacenar la versión en VersionProvider
+        Provider.of<VersionProvider>(context, listen: false)
+            .setApiVersion(versionFromAPI);
+          } else {
+            // Si las versiones no coinciden, puedes mostrar un mensaje o realizar otra acción.
+            print(
+                'Versiones no coinciden: Versión API: $versionFromAPI, Versión local: ${GlobalData().version}');
+          }
         }
       }
+      return _version;
+    } else {
+      throw Exception('Error en la solicitud HTTP: ${response.statusCode}');
     }
-    return _version;
-  } else {
-    throw Exception('Error en la solicitud HTTP: ${response.statusCode}');
   }
-}
 
-
-
-@override
-void initState() {
-  super.initState();
-  _getDeviceAndFetchVersion(context);
-}
-
-Future<void> _getDeviceAndFetchVersion(BuildContext context) async {
-  final deviceType = await getDeviceInfo();
-  if (deviceType == 'Android' || deviceType == 'iOS') {
-    setState(() {
-      _version = _getVersion(context);
-    });
+  @override
+  void initState() {
+    super.initState();
+    _getDeviceAndFetchVersion(context);
   }
-}
 
+  Future<void> _getDeviceAndFetchVersion(BuildContext context) async {
+    final deviceType = await getDeviceInfo();
+    if (deviceType == 'Android' || deviceType == 'iOS') {
+      setState(() {
+        _version = _getVersion(context);
+      });
+    }
+  }
 
-@override
-Widget build(BuildContext context) {
-  return MaterialApp(
-    debugShowCheckedModeBanner: false,
-    home: Scaffold(
-      body: FutureBuilder<List<Version>>(
-        future: _version,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.hasError) {
-            return Center(
-              child: Text('Error: ${snapshot.error}'),
-            );
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(
-              child: Text('No se encontraron versiones.'),
-            );
-          } else {
-            return ListView(
-              children: _versiones(snapshot.data ?? []), // Mostrar la lista de versiones
-            );
-          }
-        },
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: FutureBuilder<List<Version>>(
+          future: _version,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              return Center(
+                child: Text('Error: ${snapshot.error}'),
+              );
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(
+                child: Text('No se encontraron versiones.'),
+              );
+            } else {
+              return ListView(
+                children: _versiones(
+                    snapshot.data ?? []), // Mostrar la lista de versiones
+              );
+            }
+          },
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
-
-
-
-//llamada a la consulta
+  //llamada a la consulta
   List<Widget> _versiones(List<Version> data) {
     List<Widget> versionWidgets = [];
 
@@ -149,7 +170,6 @@ Widget build(BuildContext context) {
                   ),
                 ),
               ),
-
               Row(
                 children: [
                   const SizedBox(width: 20),
@@ -167,7 +187,6 @@ Widget build(BuildContext context) {
                   ),
                 ],
               ),
-
               Row(
                 children: [
                   const SizedBox(width: 20),
@@ -185,7 +204,6 @@ Widget build(BuildContext context) {
                   ),
                 ],
               ),
-
               Row(
                 children: [
                   const SizedBox(width: 20),
@@ -203,7 +221,6 @@ Widget build(BuildContext context) {
                   ),
                 ],
               ),
-
               Row(
                 children: [
                   const SizedBox(width: 20),
@@ -221,7 +238,9 @@ Widget build(BuildContext context) {
                   ),
                 ],
               ),
-             const SizedBox(height: 10,)
+              const SizedBox(
+                height: 10,
+              )
             ],
           ),
         ),

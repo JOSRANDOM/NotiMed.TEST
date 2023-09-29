@@ -1,8 +1,8 @@
 // ignore_for_file: file_names, camel_case_types, library_private_types_in_public_api, avoid_print, non_constant_identifier_names, use_build_context_synchronously
 
 import 'dart:convert';
-import 'package:app_notificador/src/MVC_ADM/PAGE_ADM/ConsultationPage_ADM.dart';
-import 'package:app_notificador/src/MVC_ADM/PAGE_ADM/ListPatient_ADM.dart';
+//import 'package:app_notificador/src/MVC_ADM/PAGE_ADM/ConsultationPage_ADM.dart';
+//import 'package:app_notificador/src/MVC_ADM/PAGE_ADM/ListPatient_ADM.dart';
 import 'package:app_notificador/src/MVC_MED/pages/UserPage.dart';
 import 'package:app_notificador/src/services/provider.dart';
 import 'package:flutter/material.dart';
@@ -59,33 +59,59 @@ class _homePageADM extends State<homePageADM> {
     secureScreen();
   }
 
-  Future<String?> _loadLoginData() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+Future<String?> _loadLoginData() async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    String? username = prefs.getString('username');
-    String? name = prefs.getString('name');
-    String? tokenBD = prefs.getString('token');
-    String? password = prefs.getString('password');
-    String? tokenFB = prefs.getString('tokenFB');
-    String? dni = prefs.getString('document_number');
-    String? phone = prefs.getString('phone');
-    String? email = prefs.getString('email');
-    String? cmp = prefs.getString('cmp');
-    int? type_doctor = prefs.getInt('type_doctor');
+  String? username = prefs.getString('username');
+  String? name = prefs.getString('name');
+  String? tokenBD = prefs.getString('token');
+  String? password = prefs.getString('password');
+  String? tokenFB = prefs.getString('tokenFB');
+  String? dni = prefs.getString('document_number');
+  String? phone = prefs.getString('phone');
+  String? email = prefs.getString('email');
+  String? cmp = prefs.getString('cmp');
+  String? clinicsJson = prefs.getString('clinics');
+  int? type_doctor = prefs.getInt('type_doctor');
 
-    if (username != null &&
-        name != null &&
-        tokenBD != null &&
-        password != null &&
-        tokenFB != null &&
-        dni != null &&
-        phone != null) {
-      final loginData = LoginData(
-          username, name, tokenBD, password, tokenFB, dni, phone, cmp, email, type_doctor!);
-      context.read<LoginProvider>().setLoginData(loginData);
+  if (username != null &&
+      name != null &&
+      tokenBD != null &&
+      password != null &&
+      tokenFB != null &&
+      dni != null &&
+      phone != null) {
+    List<Clinic> clinics = [];
+    if (clinicsJson != null) {
+      final List<dynamic> clinicData = json.decode(clinicsJson);
+      clinics = clinicData
+          .map((clinic) => Clinic(
+                clinic['id'],
+                clinic['name'],
+                clinic['name_short'],
+                clinic['color'],
+              ))
+          .toList();
     }
-    return tokenBD;
+
+    final loginData = LoginData(
+      username,
+      name,
+      tokenBD,
+      password,
+      tokenFB,
+      dni,
+      phone,
+      cmp,
+      email,
+      type_doctor!,
+      clinics, // Asigna la lista de clínicas deserializadas
+    );
+    context.read<LoginProvider>().setLoginData(loginData);
   }
+  return tokenBD;
+}
+
 
   Future<List<Usuario>> _postUsuario() async {
     const url = 'https://notimed.sanpablo.com.pe:8443/api/profile';
@@ -135,7 +161,7 @@ class _homePageADM extends State<homePageADM> {
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         initialIndex: 0,
-        length: 3,
+        length: 1,
         child: WillPopScope(
           onWillPop: () async { 
             return false; 
@@ -264,7 +290,7 @@ class _homePageADM extends State<homePageADM> {
                 indicatorColor: Colors.deepPurple,
                 unselectedLabelColor: Colors.orange,
                 tabs: [
-                  Tab(
+                  /*Tab(
                     icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
                     child: Text(
                       'TURNOS GLOBAL',
@@ -273,7 +299,7 @@ class _homePageADM extends State<homePageADM> {
                         fontSize: 12,
                       ),
                     ),
-                  ),
+                  ),*/
                   Tab(
                     icon: Icon(Icons.add_alert_sharp, color: Colors.deepPurple),
                     child: Text(
@@ -284,7 +310,7 @@ class _homePageADM extends State<homePageADM> {
                       ),
                     ),
                   ),
-                  Tab(
+                  /*Tab(
                     icon: Icon(Icons.person_pin_sharp, color: Colors.deepPurple),
                     child: Text(
                       'HOSPITALIZACION',
@@ -293,7 +319,7 @@ class _homePageADM extends State<homePageADM> {
                         fontSize: 12,
                       ),
                     ),
-                  ),
+                  ),*/
                 ],
               ),
               elevation: 0.0,
@@ -444,7 +470,7 @@ class _homePageADM extends State<homePageADM> {
               ),
             ),
             body: const TabBarView(
-              children: [MedShift(), InterconsultaADM(), ListPatientADM()],
+              children: [MedShift()/*, InterconsultaADM(), ListPatientADM()*/],
             ),
           ),
         ),

@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, non_constant_identifier_names
+// ignore_for_file: use_build_context_synchronously, non_constant_identifier_names, avoid_print
 
 import 'dart:convert';
 
@@ -16,11 +16,18 @@ import '../services/provider.dart';
 import 'package:provider/provider.dart';
 import '../MVC_MED/navegatorBar_MED.dart';
 import '../services/providerVersion.dart';
+import '../utill/version management/Version.dart';
 
 void main() async {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
-  runApp(ChangeNotifierProvider(
-      create: (context) => LoginProvider(),
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+            create: (context) =>
+                VersionProvider()), // Agregar el proveedor de versión aquí
+        ChangeNotifierProvider(create: (context) => LoginProvider()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: "Login",
@@ -29,7 +36,9 @@ void main() async {
           'login': (_) => const LoginPage(),
           '/second': (_) => const homePageMD(),
         },
-      )));
+      ),
+    ),
+  );
 }
 
 // ignore: must_be_immutable
@@ -59,100 +68,82 @@ class LoginPageState extends State<LoginPage> {
     if (response.statusCode == 200) {
       final responseBody = json.decode(response.body);
 
-      final serverVersion = responseBody['app_version'];
-      final localVersion = GlobalData().version.toString();
+      // Versiones coinciden, continuar con el inicio de sesión
+      var user = responseBody['user'];
+      var name = user['name'];
+      var cmp = user['cmp'];
+      var tokenFB = await FirebaseMessaging.instance.getToken();
+      var dni = user['document_number'];
+      var email = user['email'];
+      var phone = user['phone'];
+      var type_doctor = user['type_doctor'];
+      var tokenBD = responseBody['token'];
 
-      if (serverVersion != localVersion) {
-        // Versiones coinciden, continuar con el inicio de sesión
-        var name = responseBody['user']['name'];
-        var cmp = responseBody['user']['cmp'];
-        var tokenFB = await FirebaseMessaging.instance.getToken();
-        var dni = responseBody['user']['document_number'];
-        var email = responseBody['user']['email'];
-        var phone = responseBody['user']['phone'];
-        var type_doctor = responseBody['user']['type_doctor'];
-        var tokenBD = responseBody['token'];
-
-        final loginData = LoginData(usernameDM, name, cmp, passwordDM, tokenFB,
-            dni, email, phone, tokenBD, type_doctor);
-        final loginProvider =
-            Provider.of<LoginProvider>(context, listen: false);
-        loginProvider.setLoginData(loginData);
-
-        // Guardar las credenciales en SharedPreferences
-        await prefs.setString('username', usernameDM);
-        await prefs.setString('password', passwordDM);
-        await prefs.setString('name', name!);
-        await prefs.setString('tokenFB', tokenFB!);
-        await prefs.setString('document_number', dni);
-        await prefs.setString('email', email);
-        await prefs.setString('phone', phone);
-        await prefs.setString('token', tokenBD!);
-        await prefs.setString('cmp', cmp);
-        await prefs.setInt('type_doctor', type_doctor);
-
-        await prefs.setBool('isSessionActive', true);
-
-        if (type_doctor == 1) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const homePageMD()));
-        } else if (type_doctor == 2) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const homePageADM()));
-        } else if (type_doctor == 3) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const ListPatientHOSP()));
-        }
-
-        // La solicitud fue exitosa
-        // ignore: avoid_print
-        print('Inicio de sesión exitoso');
-        // ignore: avoid_print
-        print('usuario: ${response.body}');
-        // ignore: avoid_print
-        print(loginData.tokenFB);
-        // ignore: avoid_print
-        print(loginData.tokenBD);
-        // ignore: avoid_print
-        print(loginData.name);
+      List<Clinic> clinics = [];
+      if (user['clinics'] != null) {
+        var clinicData = user['clinics'] as List<dynamic>;
+        clinics = clinicData
+            .map((clinic) => Clinic(
+                  clinic['id'],
+                  clinic['name'],
+                  clinic['name_short'],
+                  clinic['color'],
+                ))
+            .toList();
       } else {
-        // Versiones no coinciden, mostrar mensaje de actualización
-        _mostrarMensajeActualizacion(context);
+        // Si clinics es nulo, asigna una lista vacía como valor predeterminado
+        clinics = [];
       }
+
+      // Serializar la lista de clínicas a JSON
+      final clinicsJson =
+          jsonEncode(clinics.map((clinic) => clinic.toJson()).toList());
+
+      final loginData = LoginData(usernameDM, name, cmp, passwordDM, tokenFB,
+          dni, email, phone, tokenBD, type_doctor, clinics);
+      final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+      loginProvider.setLoginData(loginData);
+
+      // Guardar las credenciales en SharedPreferences
+      await prefs.setString('username', usernameDM);
+      await prefs.setString('password', passwordDM);
+      await prefs.setString('name', name!);
+      await prefs.setString('tokenFB', tokenFB!);
+      await prefs.setString('document_number', dni);
+      await prefs.setString('email', email);
+      await prefs.setString('phone', phone);
+      await prefs.setString('token', tokenBD!);
+      await prefs.setString('cmp', cmp);
+      await prefs.setInt('type_doctor', type_doctor);
+      await prefs.setString('clinics', clinicsJson);
+
+      await prefs.setBool('isSessionActive', true);
+
+      if (type_doctor == 1) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const homePageMD()));
+      } else if (type_doctor == 2) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const homePageADM()));
+      } else if (type_doctor == 3) {
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => const ListPatientHOSP()));
+      }
+
+      // La solicitud fue exitosa
+      print('Inicio de sesión exitoso');
+      print('usuario: ${response.body}');
+      print(loginData.tokenFB);
+      print(loginData.tokenBD);
+      print(loginData.name);
     } else {
       _mostrarAlerta(context);
 
       // Ocurrió un error en la solicitud
-      // ignore: avoid_print
       print('Error: ${response.statusCode}');
-      // ignore: avoid_print
       print('Error: ${response.body}');
-      // ignore: avoid_print
       print('fallo en conexion');
     }
-  }
-
-  void _mostrarMensajeActualizacion(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Actualizar Aplicación'),
-          content: const Text('Por favor, actualice la aplicación para continuar.'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                // Puedes agregar aquí la lógica para redirigir al usuario a la tienda de aplicaciones para la actualización.
-                // Por ejemplo, para Android puedes usar:
-                // launch('https://play.google.com/store/apps/details?id=your.package.name');
-                Navigator.of(context).pop();
-              },
-              child: const Text('Actualizar'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   void _mostrarAlerta(BuildContext context) {
