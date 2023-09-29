@@ -137,8 +137,8 @@ class LoginPageState extends State<LoginPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Actualizar Aplicación'),
-          content: Text('Por favor, actualice la aplicación para continuar.'),
+          title: const Text('Actualizar Aplicación'),
+          content: const Text('Por favor, actualice la aplicación para continuar.'),
           actions: [
             TextButton(
               onPressed: () {
@@ -147,7 +147,7 @@ class LoginPageState extends State<LoginPage> {
                 // launch('https://play.google.com/store/apps/details?id=your.package.name');
                 Navigator.of(context).pop();
               },
-              child: Text('Actualizar'),
+              child: const Text('Actualizar'),
             ),
           ],
         );

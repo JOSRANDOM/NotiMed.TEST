@@ -1,4 +1,4 @@
-// ignore_for_file: unused_local_variable
+// ignore_for_file: unused_local_variable, file_names, avoid_print
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'dart:io';

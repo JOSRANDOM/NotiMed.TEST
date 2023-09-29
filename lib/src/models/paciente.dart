@@ -1,31 +1,21 @@
-// ignore: implementation_imports
+// ignore_for_file: non_constant_identifier_names, implementation_imports
+
 import 'package:flutter/src/material/card.dart';
 
 class Paciente {
-  // ignore: non_constant_identifier_names
   String order_at ;
   int episode;
-  // ignore: non_constant_identifier_names
   String episode_type_name;
-  // ignore: non_constant_identifier_names
   String order_status ;
-  // ignore: non_constant_identifier_names
   String clinic_history ;
-  // ignore: non_constant_identifier_names
   String interconsulting_type_name;
-  // ignore: non_constant_identifier_names
   String request_service;
-  // ignore: non_constant_identifier_names
   String request_specialist;
-  // ignore: non_constant_identifier_names
   String solicited_service;
-  // ignore: non_constant_identifier_names
   String patient_name;
   String patient_name_short;
-  // ignore: non_constant_identifier_names
   int patient_age;
   String? room = 'null';
-  // ignore: non_constant_identifier_names
   String last_notification_at ;
   String description ;
   final String clinicName;

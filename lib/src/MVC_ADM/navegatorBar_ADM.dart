@@ -458,17 +458,17 @@ class _homePageADM extends State<homePageADM> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Confirmar Cierre de Sesión"),
-          content: Text("¿Está seguro de que desea cerrar la sesión?"),
+          title: const Text("Confirmar Cierre de Sesión"),
+          content: const Text("¿Está seguro de que desea cerrar la sesión?"),
           actions: [
             TextButton(
-              child: Text("Cancelar"),
+              child: const Text("Cancelar"),
               onPressed: () {
                 Navigator.of(context).pop(); // Cierra el cuadro de diálogo
               },
             ),
             TextButton(
-              child: Text("Confirmar"),
+              child: const Text("Confirmar"),
               onPressed: () async {
                 logout(context);
               },

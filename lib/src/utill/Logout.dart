@@ -1,4 +1,4 @@
-  // ignore_for_file: use_build_context_synchronously, avoid_print
+  // ignore_for_file: use_build_context_synchronously, avoid_print, file_names
 
   import 'package:app_notificador/src/services/provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';

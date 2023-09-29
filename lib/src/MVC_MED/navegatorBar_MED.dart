@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, camel_case_types, library_private_types_in_public_api, avoid_print
+// ignore_for_file: file_names, camel_case_types, library_private_types_in_public_api, avoid_print, non_constant_identifier_names, use_build_context_synchronously
 
 import 'dart:convert';
 import 'package:app_notificador/src/MVC_MED/pages/ListPatient.dart';
@@ -166,12 +166,12 @@ class _homePageMD extends State<homePageMD> {
                       ? Icons.close
                       : Icons.add), // Cambiar el ícono según el estado
                 ),
-                SizedBox(height: 16.0), // Espacio entre los botones flotantes
+                const SizedBox(height: 16.0), // Espacio entre los botones flotantes
 
                 // Botón 1 - Editar Calendario
                 AnimatedContainer(
                   duration:
-                      Duration(milliseconds: 300), // Duración de la animación
+                      const Duration(milliseconds: 300), // Duración de la animación
                   height: isExpanded
                       ? 56.0
                       : 0.0, // Altura 0 para ocultar, 56 para mostrar
@@ -187,16 +187,16 @@ class _homePageMD extends State<homePageMD> {
                       backgroundColor: Colors.white, // Color de fondo blanco
                       foregroundColor: Colors.black, // Color del icono negro
                       tooltip: 'Editar Calendario',
-                      child: Icon(Icons.calendar_month),
+                      child: const Icon(Icons.calendar_month),
                     ),
                   ),
                 ),
-                SizedBox(height: 16.0), // Espacio entre los botones flotantes
+                const SizedBox(height: 16.0), // Espacio entre los botones flotantes
 
                 // Botón 2 - Messenger SP
                 AnimatedContainer(
                   duration:
-                      Duration(milliseconds: 300), // Duración de la animación
+                      const Duration(milliseconds: 300), // Duración de la animación
                   height: isExpanded
                       ? 56.0
                       : 0.0, // Altura 0 para ocultar, 56 para mostrar
@@ -212,7 +212,7 @@ class _homePageMD extends State<homePageMD> {
                       backgroundColor: Colors.white, // Color de fondo blanco
                       foregroundColor: Colors.black, // Color del icono negro
                       tooltip: 'Messenger SP',
-                      child: Icon(Icons.message),
+                      child: const Icon(Icons.message),
                     ),
                   ),
                 ),
@@ -466,17 +466,17 @@ class _homePageMD extends State<homePageMD> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text("Confirmar Cierre de Sesión"),
-            content: Text("¿Está seguro de que desea cerrar la sesión?"),
+            title: const Text("Confirmar Cierre de Sesión"),
+            content: const Text("¿Está seguro de que desea cerrar la sesión?"),
             actions: [
               TextButton(
-                child: Text("Cancelar"),
+                child: const Text("Cancelar"),
                 onPressed: () {
                   Navigator.of(context).pop(); // Cierra el cuadro de diálogo
                 },
               ),
               TextButton(
-                child: Text("Confirmar"),
+                child: const Text("Confirmar"),
                 onPressed: () async {
                   logout(context);
                 },
