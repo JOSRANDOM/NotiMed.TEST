@@ -136,6 +136,7 @@ class LoginPageState extends State<LoginPage> {
       print(loginData.tokenFB);
       print(loginData.tokenBD);
       print(loginData.name);
+      print('CLINICAS: ${loginData.clinics}');
     } else {
       _mostrarAlerta(context);
 
