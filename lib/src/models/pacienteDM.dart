@@ -23,7 +23,7 @@ class PacienteDM {
   String description ;
   int priority;
   int elapsed_time_hours;
-  final String clinicName;
+
 
   
   PacienteDM(
@@ -45,7 +45,7 @@ class PacienteDM {
      this.room,
      this.last_notification_at,
      this.description,
-     this.clinicName,
+
      this.priority,
      this.elapsed_time_hours,
 
