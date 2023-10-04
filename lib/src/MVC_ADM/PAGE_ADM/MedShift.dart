@@ -9,7 +9,7 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_html/flutter_html.dart';
+//import 'package:flutter_html/flutter_html.dart';
 
 import '../../models/pacienteDM.dart';
 import '../../services/push_notification_services.dart';
@@ -41,9 +41,11 @@ late Future<List<PacienteDM>> _paciente;
 
 class _MedShiftState extends State<MedShift> {
   String? selectedValue;
+  String? selectedService;
   late String clinicId;
   late String serviceId;
   List<PacienteDM> _paciente = [];
+  List<Map<String, dynamic>> _services = [];
 
   Future<String?> _loadLoginData(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -98,7 +100,8 @@ class _MedShiftState extends State<MedShift> {
     return tokenBD;
   }
 
-  Future<List<PacienteDM>> _postPaciente(BuildContext context) async {
+  Future<List<PacienteDM>> _postPaciente(
+      BuildContext context, String clinicId, String serviceId) async {
     const url =
         'https://notimed.sanpablo.com.pe:8443/api/clinic/interconsultings';
 
@@ -111,7 +114,14 @@ class _MedShiftState extends State<MedShift> {
 
     final parts = selectedValue!.split(' - ');
     final clinicId = parts[0];
-    final serviceId = '0'; // Valor fijo de service_id
+    // Actualiza serviceId con el valor correcto
+    if (selectedService != null) {
+      final selectedServiceMap = _services.firstWhere(
+        (service) => service['nombre'] == selectedService,
+        orElse: () => {'id': '0'},
+      );
+      serviceId = selectedServiceMap['id'].toString();
+    }
 
     final response = await http.post(
       Uri.parse(url),
@@ -166,6 +176,27 @@ class _MedShiftState extends State<MedShift> {
           ));
         });
       }
+
+      // Procesa la lista de servicios y almacénala en _services
+      if (jsonData['services'] != null) {
+        _services = List<Map<String, dynamic>>.from(jsonData['services']);
+      }
+
+      // Modifica el código para almacenar los nombres y los IDs de los servicios
+      final List<Map<String, dynamic>> servicios = jsonData['services'] != null
+          ? List<Map<String, dynamic>>.from(jsonData['services'])
+          : [];
+
+      // Crear una lista de Mapas que contienen el nombre y el ID del servicio
+      final serviciosConID = servicios.map((servicio) {
+        final nombre = servicio['name'];
+        final id = servicio['id'];
+        return {'nombre': nombre, 'id': id};
+      }).toList();
+
+      // Almacena la lista de servicios en _services
+      _services = serviciosConID;
+
       setState(() {
         _paciente = pacientes;
       });
@@ -174,6 +205,7 @@ class _MedShiftState extends State<MedShift> {
       print('reques: ${response.request}');
       print('headers: ${response.headers}');
       print('Data from response: ${json.decode(response.body)['data']}');
+      print('Data from response: ${json.decode(response.body)['services']}');
 
       return pacientes;
     } else {
@@ -182,10 +214,10 @@ class _MedShiftState extends State<MedShift> {
     }
   }
 
-  // Function to refresh the data and update the UI
   Future<void> refreshData() async {
+    final pacientes = await _postPaciente(context, clinicId, serviceId);
     setState(() {
-      _paciente = _postPaciente(context) as List<PacienteDM>;
+      _paciente = pacientes;
     });
   }
 
@@ -198,48 +230,82 @@ class _MedShiftState extends State<MedShift> {
       body: Center(
         child: Column(
           children: [
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Container(
+              constraints: BoxConstraints(maxWidth: 200),
               child: DropdownButton<String>(
                 value: selectedValue,
                 items: clinics.map((clinic) {
                   final clinicLabel = '${clinic.id} - ${clinic.name}';
                   return DropdownMenuItem<String>(
                     value: clinicLabel,
-                    child: Text(clinicLabel),
+                    child: Text(
+                      clinicLabel,
+                      style: TextStyle(fontSize: 16.0),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
                   );
                 }).toList(),
-                onChanged: (String? newValue) {
+                onChanged: (String? newValue) async {
                   setState(() {
                     selectedValue = newValue;
+                    selectedService =
+                        null; // Restablece selectedService a null cuando se selecciona un nuevo valor en selectedValue
                   });
+
+                  if (selectedValue != null) {
+                    final parts = selectedValue!.split(' - ');
+                    clinicId = parts[0];
+                    serviceId =
+                        '0'; // Valor fijo de service_id, debes actualizarlo si es necesario
+                    await _postPaciente(context, clinicId, serviceId);
+                  }
                 },
               ),
             ),
-            SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () async {
-                if (selectedValue != null) {
-                  final parts = selectedValue!.split(' - ');
-                  clinicId = parts[0];
-                  serviceId =
-                      '0'; // Valor fijo de service_id, debes actualizarlo si es necesario
-                  await _postPaciente(
-                      context); // Llamar a la consulta con los nuevos valores
-                }
-              },
-              style: ButtonStyle(
-                fixedSize: MaterialStateProperty.all<Size>(const Size(200, 40)),
-                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                  RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(40),
-                  ),
-                ),
-                backgroundColor:
-                    MaterialStateProperty.all<Color>(Colors.deepPurple),
+            const SizedBox(height: 10),
+            Container(
+              child: DropdownButton<String>(
+                value: selectedService,
+                items: _services.map((service) {
+                  final serviceName = service['nombre'];
+                  return DropdownMenuItem<String>(
+                    value: serviceName,
+                    child: Text(
+                      serviceName,
+                      style: TextStyle(fontSize: 16.0),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
+                    ),
+                  );
+                }).toList(),
+                onChanged: (String? newValue) async {
+                  setState(() {
+                    selectedService =
+                        newValue; // Actualiza selectedService con el nuevo valor seleccionado
+                  });
+
+                  if (selectedValue != null) {
+                    final parts = selectedValue!.split(' - ');
+                    clinicId = parts[0];
+
+                    if (newValue != null) {
+                      final selectedServiceMap = _services.firstWhere(
+                        (service) => service['nombre'] == newValue,
+                        orElse: () => {'id': '0'},
+                      );
+                      serviceId = selectedServiceMap['id'].toString();
+                    }
+
+                    await _postPaciente(context, clinicId,
+                        serviceId); // Llama a _postPaciente para actualizar los datos
+                  }
+                },
               ),
-              child: Text('Consultar Pacientes'),
             ),
+
+            const SizedBox(height: 10), // Espacio entre los DropdownButtons
             Expanded(
               child: LiquidPullToRefresh(
                 onRefresh: refreshData,
@@ -254,7 +320,7 @@ class _MedShiftState extends State<MedShift> {
                     final pacienteData = _paciente[index];
                     return ListTile(
                       title: Text(pacienteData.patient_name),
-                      subtitle: Text(pacienteData.request_service),
+                      subtitle: Text(pacienteData.solicited_service),
                     );
                   },
                 ),
@@ -265,5 +331,4 @@ class _MedShiftState extends State<MedShift> {
       ),
     );
   }
-  
 }
