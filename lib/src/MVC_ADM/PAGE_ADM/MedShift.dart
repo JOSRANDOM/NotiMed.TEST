@@ -1,6 +1,5 @@
-// ignore_for_file: unused_element, non_constant_identifier_names, file_names
+// ignore_for_file: unused_element, non_constant_identifier_names, file_names, avoid_unnecessary_containers, avoid_print, unnecessary_string_interpolations
 import 'dart:convert';
-//import 'dart:developer';
 
 import 'package:app_notificador/src/models/login.dart';
 import 'package:app_notificador/src/services/provider.dart';
@@ -9,7 +8,7 @@ import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
-//import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/flutter_html.dart';
 
 import '../../models/pacienteDM.dart';
 import '../../services/push_notification_services.dart';
@@ -232,103 +231,263 @@ class _MedShiftState extends State<MedShift> {
           children: [
             const SizedBox(height: 10),
             Container(
-              constraints: BoxConstraints(maxWidth: 200),
-              child: DropdownButton<String>(
-                value: selectedValue,
-                items: clinics.map((clinic) {
-                  final clinicLabel = '${clinic.id} - ${clinic.name}';
-                  return DropdownMenuItem<String>(
-                    value: clinicLabel,
-                    child: Text(
-                      clinicLabel,
-                      style: TextStyle(fontSize: 16.0),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                    ),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) async {
-                  setState(() {
-                    selectedValue = newValue;
-                    selectedService =
-                        null; // Restablece selectedService a null cuando se selecciona un nuevo valor en selectedValue
-                  });
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.black, width: 0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(5),
+                child: DropdownButton<String>(
+                  isExpanded:
+                      false, // Configura isExpanded en false para que el DropdownButton no ocupe todo el ancho del Container
+                  value: selectedValue,
+                  items: clinics.map((clinic) {
+                    final clinicLabel = '${clinic.id} - ${clinic.name}';
+                    return DropdownMenuItem<String>(
+                      value: clinicLabel,
+                      child: Text(
+                        clinicLabel,
+                        style: const TextStyle(fontSize: 16.0),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) async {
+                    setState(() {
+                      selectedValue = newValue;
+                      selectedService = null;
+                    });
 
-                  if (selectedValue != null) {
-                    final parts = selectedValue!.split(' - ');
-                    clinicId = parts[0];
-                    serviceId =
-                        '0'; // Valor fijo de service_id, debes actualizarlo si es necesario
-                    await _postPaciente(context, clinicId, serviceId);
-                  }
-                },
+                    if (selectedValue != null) {
+                      final parts = selectedValue!.split(' - ');
+                      clinicId = parts[0];
+                      serviceId = '0';
+                      await _postPaciente(context, clinicId, serviceId);
+                    }
+                  },
+                ),
               ),
             ),
+
             const SizedBox(height: 10),
             Container(
-              child: DropdownButton<String>(
-                value: selectedService,
-                items: _services.map((service) {
-                  final serviceName = service['nombre'];
-                  return DropdownMenuItem<String>(
-                    value: serviceName,
-                    child: Text(
-                      serviceName,
-                      style: TextStyle(fontSize: 16.0),
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 2,
-                    ),
-                  );
-                }).toList(),
-                onChanged: (String? newValue) async {
-                  setState(() {
-                    selectedService =
-                        newValue; // Actualiza selectedService con el nuevo valor seleccionado
-                  });
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(color: Colors.black, width: 0),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(1),
+                child: DropdownButton<String>(
+                  isExpanded: false,
+                  value: selectedService,
+                  items: _services.map((service) {
+                    final serviceName = service['nombre'];
+                    return DropdownMenuItem<String>(
+                      value: serviceName,
+                      child: Text(
+                        serviceName,
+                        style: const TextStyle(fontSize: 16.0),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) async {
+                    setState(() {
+                      selectedService =
+                          newValue; // Actualiza selectedService con el nuevo valor seleccionado
+                    });
 
-                  if (selectedValue != null) {
-                    final parts = selectedValue!.split(' - ');
-                    clinicId = parts[0];
+                    if (selectedValue != null) {
+                      final parts = selectedValue!.split(' - ');
+                      clinicId = parts[0];
 
-                    if (newValue != null) {
-                      final selectedServiceMap = _services.firstWhere(
-                        (service) => service['nombre'] == newValue,
-                        orElse: () => {'id': '0'},
-                      );
-                      serviceId = selectedServiceMap['id'].toString();
+                      if (newValue != null) {
+                        final selectedServiceMap = _services.firstWhere(
+                          (service) => service['nombre'] == newValue,
+                          orElse: () => {'id': '0'},
+                        );
+                        serviceId = selectedServiceMap['id'].toString();
+                      }
+
+                      await _postPaciente(context, clinicId,
+                          serviceId); // Llama a _postPaciente para actualizar los datos
                     }
-
-                    await _postPaciente(context, clinicId,
-                        serviceId); // Llama a _postPaciente para actualizar los datos
-                  }
-                },
+                  },
+                ),
               ),
             ),
 
             const SizedBox(height: 10), // Espacio entre los DropdownButtons
             Expanded(
               child: LiquidPullToRefresh(
-                onRefresh: refreshData,
-                color: Colors.white,
-                backgroundColor: Colors.deepPurple,
-                height: 100,
-                animSpeedFactor: 2,
-                showChildOpacityTransition: false,
-                child: ListView.builder(
-                  itemCount: _paciente.length,
-                  itemBuilder: (context, index) {
-                    final pacienteData = _paciente[index];
-                    return ListTile(
-                      title: Text(pacienteData.patient_name),
-                      subtitle: Text(pacienteData.solicited_service),
-                    );
-                  },
-                ),
-              ),
+                  onRefresh: refreshData,
+                  color: Colors.white,
+                  backgroundColor: Colors.deepPurple,
+                  height: 100,
+                  animSpeedFactor: 2,
+                  showChildOpacityTransition: false,
+                  child: ListView.builder(
+                    itemCount: _paciente.length,
+                    itemBuilder: (context, index) {
+                      final pacienteData = _paciente[index];
+                      return buildPacienteWidget(pacienteData);
+                    },
+                  )),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget buildPacienteWidget(PacienteDM pacienteData) {
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: GestureDetector(
+        onTap: () {
+          _showDialog(context, pacienteData);
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(30),
+            border: Border.all(color: Colors.deepPurple, width: 0),
+          ),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ListTile(
+                  title: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 5),
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        color: Colors.deepPurple,
+                      ),
+                      child: Text(
+                        '${pacienteData.patient_name_short}',
+                        style: const TextStyle(
+                          fontSize: 17,
+                          color: Colors.white,
+                        ),
+                      )),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(''),
+                      Text(
+                        'HC: ${pacienteData.clinic_history}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.deepPurple,
+                        ),
+                      ),
+                      const Text(''),
+                      Text(
+                        'SERVICIO: ${pacienteData.solicited_service}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Text(
+                        'HABITACION: ${pacienteData.room}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Text(
+                        'TIPO: ${pacienteData.interconsulting_type_name}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Text(
+                        'FECHA Y HORA DE INTERCONSULTA: ${pacienteData.last_notification_at}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                      ),
+                      const Text(''),
+                      Center(
+                          child: Text(
+                        '${pacienteData.solicited_service}',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      )),
+                      const Text(''),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+//FUNCION DE INFORMAACION ADICIONAL
+  void _showDialog(BuildContext context, PacienteDM pacienteData) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(30),
+          ),
+          title: Text('Detalles de la Interconsulta'),
+          content: Container(
+            width: 300, // Ancho deseado
+            height: 250, // Altura deseada
+            decoration: BoxDecoration(
+              borderRadius:
+                  BorderRadius.all(Radius.circular(10.0)), // Borde redondeado
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${pacienteData.patient_name}',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text('Origen: ${pacienteData.episode_type_name}'),
+                  Text('Habitación: ${pacienteData.room ?? ""}'),
+                  SizedBox(
+                      height:
+                          10), // Espacio entre los datos y el contenido HTML
+                  Html(data: pacienteData.description),
+                ],
+              ),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: Text(
+                'Cerrar',
+                style: TextStyle(
+                  color: Colors.deepPurple,
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 }

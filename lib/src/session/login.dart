@@ -50,6 +50,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
+  
   void realizarSolicitudLogin(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 

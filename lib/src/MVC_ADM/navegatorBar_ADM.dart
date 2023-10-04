@@ -3,7 +3,7 @@
 import 'dart:convert';
 //import 'package:app_notificador/src/MVC_ADM/PAGE_ADM/ConsultationPage_ADM.dart';
 //import 'package:app_notificador/src/MVC_ADM/PAGE_ADM/ListPatient_ADM.dart';
-import 'package:app_notificador/src/MVC_MED/pages/UserPage.dart';
+//import 'package:app_notificador/src/MVC_MED/pages/UserPage.dart';
 import 'package:app_notificador/src/services/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +18,7 @@ import '../services/push_notification_services.dart';
 import '../utill/IDI.dart';
 import '../utill/Logout.dart';
 import 'PAGE_ADM/MedShift.dart';
+import 'PAGE_ADM/UserPageADM.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -59,59 +60,58 @@ class _homePageADM extends State<homePageADM> {
     secureScreen();
   }
 
-Future<String?> _loadLoginData() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<String?> _loadLoginData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  String? username = prefs.getString('username');
-  String? name = prefs.getString('name');
-  String? tokenBD = prefs.getString('token');
-  String? password = prefs.getString('password');
-  String? tokenFB = prefs.getString('tokenFB');
-  String? dni = prefs.getString('document_number');
-  String? phone = prefs.getString('phone');
-  String? email = prefs.getString('email');
-  String? cmp = prefs.getString('cmp');
-  String? clinicsJson = prefs.getString('clinics');
-  int? type_doctor = prefs.getInt('type_doctor');
+    String? username = prefs.getString('username');
+    String? name = prefs.getString('name');
+    String? tokenBD = prefs.getString('token');
+    String? password = prefs.getString('password');
+    String? tokenFB = prefs.getString('tokenFB');
+    String? dni = prefs.getString('document_number');
+    String? phone = prefs.getString('phone');
+    String? email = prefs.getString('email');
+    String? cmp = prefs.getString('cmp');
+    String? clinicsJson = prefs.getString('clinics');
+    int? type_doctor = prefs.getInt('type_doctor');
 
-  if (username != null &&
-      name != null &&
-      tokenBD != null &&
-      password != null &&
-      tokenFB != null &&
-      dni != null &&
-      phone != null) {
-    List<Clinic> clinics = [];
-    if (clinicsJson != null) {
-      final List<dynamic> clinicData = json.decode(clinicsJson);
-      clinics = clinicData
-          .map((clinic) => Clinic(
-                clinic['id'],
-                clinic['name'],
-                clinic['name_short'],
-                clinic['color'],
-              ))
-          .toList();
+    if (username != null &&
+        name != null &&
+        tokenBD != null &&
+        password != null &&
+        tokenFB != null &&
+        dni != null &&
+        phone != null) {
+      List<Clinic> clinics = [];
+      if (clinicsJson != null) {
+        final List<dynamic> clinicData = json.decode(clinicsJson);
+        clinics = clinicData
+            .map((clinic) => Clinic(
+                  clinic['id'],
+                  clinic['name'],
+                  clinic['name_short'],
+                  clinic['color'],
+                ))
+            .toList();
+      }
+
+      final loginData = LoginData(
+        username,
+        name,
+        tokenBD,
+        password,
+        tokenFB,
+        dni,
+        phone,
+        cmp,
+        email,
+        type_doctor!,
+        clinics, // Asigna la lista de clínicas deserializadas
+      );
+      context.read<LoginProvider>().setLoginData(loginData);
     }
-
-    final loginData = LoginData(
-      username,
-      name,
-      tokenBD,
-      password,
-      tokenFB,
-      dni,
-      phone,
-      cmp,
-      email,
-      type_doctor!,
-      clinics, // Asigna la lista de clínicas deserializadas
-    );
-    context.read<LoginProvider>().setLoginData(loginData);
+    return tokenBD;
   }
-  return tokenBD;
-}
-
 
   Future<List<Usuario>> _postUsuario() async {
     const url = 'https://notimed.sanpablo.com.pe:8443/api/profile';
@@ -151,9 +151,9 @@ Future<String?> _loadLoginData() async {
 
   secureScreen() async {
     await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
-    await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_KEEP_SCREEN_ON);
+    await FlutterWindowManager.addFlags(
+        FlutterWindowManager.FLAG_KEEP_SCREEN_ON);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -163,81 +163,10 @@ Future<String?> _loadLoginData() async {
         initialIndex: 0,
         length: 1,
         child: WillPopScope(
-          onWillPop: () async { 
-            return false; 
-           },
+          onWillPop: () async {
+            return false;
+          },
           child: Scaffold(
-            //BOTON FLOTANTE
-           /* floatingActionButton: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                // Botón principal que controla la expansión
-                FloatingActionButton(
-                  onPressed: () {
-                    setState(() {
-                      isExpanded = !isExpanded; // Cambiar el estado de expansión
-                    });
-                  },
-                  backgroundColor: Colors.white, // Color de fondo blanco
-                  foregroundColor: Colors.black, // Color del icono negro
-                  tooltip: 'Mostrar/Ocultar',
-                  child: Icon(isExpanded
-                      ? Icons.close
-                      : Icons.add), // Cambiar el ícono según el estado
-                ),
-                SizedBox(height: 16.0), // Espacio entre los botones flotantes
-        
-                // Botón 1 - Editar Calendario
-                AnimatedContainer(
-                  duration:
-                      Duration(milliseconds: 300), // Duración de la animación
-                  height: isExpanded
-                      ? 56.0
-                      : 0.0, // Altura 0 para ocultar, 56 para mostrar
-                  child: Visibility(
-                    visible: isExpanded, // Controlar la visibilidad
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const EditCalendar()));
-                      },
-                      backgroundColor: Colors.white, // Color de fondo blanco
-                      foregroundColor: Colors.black, // Color del icono negro
-                      tooltip: 'Editar Calendario',
-                      child: Icon(Icons.calendar_month),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 16.0), // Espacio entre los botones flotantes
-        
-                // Botón 2 - Messenger SP
-                AnimatedContainer(
-                  duration:
-                      Duration(milliseconds: 300), // Duración de la animación
-                  height: isExpanded
-                      ? 56.0
-                      : 0.0, // Altura 0 para ocultar, 56 para mostrar
-                  child: Visibility(
-                    visible: isExpanded, // Controlar la visibilidad
-                    child: FloatingActionButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const MessagerSP()));
-                      },
-                      backgroundColor: Colors.white, // Color de fondo blanco
-                      foregroundColor: Colors.black, // Color del icono negro
-                      tooltip: 'Messenger SP',
-                      child: Icon(Icons.message),
-                    ),
-                  ),
-                ),
-              ],
-            ),*/
-        
             appBar: AppBar(
               backgroundColor: Colors.white,
               iconTheme: const IconThemeData(color: Colors.deepPurple),
@@ -258,24 +187,12 @@ Future<String?> _loadLoginData() async {
                             color: Colors.black,
                             fontSize: 18),
                         children: [
-        
                           const TextSpan(text: ' '),
-        
                           TextSpan(
                             text: userName,
                             style: const TextStyle(
                               color: Colors.deepPurple,
                               fontSize: 18,
-                            ),
-                          ),
-        
-                          const TextSpan(text: ' '),
-        
-                          const TextSpan(
-                            text: 'usuarios adminstrativo',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 13,
                             ),
                           ),
                         ],
@@ -290,16 +207,6 @@ Future<String?> _loadLoginData() async {
                 indicatorColor: Colors.deepPurple,
                 unselectedLabelColor: Colors.orange,
                 tabs: [
-                  /*Tab(
-                    icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
-                    child: Text(
-                      'TURNOS GLOBAL',
-                      style: TextStyle(
-                        color: Colors.deepPurple,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),*/
                   Tab(
                     icon: Icon(Icons.add_alert_sharp, color: Colors.deepPurple),
                     child: Text(
@@ -310,16 +217,6 @@ Future<String?> _loadLoginData() async {
                       ),
                     ),
                   ),
-                  /*Tab(
-                    icon: Icon(Icons.person_pin_sharp, color: Colors.deepPurple),
-                    child: Text(
-                      'HOSPITALIZACION',
-                      style: TextStyle(
-                        color: Colors.deepPurple,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ),*/
                 ],
               ),
               elevation: 0.0,
@@ -340,31 +237,33 @@ Future<String?> _loadLoginData() async {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => const UserPage()));
+                                builder: (context) => const UserPageADM()));
                       },
                       child: Container(
                         margin: const EdgeInsets.only(top: 30),
                         padding: const EdgeInsets.all(20),
                         width: 300,
                         decoration: const BoxDecoration(
-                          color: Colors.deepPurple,
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
-                        ),
+                            color: Colors.deepPurple,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(12))),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               'DATOS DEL USUARIO',
                               style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15),
                             ),
                             Icon(
-                              Icons.account_circle_rounded,
-                              color: Colors.white,
-                              size: 24,
+                              Icons
+                                  .account_circle_rounded, // Cambia Icons.add_circle con el icono que desees utilizar
+                              color: Colors
+                                  .white, // Cambia Colors.blue con el color deseado para el icono
+                              size:
+                                  24, // Ajusta el tamaño del icono según tus necesidades
                             ),
                           ],
                         ),
@@ -382,59 +281,26 @@ Future<String?> _loadLoginData() async {
                         padding: const EdgeInsets.all(20),
                         width: 300,
                         decoration: const BoxDecoration(
-                          color: Colors.deepPurple,
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
-                        ),
+                            color: Colors.deepPurple,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(12))),
                         child: const Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
                               '¿Quiénes Somos?',
                               style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15),
                             ),
                             Icon(
-                              Icons.co_present_rounded,
-                              color: Colors.white,
-                              size: 24,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        IDI(context);
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 2),
-                        padding: const EdgeInsets.all(20),
-                        width: 300,
-                        decoration: const BoxDecoration(
-                          color: Colors.deepPurple,
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
-                        ),
-                        child: const Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Registro de Horario',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                              ),
-                            ),
-                            Icon(
-                              Icons.add_circle_rounded,
-                              color: Colors.white,
-                              size: 24,
+                              Icons
+                                  .co_present_rounded, // Cambia Icons.add_circle con el icono que desees utilizar
+                              color: Colors
+                                  .white, // Cambia Colors.blue con el color deseado para el icono
+                              size:
+                                  24, // Ajusta el tamaño del icono según tus necesidades
                             ),
                           ],
                         ),
@@ -443,24 +309,24 @@ Future<String?> _loadLoginData() async {
                     Expanded(child: Container()),
                     GestureDetector(
                       onTap: () {
-                        ShowDialogLogout(context);
+                        logout(context);
+                        // Lógica que deseas ejecutar cuando se toque el Container
                       },
                       child: Container(
                         margin: const EdgeInsets.only(top: 2),
                         padding: const EdgeInsets.all(20),
                         width: 250,
                         decoration: const BoxDecoration(
-                          color: Colors.deepPurple,
-                          borderRadius: BorderRadius.all(Radius.circular(12)),
-                        ),
+                            color: Colors.deepPurple,
+                            borderRadius:
+                                BorderRadius.all(Radius.circular(12))),
                         alignment: Alignment.center,
                         child: const Text(
                           'CERRAR SESIÓN',
                           style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15),
                         ),
                       ),
                     ),
@@ -470,42 +336,42 @@ Future<String?> _loadLoginData() async {
               ),
             ),
             body: const TabBarView(
-              children: [MedShift()/*, InterconsultaADM(), ListPatientADM()*/],
+              children: [MedShift()],
             ),
           ),
         ),
       ),
     );
   }
-  void ShowDialogLogout(BuildContext context) async {
-  try {
-    // Mostrar un cuadro de diálogo de confirmación
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Confirmar Cierre de Sesión"),
-          content: const Text("¿Está seguro de que desea cerrar la sesión?"),
-          actions: [
-            TextButton(
-              child: const Text("Cancelar"),
-              onPressed: () {
-                Navigator.of(context).pop(); // Cierra el cuadro de diálogo
-              },
-            ),
-            TextButton(
-              child: const Text("Confirmar"),
-              onPressed: () async {
-                logout(context);
-              },
-            ),
-          ],
-        );
-      },
-    );
-  } catch (e) {
-    print("Error durante el cierre de sesión: $e");
-  }
-}
 
+  void ShowDialogLogout(BuildContext context) async {
+    try {
+      // Mostrar un cuadro de diálogo de confirmación
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Confirmar Cierre de Sesión"),
+            content: const Text("¿Está seguro de que desea cerrar la sesión?"),
+            actions: [
+              TextButton(
+                child: const Text("Cancelar"),
+                onPressed: () {
+                  Navigator.of(context).pop(); // Cierra el cuadro de diálogo
+                },
+              ),
+              TextButton(
+                child: const Text("Confirmar"),
+                onPressed: () async {
+                  logout(context);
+                },
+              ),
+            ],
+          );
+        },
+      );
+    } catch (e) {
+      print("Error durante el cierre de sesión: $e");
+    }
+  }
 }
