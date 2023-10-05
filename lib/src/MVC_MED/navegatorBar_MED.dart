@@ -6,7 +6,6 @@ import 'package:app_notificador/src/MVC_MED/pages/UserPage.dart';
 import 'package:app_notificador/src/MVC_MED/pages/messager.dart';
 import 'package:app_notificador/src/services/provider.dart';
 import 'package:app_notificador/src/MVC_MED/pages/ConsultationPage.dart';
-import 'package:app_notificador/src/utill/Logout.dart';
 //import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,6 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/login.dart';
 import '../models/user.dart';
 import '../utill/IDI.dart';
+import '../utill/ShowDialogLogout.dart';
 import 'pages/EditCalendar.dart';
 import 'pages/HomePage.dart';
 
@@ -485,34 +485,4 @@ Future<String?> _loadLoginData() async {
     );
   }
 
-  void ShowDialogLogout(BuildContext context) async {
-    try {
-      // Mostrar un cuadro de diálogo de confirmación
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Confirmar Cierre de Sesión"),
-            content: const Text("¿Está seguro de que desea cerrar la sesión?"),
-            actions: [
-              TextButton(
-                child: const Text("Cancelar"),
-                onPressed: () {
-                  Navigator.of(context).pop(); // Cierra el cuadro de diálogo
-                },
-              ),
-              TextButton(
-                child: const Text("Confirmar"),
-                onPressed: () async {
-                  logout(context);
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } catch (e) {
-      print("Error durante el cierre de sesión: $e");
-    }
-  }
 }

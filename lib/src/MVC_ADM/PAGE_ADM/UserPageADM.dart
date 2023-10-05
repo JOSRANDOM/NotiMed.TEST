@@ -61,58 +61,58 @@ class _UserPage extends State<UserPageADM> {
     _loadLoginData();
   }
 
-Future<String?> _loadLoginData() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<String?> _loadLoginData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  String? username = prefs.getString('username');
-  String? name = prefs.getString('name');
-  String? tokenBD = prefs.getString('token');
-  String? password = prefs.getString('password');
-  String? tokenFB = prefs.getString('tokenFB');
-  String? dni = prefs.getString('document_number');
-  String? phone = prefs.getString('phone');
-  String? email = prefs.getString('email');
-  String? cmp = prefs.getString('cmp');
-  String? clinicsJson = prefs.getString('clinics');
-  int? type_doctor = prefs.getInt('type_doctor');
+    String? username = prefs.getString('username');
+    String? name = prefs.getString('name');
+    String? tokenBD = prefs.getString('token');
+    String? password = prefs.getString('password');
+    String? tokenFB = prefs.getString('tokenFB');
+    String? dni = prefs.getString('document_number');
+    String? phone = prefs.getString('phone');
+    String? email = prefs.getString('email');
+    String? cmp = prefs.getString('cmp');
+    String? clinicsJson = prefs.getString('clinics');
+    int? type_doctor = prefs.getInt('type_doctor');
 
-  if (username != null &&
-      name != null &&
-      tokenBD != null &&
-      password != null &&
-      tokenFB != null &&
-      dni != null &&
-      phone != null) {
-    List<Clinic> clinics = [];
-    if (clinicsJson != null) {
-      final List<dynamic> clinicData = json.decode(clinicsJson);
-      clinics = clinicData
-          .map((clinic) => Clinic(
-                clinic['id'],
-                clinic['name'],
-                clinic['name_short'],
-                clinic['color'],
-              ))
-          .toList();
+    if (username != null &&
+        name != null &&
+        tokenBD != null &&
+        password != null &&
+        tokenFB != null &&
+        dni != null &&
+        phone != null) {
+      List<Clinic> clinics = [];
+      if (clinicsJson != null) {
+        final List<dynamic> clinicData = json.decode(clinicsJson);
+        clinics = clinicData
+            .map((clinic) => Clinic(
+                  clinic['id'],
+                  clinic['name'],
+                  clinic['name_short'],
+                  clinic['color'],
+                ))
+            .toList();
+      }
+
+      final loginData = LoginData(
+        username,
+        name,
+        tokenBD,
+        password,
+        tokenFB,
+        dni,
+        phone,
+        cmp,
+        email,
+        type_doctor!,
+        clinics, // Asigna la lista de clínicas deserializadas
+      );
+      context.read<LoginProvider>().setLoginData(loginData);
     }
-
-    final loginData = LoginData(
-      username,
-      name,
-      tokenBD,
-      password,
-      tokenFB,
-      dni,
-      phone,
-      cmp,
-      email,
-      type_doctor!,
-      clinics, // Asigna la lista de clínicas deserializadas
-    );
-    context.read<LoginProvider>().setLoginData(loginData);
+    return tokenBD;
   }
-  return tokenBD;
-}
 
   late Future<List<Usuario>> _usuario;
 
@@ -166,7 +166,9 @@ Future<String?> _loadLoginData() async {
           child: SingleChildScrollView(
         child: Column(
           children: [
-           const SizedBox(height: 20,),
+            const SizedBox(
+              height: 20,
+            ),
             //app bar
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 25.0),
@@ -453,6 +455,12 @@ Future<String?> _loadLoginData() async {
     );
   }
 
+  Future<void> refreshData() async {
+    setState(() {
+      _usuario = _postUsuario();
+    });
+  }
+
 //FUNCION DE ACTUALIZAR DATOS
   void _showEditDialog(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -462,24 +470,29 @@ Future<String?> _loadLoginData() async {
       // Handle the case where token is not available
       return;
     }
+    // Obtén los datos de usuario de _postUsuario()
+    List<Usuario> usuarios = await _postUsuario();
+    if (usuarios.isEmpty) {
+      // Handle the case where user data is not available
+      return;
+    }
 
-    var userEmail = prefs.getString('') ?? '';
-    var userPhone = prefs.getString('') ?? '';
+    var userEmail = usuarios[0].email;
+    var userPhone = usuarios[0].phone;
 
-    TextEditingController emailController =
-        TextEditingController(text: userEmail);
-    TextEditingController phoneController =
-        TextEditingController(text: userPhone);
+  TextEditingController emailController = TextEditingController(text: userEmail);
+  TextEditingController phoneController = TextEditingController(text: userPhone);
+
 
     // ignore: use_build_context_synchronously
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          backgroundColor: Colors.deepPurple.shade200,
-          title: const Text(
+          backgroundColor: Colors.white,
+          title: Text(
             'Editar Información',
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.deepPurple.shade200),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -488,7 +501,7 @@ Future<String?> _loadLoginData() async {
               TextField(
                 controller: emailController,
                 decoration: const InputDecoration(
-                  labelText: 'Nuevo Email (campo obligatorio)',
+                  labelText: 'email',
                   labelStyle: TextStyle(color: Colors.deepPurple),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -511,7 +524,7 @@ Future<String?> _loadLoginData() async {
               TextField(
                 controller: phoneController,
                 decoration: const InputDecoration(
-                  labelText: 'Nuevo Phone (campo obligatorio)',
+                  labelText: 'phone',
                   labelStyle: TextStyle(color: Colors.deepPurple),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -547,6 +560,12 @@ Future<String?> _loadLoginData() async {
                 );
 
                 if (response.statusCode == 200) {
+                  // Actualiza los datos del usuario después de la edición
+                  await _postUsuario();
+
+                  // Cierra el diálogo
+                  refreshData();
+
                   // ignore: avoid_print
                   print('Data updated successfully');
                   // ignore: use_build_context_synchronously

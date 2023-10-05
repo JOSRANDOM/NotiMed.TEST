@@ -1,9 +1,6 @@
 // ignore_for_file: file_names, camel_case_types, library_private_types_in_public_api, avoid_print, non_constant_identifier_names, use_build_context_synchronously
 
 import 'dart:convert';
-//import 'package:app_notificador/src/MVC_ADM/PAGE_ADM/ConsultationPage_ADM.dart';
-//import 'package:app_notificador/src/MVC_ADM/PAGE_ADM/ListPatient_ADM.dart';
-//import 'package:app_notificador/src/MVC_MED/pages/UserPage.dart';
 import 'package:app_notificador/src/services/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,7 +13,7 @@ import '../models/login.dart';
 import '../models/user.dart';
 import '../services/push_notification_services.dart';
 import '../utill/IDI.dart';
-import '../utill/Logout.dart';
+import '../utill/ShowDialogLogout.dart';
 import 'PAGE_ADM/MedShift.dart';
 import 'PAGE_ADM/UserPageADM.dart';
 
@@ -24,6 +21,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
   await PushNotificatonServices.initializeApp();
+  
 
   runApp(ChangeNotifierProvider(
       create: (context) => LoginProvider(),
@@ -309,7 +307,7 @@ class _homePageADM extends State<homePageADM> {
                     Expanded(child: Container()),
                     GestureDetector(
                       onTap: () {
-                        logout(context);
+                        ShowDialogLogout(context);
                         // Lógica que deseas ejecutar cuando se toque el Container
                       },
                       child: Container(
@@ -344,34 +342,4 @@ class _homePageADM extends State<homePageADM> {
     );
   }
 
-  void ShowDialogLogout(BuildContext context) async {
-    try {
-      // Mostrar un cuadro de diálogo de confirmación
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Confirmar Cierre de Sesión"),
-            content: const Text("¿Está seguro de que desea cerrar la sesión?"),
-            actions: [
-              TextButton(
-                child: const Text("Cancelar"),
-                onPressed: () {
-                  Navigator.of(context).pop(); // Cierra el cuadro de diálogo
-                },
-              ),
-              TextButton(
-                child: const Text("Confirmar"),
-                onPressed: () async {
-                  logout(context);
-                },
-              ),
-            ],
-          );
-        },
-      );
-    } catch (e) {
-      print("Error durante el cierre de sesión: $e");
-    }
-  }
 }

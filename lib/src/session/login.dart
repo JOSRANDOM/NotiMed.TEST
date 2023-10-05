@@ -50,7 +50,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
-  
   void realizarSolicitudLogin(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -121,14 +120,20 @@ class LoginPageState extends State<LoginPage> {
       await prefs.setBool('isSessionActive', true);
 
       if (type_doctor == 1) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const homePageMD()));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const homePageMD()),
+        );
       } else if (type_doctor == 2) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const homePageADM()));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const homePageADM()),
+        );
       } else if (type_doctor == 3) {
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const ListPatientHOSP()));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const ListPatientHOSP()),
+        );
       }
 
       // La solicitud fue exitosa

@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 //import 'package:permission_handler/permission_handler.dart';
 
+import 'src/MVC_ADM/navegatorBar_ADM.dart';
+import 'src/MVC_HOSP/pages/ListPatient_HOSP.dart';
 import 'src/MVC_MED/navegatorBar_MED.dart';
 
 void main() async{
@@ -17,12 +19,26 @@ void main() async{
   await PushNotificatonServices.initializeApp();
  
   // Obtén una instancia de SharedPreferences
-  SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  // Verifica si la sesión está activa
-  bool isSessionActive = prefs.getBool('isSessionActive') ?? false;
+  final prefs = await SharedPreferences.getInstance();
+  final savedTypeDoctor = prefs.getInt('type_doctor');
+  Widget initialPage = const LoginPage(); // Valor por defecto
 
-  String initialRoute = isSessionActive ? '/second' : 'login';
+    if (savedTypeDoctor != null) {
+    // Si hay un tipo de perfil almacenado, redirige directamente a la página correspondiente
+    if (savedTypeDoctor == 1) {
+      initialPage = const homePageMD();
+    } else if (savedTypeDoctor == 2) {
+      initialPage = const homePageADM();
+    } else if (savedTypeDoctor == 3) {
+      initialPage = const ListPatientHOSP();
+    } else {
+      // Maneja cualquier otro tipo de perfil aquí o redirige a una página predeterminada
+    }
+  }else {
+    // Si no se ha almacenado ningún tipo de perfil, muestra la página de inicio de sesión
+    initialPage = const LoginPage();
+  }
 
   initializeDateFormatting().then((_) =>   
   runApp(
@@ -34,11 +50,7 @@ void main() async{
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: "NOTIMED",
-        initialRoute: initialRoute,
-        routes: {
-          'login': (_) => const LoginPage (),
-          '/second': (_) => const homePageMD(),
-        },
+        home: initialPage,
       ),
     ),
   ));

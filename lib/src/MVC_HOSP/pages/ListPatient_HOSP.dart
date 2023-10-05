@@ -17,7 +17,7 @@ import '../../services/push_notification_services.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../utill/IDI.dart';
-import '../../utill/Logout.dart';
+import '../../utill/ShowDialogLogout.dart';
 
 class ListPatientHOSP extends StatefulWidget {
   const ListPatientHOSP({Key? key}) : super(key: key);
@@ -313,7 +313,7 @@ Future<String?> _loadLoginData() async {
                 Expanded(child: Container()),
                 GestureDetector(
                   onTap: () {
-                    logout(context);
+                    ShowDialogLogout(context);
                   },
                   child: Container(
                     margin: const EdgeInsets.only(top: 2),
