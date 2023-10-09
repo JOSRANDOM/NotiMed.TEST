@@ -1,6 +1,7 @@
 // ignore_for_file: file_names, camel_case_types, library_private_types_in_public_api, avoid_print, non_constant_identifier_names, use_build_context_synchronously
 
 import 'dart:convert';
+import 'package:app_notificador/src/MVC_ADM/PAGE_ADM/Med_Guard.dart';
 import 'package:app_notificador/src/services/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,14 +15,13 @@ import '../models/user.dart';
 import '../services/push_notification_services.dart';
 import '../utill/IDI.dart';
 import '../utill/ShowDialogLogout.dart';
-import 'PAGE_ADM/MedShift.dart';
+import 'PAGE_ADM/Global_Interconsultation.dart';
 import 'PAGE_ADM/UserPageADM.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
   await PushNotificatonServices.initializeApp();
-  
 
   runApp(ChangeNotifierProvider(
       create: (context) => LoginProvider(),
@@ -159,7 +159,7 @@ class _homePageADM extends State<homePageADM> {
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         initialIndex: 0,
-        length: 1,
+        length: 2,
         child: WillPopScope(
           onWillPop: () async {
             return false;
@@ -205,6 +205,19 @@ class _homePageADM extends State<homePageADM> {
                 indicatorColor: Colors.deepPurple,
                 unselectedLabelColor: Colors.orange,
                 tabs: [
+                  //PAGINA DE GUARDIAS
+                  Tab(
+                    icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
+                    child: Text(
+                      'GUARDIAS',
+                      style: TextStyle(
+                        color: Colors.deepPurple,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+
+                  //PAGINA DE INTERCONSULTAS
                   Tab(
                     icon: Icon(Icons.add_alert_sharp, color: Colors.deepPurple),
                     child: Text(
@@ -334,12 +347,11 @@ class _homePageADM extends State<homePageADM> {
               ),
             ),
             body: const TabBarView(
-              children: [MedShift()],
+              children: [MedGuard(), MedShift()],
             ),
           ),
         ),
       ),
     );
   }
-
 }
