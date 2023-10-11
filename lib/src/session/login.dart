@@ -50,6 +50,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
+
   void realizarSolicitudLogin(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -151,6 +152,11 @@ class LoginPageState extends State<LoginPage> {
       print('Error: ${response.body}');
       print('fallo en conexion');
     }
+
+      // Definir un callback que puede ser llamado desde _MedShiftState
+  void realizarSolicitudLoginCallback(BuildContext context) {
+    realizarSolicitudLogin(context);
+  }
   }
 
   void _mostrarAlerta(BuildContext context) {

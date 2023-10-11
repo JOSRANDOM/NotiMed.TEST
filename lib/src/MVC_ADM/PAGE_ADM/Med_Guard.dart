@@ -239,12 +239,12 @@ class _MedShiftState extends State<MedGuard> {
                     ? Column(
                         children: [
                           const SizedBox(height: 10),
-                          //DROPDOWN N°1
+                          //DROPDOWN - SEDES
                           Container(
                             width: 320,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: Colors.black, width: 0),
+                              border: Border.all(color: Colors.purple, width: 0),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8),
@@ -252,6 +252,7 @@ class _MedShiftState extends State<MedGuard> {
                                 isExpanded:
                                     false, // Configura isExpanded en false para que el DropdownButton no ocupe todo el ancho del Container
                                 hint: const Text('selecciona una sede'),
+
                                 value: selectedValue,
                                 borderRadius: BorderRadius.circular(10),
                                 dropdownColor: Colors.white,
@@ -268,6 +269,11 @@ class _MedShiftState extends State<MedGuard> {
                                     ),
                                   );
                                 }).toList(),
+                                underline: Container(
+                                  // Cambiar el color de la línea debajo del botón desplegable
+                                  height: 2,
+                                  color: Colors.transparent,
+                                ),
                                 onChanged: (String? newValue) async {
                                   setState(() {
                                     selectedValue = newValue;
@@ -285,12 +291,15 @@ class _MedShiftState extends State<MedGuard> {
                               ),
                             ),
                           ),
+
                           const SizedBox(height: 10),
+
+                          //DROPDOWN - SERVICIOS
                           Container(
                             width: 320,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: Colors.black, width: 0),
+                              border: Border.all(color: Colors.purple, width: 0),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8),
@@ -316,6 +325,11 @@ class _MedShiftState extends State<MedGuard> {
                                     ),
                                   );
                                 }).toList(),
+                                underline: Container(
+                                  // Cambiar el color de la línea debajo del botón desplegable
+                                  height: 2,
+                                  color: Colors.transparent,
+                                ),
                                 onChanged: (String? newValue) async {
                                   setState(() {
                                     selectedValue = newValue;
@@ -346,7 +360,7 @@ class _MedShiftState extends State<MedGuard> {
                             width: 320,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: Colors.black, width: 0),
+                              border: Border.all(color: Colors.purple, width: 0),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8),
@@ -363,8 +377,8 @@ class _MedShiftState extends State<MedGuard> {
                                   if (selectedDate != null) {
                                     setState(() {
                                       initAt = selectedDate;
-                                      endAt =
-                                          selectedDate.add(const Duration(days: 1));
+                                      endAt = selectedDate
+                                          .add(const Duration(days: 1));
                                       initAtController.text =
                                           DateFormat('yyyy-MM-dd')
                                               .format(initAt);
@@ -375,7 +389,21 @@ class _MedShiftState extends State<MedGuard> {
                                 },
                                 decoration: const InputDecoration(
                                   labelText: 'Fecha de inicio',
+                                  labelStyle: TextStyle(
+                                      color: Colors
+                                          .deepPurple), // Color del labelText
                                   hintText: 'Seleccione una fecha',
+                                  hintStyle: TextStyle(
+                                      color: Colors
+                                          .deepOrange), // Color del hintText
+                                  focusedBorder: UnderlineInputBorder(
+                                    borderSide:
+                                        BorderSide(color: Colors.transparent),
+                                  ),
+                                  prefixIcon: Icon(
+                                    Icons.calendar_today,
+                                    color: Colors.purple, // Color del icono
+                                  ),
                                 ),
                               ),
                             ),

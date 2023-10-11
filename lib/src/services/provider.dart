@@ -103,6 +103,7 @@ List<Clinic> get clinics {
     }
   }
 
+
   void setLoginData(LoginData? loginData) {
     _loginData = loginData;
 

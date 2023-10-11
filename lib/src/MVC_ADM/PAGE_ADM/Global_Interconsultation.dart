@@ -1,4 +1,4 @@
-// ignore_for_file: unused_element, non_constant_identifier_names, file_names, avoid_unnecessary_containers, avoid_print, unnecessary_string_interpolations
+// ignore_for_file: unused_element, non_constant_identifier_names, file_names, avoid_unnecessary_containers, avoid_print, unnecessary_string_interpolations, use_build_context_synchronously
 import 'dart:convert';
 
 import 'package:app_notificador/src/models/login.dart';
@@ -250,7 +250,7 @@ class _MedShiftState extends State<MedShift> {
                             width: 320,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: Colors.black, width: 0),
+                              border: Border.all(color: Colors.purple, width: 0),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8),
@@ -274,6 +274,12 @@ class _MedShiftState extends State<MedShift> {
                                     ),
                                   );
                                 }).toList(),
+                                icon: const Icon(Icons.arrow_drop_down),
+                                underline: Container(
+                                  // Cambiar el color de la línea debajo del botón desplegable
+                                  height: 2,
+                                  color: Colors.transparent,
+                                ),
                                 onChanged: (String? newValue) async {
                                   setState(() {
                                     selectedValue = newValue;
@@ -296,7 +302,7 @@ class _MedShiftState extends State<MedShift> {
                             width: 320,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: Colors.black, width: 0),
+                              border: Border.all(color: Colors.purple, width: 0),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8),
@@ -322,6 +328,12 @@ class _MedShiftState extends State<MedShift> {
                                     ),
                                   );
                                 }).toList(),
+                                icon: const Icon(Icons.arrow_drop_down),
+                                underline: Container(
+                                  // Cambiar el color de la línea debajo del botón desplegable
+                                  height: 2,
+                                  color: Colors.transparent,
+                                ),
                                 onChanged: (String? newValue) async {
                                   setState(() {
                                     selectedService = newValue;
@@ -386,8 +398,8 @@ class _MedShiftState extends State<MedShift> {
               // Muestra el número de resultados
               Center(
                   child: Container(
-                    width: 150,
-                    height: 20,
+                      width: 150,
+                      height: 20,
                       decoration: const BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(20)),
                         color: Colors.deepPurple,
