@@ -114,46 +114,36 @@ class _HomeState extends State<Home> {
     return tokenBD;
   }
 
-Future<void> _postTurnoConFecha(BuildContext context, DateTime fechaSeleccionada) async {
-  const url = 'https://notimed.sanpablo.com.pe:8443/api/schedules';
+  Future<void> _postTurnoConFecha(
+      BuildContext context, DateTime fechaSeleccionada) async {
+    const url = 'https://notimed.sanpablo.com.pe:8443/api/schedules';
 
-  final String? tokenBD = await _loadLoginData();
+    final String? tokenBD = await _loadLoginData();
 
-  final response = await http.post(Uri.parse(url), headers: {
-    'Authorization': 'Bearer $tokenBD',
-  }, body: {
-    'date_at': DateFormat('yyyy-MM-dd').format(fechaSeleccionada),
-  });
+    final response = await http.post(Uri.parse(url), headers: {
+      'Authorization': 'Bearer $tokenBD',
+    }, body: {
+      'date_at': DateFormat('yyyy-MM-dd').format(fechaSeleccionada),
+    });
 
-  if (response.statusCode == 200) {
-    final jsonData = jsonDecode(response.body);
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
 
-    for (var element in jsonData['data']) {
-      String initDate = element['init_date_at'];
-      String endDate = element['end_date_at'];
+      for (var element in jsonData['data']) {
+        String initDate = element['init_date_at'];
 
-      DateTime startDate = DateTime.parse(_formatDate(initDate));
-      DateTime finishDate = DateTime.parse(_formatDate(endDate));
-
-      // Si la fecha de inicio y finalización es la misma, se agrega solo una vez
-      if (isSameDay(startDate, finishDate) && isSameDay(startDate, _selectedDay)) {
-        String clinicName = element['clinic_name'];
-        _handleTurnoData(clinicName, element);
-      } else {
-        // Si las fechas de inicio y finalización son diferentes
-        if (isSameDay(startDate, _selectedDay) || isSameDay(finishDate, _selectedDay)) {
+        if (isSameDay(DateTime.parse(_formatDate(initDate)), _selectedDay)) {
           String clinicName = element['clinic_name'];
+
           _handleTurnoData(clinicName, element);
         }
       }
+    } else {
+      // Manejar otros códigos de estado aquí si es necesario
+      print('Error en la solicitud HTTP: ${response.statusCode}');
+      throw Exception('Error en la solicitud HTTP: ${response.statusCode}');
     }
-  } else {
-    // Manejar otros códigos de estado aquí si es necesario
-    print('Error en la solicitud HTTP: ${response.statusCode}');
-    throw Exception('Error en la solicitud HTTP: ${response.statusCode}');
   }
-}
-
 
   void _handleTurnoData(String clinicName, Map<String, dynamic> element) {
     if (!_groupedTurnos.containsKey(clinicName)) {
@@ -392,7 +382,7 @@ Future<void> _postTurnoConFecha(BuildContext context, DateTime fechaSeleccionada
                 child: Row(
                   children: [
                     const Icon(
-                      Icons.add_circle_outline_rounded,
+                      Icons.add_alert,
                       color: Colors.deepPurple,
                     ),
                     const SizedBox(width: 10),
@@ -416,7 +406,22 @@ Future<void> _postTurnoConFecha(BuildContext context, DateTime fechaSeleccionada
                   children: [
                     const SizedBox(width: 30),
                     Text(
-                      ' ${turnoData.init_hour_at} - ${turnoData.end_hour_at}',
+                      'Inicio de Turno ${turnoData.init_hour_at} - ${turnoData.init_date_at}',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 20, top: 5),
+                child: Row(
+                  children: [
+                    const SizedBox(width: 30),
+                    Text(
+                      'Fin de Turno     ${turnoData.end_hour_at} - ${turnoData.end_date_at}',
                       style: const TextStyle(
                         color: Colors.black,
                         fontSize: 12,
