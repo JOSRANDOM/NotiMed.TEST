@@ -61,90 +61,99 @@ class _HomeState extends State<Home> {
     // Aquí puedes realizar otras operaciones de inicialización
   }
 
-Future<String?> _loadLoginData() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<String?> _loadLoginData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  String? username = prefs.getString('username');
-  String? name = prefs.getString('name');
-  String? tokenBD = prefs.getString('token');
-  String? password = prefs.getString('password');
-  String? tokenFB = prefs.getString('tokenFB');
-  String? dni = prefs.getString('document_number');
-  String? phone = prefs.getString('phone');
-  String? email = prefs.getString('email');
-  String? cmp = prefs.getString('cmp');
-  String? clinicsJson = prefs.getString('clinics');
-  int? type_doctor = prefs.getInt('type_doctor');
+    String? username = prefs.getString('username');
+    String? name = prefs.getString('name');
+    String? tokenBD = prefs.getString('token');
+    String? password = prefs.getString('password');
+    String? tokenFB = prefs.getString('tokenFB');
+    String? dni = prefs.getString('document_number');
+    String? phone = prefs.getString('phone');
+    String? email = prefs.getString('email');
+    String? cmp = prefs.getString('cmp');
+    String? clinicsJson = prefs.getString('clinics');
+    int? type_doctor = prefs.getInt('type_doctor');
 
-  if (username != null &&
-      name != null &&
-      tokenBD != null &&
-      password != null &&
-      tokenFB != null &&
-      dni != null &&
-      phone != null) {
-    List<Clinic> clinics = [];
-    if (clinicsJson != null) {
-      final List<dynamic> clinicData = json.decode(clinicsJson);
-      clinics = clinicData
-          .map((clinic) => Clinic(
-                clinic['id'],
-                clinic['name'],
-                clinic['name_short'],
-                clinic['color'],
-              ))
-          .toList();
+    if (username != null &&
+        name != null &&
+        tokenBD != null &&
+        password != null &&
+        tokenFB != null &&
+        dni != null &&
+        phone != null) {
+      List<Clinic> clinics = [];
+      if (clinicsJson != null) {
+        final List<dynamic> clinicData = json.decode(clinicsJson);
+        clinics = clinicData
+            .map((clinic) => Clinic(
+                  clinic['id'],
+                  clinic['name'],
+                  clinic['name_short'],
+                  clinic['color'],
+                ))
+            .toList();
+      }
+
+      final loginData = LoginData(
+        username,
+        name,
+        tokenBD,
+        password,
+        tokenFB,
+        dni,
+        phone,
+        cmp,
+        email,
+        type_doctor!,
+        clinics, // Asigna la lista de clínicas deserializadas
+      );
+      context.read<LoginProvider>().setLoginData(loginData);
     }
-
-    final loginData = LoginData(
-      username,
-      name,
-      tokenBD,
-      password,
-      tokenFB,
-      dni,
-      phone,
-      cmp,
-      email,
-      type_doctor!,
-      clinics, // Asigna la lista de clínicas deserializadas
-    );
-    context.read<LoginProvider>().setLoginData(loginData);
+    return tokenBD;
   }
-  return tokenBD;
-}
 
+Future<void> _postTurnoConFecha(BuildContext context, DateTime fechaSeleccionada) async {
+  const url = 'https://notimed.sanpablo.com.pe:8443/api/schedules';
 
-  Future<void> _postTurnoConFecha(
-      BuildContext context, DateTime fechaSeleccionada) async {
-    const url = 'https://notimed.sanpablo.com.pe:8443/api/schedules';
+  final String? tokenBD = await _loadLoginData();
 
-    final String? tokenBD = await _loadLoginData();
+  final response = await http.post(Uri.parse(url), headers: {
+    'Authorization': 'Bearer $tokenBD',
+  }, body: {
+    'date_at': DateFormat('yyyy-MM-dd').format(fechaSeleccionada),
+  });
 
-    final response = await http.post(Uri.parse(url), headers: {
-      'Authorization': 'Bearer $tokenBD',
-    }, body: {
-      'date_at': DateFormat('yyyy-MM-dd').format(fechaSeleccionada),
-    });
+  if (response.statusCode == 200) {
+    final jsonData = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
-      final jsonData = jsonDecode(response.body);
+    for (var element in jsonData['data']) {
+      String initDate = element['init_date_at'];
+      String endDate = element['end_date_at'];
 
-      for (var element in jsonData['data']) {
-        String initDate = element['init_date_at'];
+      DateTime startDate = DateTime.parse(_formatDate(initDate));
+      DateTime finishDate = DateTime.parse(_formatDate(endDate));
 
-        if (isSameDay(DateTime.parse(_formatDate(initDate)), _selectedDay)) {
+      // Si la fecha de inicio y finalización es la misma, se agrega solo una vez
+      if (isSameDay(startDate, finishDate) && isSameDay(startDate, _selectedDay)) {
+        String clinicName = element['clinic_name'];
+        _handleTurnoData(clinicName, element);
+      } else {
+        // Si las fechas de inicio y finalización son diferentes
+        if (isSameDay(startDate, _selectedDay) || isSameDay(finishDate, _selectedDay)) {
           String clinicName = element['clinic_name'];
-
           _handleTurnoData(clinicName, element);
         }
       }
-    } else {
-      // Manejar otros códigos de estado aquí si es necesario
-      print('Error en la solicitud HTTP: ${response.statusCode}');
-      throw Exception('Error en la solicitud HTTP: ${response.statusCode}');
     }
+  } else {
+    // Manejar otros códigos de estado aquí si es necesario
+    print('Error en la solicitud HTTP: ${response.statusCode}');
+    throw Exception('Error en la solicitud HTTP: ${response.statusCode}');
   }
+}
+
 
   void _handleTurnoData(String clinicName, Map<String, dynamic> element) {
     if (!_groupedTurnos.containsKey(clinicName)) {

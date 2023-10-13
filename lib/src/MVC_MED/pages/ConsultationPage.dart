@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, avoid_print, sized_box_for_whitespace, non_constant_identifier_names, unnecessary_string_interpolations, prefer_const_constructors
+// ignore_for_file: file_names, avoid_print, sized_box_for_whitespace, non_constant_identifier_names, unnecessary_string_interpolations, prefer_const_constructors, use_build_context_synchronously
 
 import 'dart:convert';
 import 'dart:core';

@@ -1,6 +1,9 @@
 import 'package:app_notificador/src/services/provider.dart';
+import 'package:app_notificador/src/services/providerVersion.dart';
 import 'package:app_notificador/src/services/push_notification_services.dart';
 import 'package:app_notificador/src/session/login.dart';
+import 'package:app_notificador/src/utill/ShowDialogUpdate.dart';
+import 'package:app_notificador/src/utill/version%20management/Version.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
@@ -11,21 +14,15 @@ import 'src/MVC_ADM/navegatorBar_ADM.dart';
 import 'src/MVC_HOSP/pages/ListPatient_HOSP.dart';
 import 'src/MVC_MED/navegatorBar_MED.dart';
 
-void main() async{
-    WidgetsFlutterBinding.ensureInitialized();
-  await PushNotificatonServices.initializeApp();
-
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await PushNotificatonServices.initializeApp();
- 
-  // Obtén una instancia de SharedPreferences
 
   final prefs = await SharedPreferences.getInstance();
   final savedTypeDoctor = prefs.getInt('type_doctor');
-  Widget initialPage = const LoginPage(); // Valor por defecto
+  Widget initialPage = const LoginPage();
 
-    if (savedTypeDoctor != null) {
-    // Si hay un tipo de perfil almacenado, redirige directamente a la página correspondiente
+  if (savedTypeDoctor != null) {
     if (savedTypeDoctor == 1) {
       initialPage = const homePageMD();
     } else if (savedTypeDoctor == 2) {
@@ -33,58 +30,85 @@ void main() async{
     } else if (savedTypeDoctor == 3) {
       initialPage = const ListPatientHOSP();
     } else {
-      // Maneja cualquier otro tipo de perfil aquí o redirige a una página predeterminada
+      // Handle any other profile type here or redirect to a default page
     }
-  }else {
-    // Si no se ha almacenado ningún tipo de perfil, muestra la página de inicio de sesión
+  } else {
     initialPage = const LoginPage();
   }
 
-  initializeDateFormatting().then((_) =>   
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => LoginProvider()),
-        Provider(create: (context) => PushNotificatonServices()),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: "NOTIMED",
-        home: initialPage,
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        backgroundColor: Colors.white,
+        body: Builder(
+          builder: (context) {
+            // Realizar la validación de la versión antes de continuar
+            const VersionAPI().validateAppVersion(context).then((versionMatch) {
+              if (!versionMatch) {
+                // Mostrar cuadro de diálogo de actualización y no iniciar la aplicación
+                mostrarDialogActualizarApp(context);
+              } else {
+                initializeDateFormatting().then((_) {
+                  runApp(
+                    MultiProvider(
+                      providers: [
+                        ChangeNotifierProvider(create: (context) => GlobalData()),
+                        ChangeNotifierProvider(
+                            create: (context) => VersionProvider()),
+                        ChangeNotifierProvider(
+                            create: (context) => LoginProvider()),
+                      ],
+                      child: MaterialApp(
+                        debugShowCheckedModeBanner: false,
+                        title: "NOTIMED",
+                        home: initialPage,
+                      ),
+                    ),
+                  );
+                });
+              }
+            });
+      
+            return Center(
+              child: Container(
+                color: Colors.white, // Fondo blanco
+                padding: const EdgeInsets.all(
+                    16.0), // Ajusta el espacio alrededor del CircularProgressIndicator
+                child: const CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                      Colors.deepPurple), // Color del indicador
+                  strokeWidth: 2.0, // Grosor del indicador
+                ),
+              ),
+            );
+          },
+        ),
       ),
     ),
-  ));
-
+  );
 }
 
-
 class MyApp extends StatefulWidget {
-   const MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  
-
-@override
+  @override
   void initState() {
-    
     super.initState();
 
     PushNotificatonServices.messagesStream.listen((message) {
       // ignore: avoid_print
-      print('MyApp: $message' );
-
+      print('MyApp: $message');
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    
     throw UnimplementedError();
   }
-
 }
-

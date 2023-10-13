@@ -1,4 +1,4 @@
-// ignore_for_file: use_build_context_synchronously, non_constant_identifier_names, avoid_print
+// ignore_for_file: use_build_context_synchronously, non_constant_identifier_names, avoid_print, unused_element
 
 import 'dart:convert';
 
@@ -16,6 +16,7 @@ import '../services/provider.dart';
 import 'package:provider/provider.dart';
 import '../MVC_MED/navegatorBar_MED.dart';
 import '../services/providerVersion.dart';
+import '../utill/ShowDialogUpdate.dart';
 import '../utill/version management/Version.dart';
 
 void main() async {
@@ -51,10 +52,16 @@ class LoginPage extends StatefulWidget {
 
 class LoginPageState extends State<LoginPage> {
 
+
+
   void realizarSolicitudLogin(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    const url = 'https://notimed.sanpablo.com.pe:8443/api/auth/login';
+  // Validar versiones llamando a VersionAPI
+  bool versionMatch = await const VersionAPI().validateAppVersion(context);
+
+  if (versionMatch) { 
+        const url = 'https://notimed.sanpablo.com.pe:8443/api/auth/login';
 
     final usernameDM = usernameController.text;
     final passwordDM = passwordController.text;
@@ -152,6 +159,10 @@ class LoginPageState extends State<LoginPage> {
       print('Error: ${response.body}');
       print('fallo en conexion');
     }
+   } else {
+    // Las versiones no coinciden, mostrar cuadro de diálogo de actualización
+    mostrarDialogActualizarApp(context);
+  }
 
       // Definir un callback que puede ser llamado desde _MedShiftState
   void realizarSolicitudLoginCallback(BuildContext context) {

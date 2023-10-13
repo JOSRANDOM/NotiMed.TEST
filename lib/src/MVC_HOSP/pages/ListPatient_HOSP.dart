@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, no_leading_underscores_for_local_identifiers, avoid_print, sized_box_for_whitespace, non_constant_identifier_names, unused_element
+// ignore_for_file: file_names, no_leading_underscores_for_local_identifiers, avoid_print, sized_box_for_whitespace, non_constant_identifier_names, unused_element, use_build_context_synchronously
 
 import 'dart:convert';
 import 'dart:core';

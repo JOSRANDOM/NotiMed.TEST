@@ -1,4 +1,4 @@
-// ignore_for_file: file_names, sized_box_for_whitespace, non_constant_identifier_names
+// ignore_for_file: file_names, sized_box_for_whitespace, non_constant_identifier_names, use_build_context_synchronously
 
 import 'dart:convert';
 import 'dart:core';
@@ -490,7 +490,6 @@ Future<String?> _loadLoginData() async {
   TextEditingController phoneController = TextEditingController(text: userPhone);
 
 
-    // ignore: use_build_context_synchronously
     showDialog(
       context: context,
       builder: (context) {
@@ -574,7 +573,6 @@ Future<String?> _loadLoginData() async {
 
                   // ignore: avoid_print
                   print('Data updated successfully');
-                  // ignore: use_build_context_synchronously
                   Navigator.of(context).pop();
                   _reloadUserData(); // Call the reload function
                 } else {

@@ -1,3 +1,5 @@
+  // ignore_for_file: non_constant_identifier_names, file_names, avoid_print
+
   import 'package:app_notificador/src/utill/Logout.dart';
 import 'package:flutter/material.dart';
 
