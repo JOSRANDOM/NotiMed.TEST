@@ -53,7 +53,8 @@ void main() async {
                   runApp(
                     MultiProvider(
                       providers: [
-                        ChangeNotifierProvider(create: (context) => GlobalData()),
+                        ChangeNotifierProvider(
+                            create: (context) => GlobalData()),
                         ChangeNotifierProvider(
                             create: (context) => VersionProvider()),
                         ChangeNotifierProvider(
@@ -69,16 +70,26 @@ void main() async {
                 });
               }
             });
-      
+
             return Center(
               child: Container(
                 color: Colors.white, // Fondo blanco
                 padding: const EdgeInsets.all(
                     16.0), // Ajusta el espacio alrededor del CircularProgressIndicator
-                child: const CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                      Colors.deepPurple), // Color del indicador
-                  strokeWidth: 2.0, // Grosor del indicador
+                child: const Column(
+                  mainAxisSize:
+                      MainAxisSize.min, // Alinea el contenido verticalmente
+                  children: [
+                    CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                          Colors.deepPurple), // Color del indicador
+                      strokeWidth: 2.0, // Grosor del indicador
+                    ),
+                    SizedBox(
+                        height: 10), // Espacio entre el indicador y el texto
+                    Text("Buscando nuevas versiones",
+                        style: TextStyle(color: Colors.black)),
+                  ],
                 ),
               ),
             );
