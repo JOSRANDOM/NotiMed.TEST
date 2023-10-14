@@ -131,10 +131,14 @@ class _HomeState extends State<Home> {
 
       for (var element in jsonData['data']) {
         String initDate = element['init_date_at'];
+        String endDate = element['end_date_at'];
 
-        if (isSameDay(DateTime.parse(_formatDate(initDate)), _selectedDay)) {
+        // Comprueba si la fecha de inicio o fin coincide con el día seleccionado
+        if (isSameDay(
+                DateTime.parse(_formatDate(initDate)), fechaSeleccionada) ||
+            isSameDay(
+                DateTime.parse(_formatDate(endDate)), fechaSeleccionada)) {
           String clinicName = element['clinic_name'];
-
           _handleTurnoData(clinicName, element);
         }
       }
@@ -333,50 +337,57 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget _buildTurnoCard(BuildContext context, Turno turnoData) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: IntrinsicHeight(
-        child: Container(
-          width: MediaQuery.of(context).size.width * 0.8,
-          margin: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(30),
-          ),
+Widget _buildTurnoCard(BuildContext context, Turno turnoData) {
+  final isInitDate = isSameDay(
+      DateTime.parse(_formatDate(turnoData.init_date_at)), _selectedDay);
+  final fechaMostrada = isInitDate
+      ? turnoData.init_date_at
+      : turnoData.end_date_at;
+
+  return Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: IntrinsicHeight(
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.8,
+        margin: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(30),
+        ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    width: double.infinity,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(20)),
-                      color: Colors.deepPurple,
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  color: Colors.deepPurple,
+                ),
+                child: Wrap(
+                  spacing: 100, // Espacio entre los elementos
+                  children: [
+                    Text(
+                      ' $fechaMostrada',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                      ),
                     ),
-                    child: Wrap(
-                      spacing: 100, // Espacio entre los elementos
-                      children: [
-                        Text(
-                          ' ${turnoData.init_date_at}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 15,
-                          ),
-                        ),
-                        Text(
-                          ' ${turnoData.clinic_name}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      ' ${turnoData.clinic_name}',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: Colors.white,
+                      ),
                     ),
-                  )),
+                  ],
+                ),
+              ),
+            ),
               Padding(
                 padding: const EdgeInsets.only(left: 20, top: 5),
                 child: Row(
