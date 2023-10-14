@@ -29,11 +29,12 @@ void mostrarDialogActualizarApp(BuildContext context) {
           Center(
             child: TextButton(
               style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(Colors.deepPurple), // Color del botón
+                backgroundColor: MaterialStateProperty.all<Color>(
+                    Colors.deepPurple), // Color del botón
               ),
               onPressed: () {
                 // Aquí redirige al navegador web al enlace proporcionado
-                _launchURL("https://notimed.sanpablo.com.pe:8443");
+                _launcherURL("www.notimed.sanpablo.com.pe");
               },
               child: const Text(
                 'Actualizar',
@@ -47,17 +48,13 @@ void mostrarDialogActualizarApp(BuildContext context) {
   );
 }
 
-// Función para abrir un enlace web en el navegador
-void _launchURL(String url) async {
-  final chromeURL = 'googlechrome://$url';
-
-  if (await canLaunch(chromeURL)) {
-    await launch(chromeURL);
-  } else if (await canLaunch(url)) {
-    await launch(url);
-  } else {
+Future<void> _launcherURL(String url) async {
+  final Uri uri = Uri(scheme: 'https', host: url);
+  if (!await launchUrl(
+    uri,
+    mode: LaunchMode.externalApplication,
+  )) {
     throw 'No se pudo abrir el enlace $url';
   }
 }
-
 
