@@ -1,15 +1,17 @@
-// ignore_for_file: unused_element, non_constant_identifier_names, file_names, avoid_unnecessary_containers, avoid_print, unnecessary_string_interpolations, use_build_context_synchronously
+// ignore_for_file: unused_element, non_constant_identifier_names, file_names, avoid_unnecessary_containers, avoid_print, unnecessary_string_interpolations, use_build_context_synchronously, body_might_complete_normally_nullable
 import 'dart:convert';
 
 import 'package:app_notificador/src/models/login.dart';
 import 'package:app_notificador/src/services/provider.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_html/flutter_html.dart';
 
+import '../../models/doctor.dart';
 import '../../models/pacienteDM.dart';
 import '../../services/push_notification_services.dart';
 
@@ -37,14 +39,19 @@ class MedShift extends StatefulWidget {
 }
 
 late Future<List<PacienteDM>> _paciente;
+late Future<List<PacienteDM>> _doctores;
 
 class _MedShiftState extends State<MedShift> {
+  String? doctorName;
   bool _showDropdowns = true;
+  bool _showDoctorResults =
+      false; // Variable de estado para controlar la visibilidad de los resultados de médicos
   String? selectedValue;
   String? selectedService;
   late String clinicId;
   late String serviceId;
   List<PacienteDM> _paciente = [];
+  List<DoctorDM> _doctores = [];
   List<Map<String, dynamic>> _services = [];
 
   Future<String?> _loadLoginData(BuildContext context) async {
@@ -114,6 +121,7 @@ class _MedShiftState extends State<MedShift> {
 
     final parts = selectedValue!.split(' - ');
     final clinicId = parts[0];
+
     // Actualiza serviceId con el valor correcto
     if (selectedService != null) {
       final selectedServiceMap = _services.firstWhere(
@@ -215,10 +223,83 @@ class _MedShiftState extends State<MedShift> {
   }
 
   Future<void> refreshData() async {
-    final pacientes = await _postPaciente(context, clinicId, serviceId);
-    setState(() {
-      _paciente = pacientes;
-    });
+    try {
+      doctorName = await _fetchDoctorName(
+          clinicId, serviceId); // Usa la variable de clase doctorName
+      final pacientes = await _postPaciente(context, clinicId, serviceId);
+      setState(() {
+        _paciente = pacientes;
+        // No vuelvas a declarar doctorName aquí
+      });
+    } catch (e) {
+      print("Error al obtener doctorName: $e");
+    }
+  }
+
+  Future<String?> _fetchDoctorName(String clinicId, String serviceId) async {
+    final apiUrl = 'https://notimed.sanpablo.com.pe:8443/api/clinic/schedules';
+
+    final String? tokenBD = await _loadLoginData(context);
+
+    final DateTime initAt = DateTime.now();
+    final DateTime endAt = DateTime.now().add(const Duration(days: 1));
+
+    // Actualiza serviceId con el valor correcto
+    if (selectedService != null) {
+      final selectedServiceMap = _services.firstWhere(
+        (service) => service['nombre'] == selectedService,
+        orElse: () => {'id': '0'},
+      );
+      serviceId = selectedServiceMap['id'].toString();
+    }
+
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {'Authorization': 'Bearer $tokenBD'},
+      body: {
+        'clinic_id': clinicId,
+        'init_at': DateFormat('yyyy-MM-dd').format(initAt), // Agregar init_at
+        'end_at': DateFormat('yyyy-MM-dd').format(endAt), // Agregar end_at
+        'service_id': serviceId,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      String body = utf8.decode(response.bodyBytes);
+      final jsonData = jsonDecode(body);
+
+      List<DoctorDM> doctores = [];
+
+      if (jsonData['data'] != null) {
+        jsonData['data'].forEach((doctorData) {
+          doctores.add(DoctorDM(
+            doctorData['clinic_name'] ?? '',
+            doctorData['clinic_name_short'] ?? '',
+            doctorData['clinic_color'] ?? '',
+            doctorData['service_id'] ?? '',
+            doctorData['service_name'] ?? '',
+            doctorData['service_color'] ?? '',
+            doctorData['doctor_name'] ?? '',
+            doctorData['doctor_color'] ?? '',
+            doctorData['init_date_at'] ?? '',
+            doctorData['init_hour_at'] ?? '',
+            doctorData['end_date_at'] ?? '',
+            doctorData['end_hour_at'] ?? '',
+          ));
+        });
+      }
+
+      setState(() {
+        _doctores = doctores;
+      });
+      print('Error: ${response.statusCode}');
+      print('Error: ${response.body}');
+      return doctorName;
+    } else {
+      print('Error: ${response.statusCode}');
+      print('Error: ${response.body}');
+      throw Exception('Error al cargar datos desde la API');
+    }
   }
 
   @override
@@ -250,7 +331,8 @@ class _MedShiftState extends State<MedShift> {
                             width: 320,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: Colors.purple, width: 0),
+                              border:
+                                  Border.all(color: Colors.purple, width: 0),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8),
@@ -280,6 +362,7 @@ class _MedShiftState extends State<MedShift> {
                                   height: 2,
                                   color: Colors.transparent,
                                 ),
+// En el manejador del evento del primer dropdown
                                 onChanged: (String? newValue) async {
                                   setState(() {
                                     selectedValue = newValue;
@@ -290,6 +373,12 @@ class _MedShiftState extends State<MedShift> {
                                     final parts = selectedValue!.split(' - ');
                                     clinicId = parts[0];
                                     serviceId = '0';
+
+                                    // Llama a _fetchDoctorName aquí
+                                    doctorName = await _fetchDoctorName(
+                                        clinicId, serviceId);
+
+                                    // Luego, realiza la llamada para obtener pacientes
                                     await _postPaciente(
                                         context, clinicId, serviceId);
                                   }
@@ -302,7 +391,8 @@ class _MedShiftState extends State<MedShift> {
                             width: 320,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: Colors.purple, width: 0),
+                              border:
+                                  Border.all(color: Colors.purple, width: 0),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8),
@@ -356,6 +446,8 @@ class _MedShiftState extends State<MedShift> {
 
                                     await _postPaciente(
                                         context, clinicId, serviceId);
+
+                                    await _fetchDoctorName(clinicId, serviceId);
                                   }
                                 },
                               ),
@@ -369,20 +461,58 @@ class _MedShiftState extends State<MedShift> {
               ),
 
               // Añade un botón de flecha para mostrar/ocultar ambos dropdowns juntos
-              Padding(
-                padding: const EdgeInsets.all(5),
-                child: GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _showDropdowns = !_showDropdowns;
-                    });
-                  },
-                  child: Icon(
-                    _showDropdowns
-                        ? Icons.keyboard_arrow_up
-                        : Icons.keyboard_arrow_down,
+// Botón para mostrar/ocultar resultados de pacientes con texto
+              Row(
+                children: [
+                  IconButton(
+                    icon: _showDropdowns
+                        ? const Icon(Icons.keyboard_arrow_up)
+                        : const Icon(Icons.keyboard_arrow_down),
+                    onPressed: () {
+                      setState(() {
+                        _showDropdowns = !_showDropdowns;
+                      });
+                    },
+                  ),
+                  const Text(
+                    'Filtros de Interconsultas',
+                    style: TextStyle(fontSize: 16), // Estilo de texto opcional
+                  ),
+                ],
+              ),
+
+              // Lista de resultados de médicos con visibilidad controlada
+              Visibility(
+                visible: _showDoctorResults,
+                child: Expanded(
+                  child: ListView.builder(
+                    itemCount: _doctores.length,
+                    itemBuilder: (context, index) {
+                      final doctorData = _doctores[index];
+                      return buildDoctorWidget(doctorData);
+                    },
                   ),
                 ),
+              ),
+
+// Botón para mostrar/ocultar resultados de médicos con texto
+              Row(
+                children: [
+                  IconButton(
+                    icon: _showDoctorResults
+                        ? const Icon(Icons.keyboard_arrow_up)
+                        : const Icon(Icons.keyboard_arrow_down),
+                    onPressed: () {
+                      setState(() {
+                        _showDoctorResults = !_showDoctorResults;
+                      });
+                    },
+                  ),
+                  const Text(
+                    'Lista de Médicos',
+                    style: TextStyle(fontSize: 16), // Estilo de texto opcional
+                  ),
+                ],
               ),
 
               Expanded(
@@ -412,6 +542,80 @@ class _MedShiftState extends State<MedShift> {
                       ))),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget buildDoctorWidget(DoctorDM doctorData) {
+    return Padding(
+      padding: const EdgeInsets.all(4),
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(5),
+        alignment: Alignment.center,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(0),
+              child: Container(
+                width: double.infinity,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  color: Colors.deepPurple,
+                ),
+                child: Column(
+                  children: [
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 5),
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        color: Colors.white,
+                      ),
+                      child: const Center(
+                        child: Text(
+                          'MEDICO DE TURNO X SERVICIO',
+                          style: TextStyle(
+                            color: Colors.deepPurple,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      '${doctorData.doctor_name}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      'Inicio de Turno ${doctorData.init_hour_at} - ${doctorData.init_date_at}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                    Text(
+                      'Fin de Turno     ${doctorData.end_hour_at} - ${doctorData.end_date_at}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

@@ -244,7 +244,8 @@ class _MedShiftState extends State<MedGuard> {
                             width: 320,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: Colors.purple, width: 0),
+                              border:
+                                  Border.all(color: Colors.purple, width: 0),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8),
@@ -299,7 +300,8 @@ class _MedShiftState extends State<MedGuard> {
                             width: 320,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: Colors.purple, width: 0),
+                              border:
+                                  Border.all(color: Colors.purple, width: 0),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8),
@@ -325,6 +327,7 @@ class _MedShiftState extends State<MedGuard> {
                                     ),
                                   );
                                 }).toList(),
+                                icon: const Icon(Icons.arrow_drop_down),
                                 underline: Container(
                                   // Cambiar el color de la línea debajo del botón desplegable
                                   height: 2,
@@ -332,19 +335,24 @@ class _MedShiftState extends State<MedGuard> {
                                 ),
                                 onChanged: (String? newValue) async {
                                   setState(() {
-                                    selectedValue = newValue;
-                                    selectedService = null;
-                                    initAt = DateTime
-                                        .now(); // Reinicia la fecha initAt
-                                    initAtController.text =
-                                        DateFormat('yyyy-MM-dd').format(
-                                            initAt); // Actualiza el controlador
+                                    selectedService = newValue;
                                   });
 
                                   if (selectedValue != null) {
                                     final parts = selectedValue!.split(' - ');
                                     clinicId = parts[0];
-                                    serviceId = '0';
+
+                                    if (newValue != null) {
+                                      final selectedServiceMap =
+                                          _services.firstWhere(
+                                        (service) =>
+                                            service['nombre'] == newValue,
+                                        orElse: () => {'id': '0'},
+                                      );
+                                      serviceId =
+                                          selectedServiceMap['id'].toString();
+                                    }
+
                                     await _postDoctor(
                                         context, clinicId, serviceId);
                                   }
@@ -360,7 +368,8 @@ class _MedShiftState extends State<MedGuard> {
                             width: 320,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
-                              border: Border.all(color: Colors.purple, width: 0),
+                              border:
+                                  Border.all(color: Colors.purple, width: 0),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8),
@@ -369,11 +378,20 @@ class _MedShiftState extends State<MedGuard> {
                                 readOnly: true,
                                 onTap: () async {
                                   final selectedDate = await showDatePicker(
-                                    context: context,
-                                    initialDate: initAt,
-                                    firstDate: DateTime.now(),
-                                    lastDate: DateTime(2101),
-                                  );
+                                      context: context,
+                                      initialDate: initAt,
+                                      firstDate: DateTime.now(),
+                                      lastDate: DateTime(2101),
+                                      builder: (context, child) => Theme(
+                                            data: ThemeData().copyWith(
+                                              colorScheme:
+                                                  const ColorScheme.light(
+                                                primary: Colors.deepPurple,
+                                              ),
+                                            ),
+                                            child: child ??
+                                                const SizedBox(), // Usar un widget vacío si child es nulo
+                                          ));
                                   if (selectedDate != null) {
                                     setState(() {
                                       initAt = selectedDate;
@@ -505,10 +523,18 @@ class _MedShiftState extends State<MedGuard> {
                       ),
                       const Text(''),
                       Text(
-                        'INICIO DE GUARDIA: ${doctorData.init_date_at}',
+                        'Inicio de Turno ${doctorData.init_hour_at} - ${doctorData.init_date_at}',
                         style: const TextStyle(
-                          fontSize: 16,
                           color: Colors.black,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const Text(''),
+                      Text(
+                        'Fin de Turno     ${doctorData.end_hour_at} - ${doctorData.end_date_at}',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
                         ),
                       ),
                       const Text(''),
