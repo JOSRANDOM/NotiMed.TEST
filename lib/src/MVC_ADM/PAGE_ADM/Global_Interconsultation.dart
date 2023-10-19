@@ -1,4 +1,4 @@
-// ignore_for_file: unused_element, non_constant_identifier_names, file_names, avoid_unnecessary_containers, avoid_print, unnecessary_string_interpolations, use_build_context_synchronously, body_might_complete_normally_nullable
+// ignore_for_file: unused_element, non_constant_identifier_names, file_names, avoid_unnecessary_containers, avoid_print, unnecessary_string_interpolations, use_build_context_synchronously, body_might_complete_normally_nullable, unused_local_variable, prefer_const_declarations
 import 'dart:convert';
 
 import 'package:app_notificador/src/models/login.dart';
@@ -622,6 +622,44 @@ class _MedShiftState extends State<MedShift> {
   }
 
   Widget buildPacienteWidget(PacienteDM pacienteData) {
+    // Obtén la hora actual
+    final now = DateTime.now();
+
+    // Parsea la fecha y hora de la API en un objeto DateTime
+    final apiDateTime = DateTime.parse(pacienteData.last_notification_at);
+
+    // Calcula la diferencia en minutos y horas
+    final timeDifference = now.difference(apiDateTime);
+    final minutesDifference = timeDifference.inMinutes;
+    final hoursDifference = timeDifference.inHours;
+
+    // Calcula un valor entre 0 y 1 basado en el tiempo transcurrido
+    double progressValue =
+        (minutesDifference / (3 * 60)).clamp(0.0, 1.0); // 3 horas
+
+    // Define el color de la barra de progreso basado en el tiempo transcurrido
+    Color progressColor = Colors.deepPurple;
+
+    if (progressValue >= 0.5) {
+      progressColor = Colors.amber;
+    }
+    if (progressValue >= 0.75) {
+      progressColor = Colors.red;
+    }
+
+    // Define el texto basado en el tiempo transcurrido
+    String progressText = 'Dentro del tiempo de respuesta';
+    Color progressTextColor = Colors.deepPurple;
+
+    if (progressValue >= 0.5) {
+      progressText = 'Tiempo máximo de respuesta por acabar';
+      progressTextColor = Colors.amber;
+    }
+    if (progressValue >= 0.75) {
+      progressText = 'Se excede al tiempo máximo de respuesta';
+      progressTextColor = Colors.red;
+    }
+
     return Padding(
       padding: const EdgeInsets.all(4),
       child: GestureDetector(
@@ -703,6 +741,25 @@ class _MedShiftState extends State<MedShift> {
                         ),
                       )),
                       const Text(''),
+                      LinearProgressIndicator(
+                        minHeight: 20,
+                        value: progressValue,
+                        backgroundColor: Colors.grey,
+                        borderRadius: BorderRadius.circular(10),
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(progressColor),
+                      ),
+                      const SizedBox(height: 4),
+                      Center(
+                        child: Text(
+                          progressText,
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.bold,
+                            color: progressTextColor,
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
