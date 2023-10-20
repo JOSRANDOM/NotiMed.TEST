@@ -56,11 +56,13 @@ class _HomeState extends State<Home> {
     });
   }
 
+ //FUNCION INICIALIZACION
   Future<void> _initializeData() async {
     await _loadLoginData(); // Esperar a que _loadLoginData se complete
     // Aquí puedes realizar otras operaciones de inicialización
   }
 
+ //FUNCION CARGAR DATOS GUARDADOS
   Future<String?> _loadLoginData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -114,6 +116,7 @@ class _HomeState extends State<Home> {
     return tokenBD;
   }
 
+ //FUNCION LLAMADA A LA API - DE MEDICOS
   Future<void> _postTurnoConFecha(
       BuildContext context, DateTime fechaSeleccionada) async {
     const url = 'https://notimed.sanpablo.com.pe:8443/api/schedules';
@@ -149,6 +152,7 @@ class _HomeState extends State<Home> {
     }
   }
 
+ //FUNCION LLAMADA A LA API - DE CLINICAS
   void _handleTurnoData(String clinicName, Map<String, dynamic> element) {
     if (!_groupedTurnos.containsKey(clinicName)) {
       _groupedTurnos[clinicName] = [];
@@ -181,6 +185,7 @@ class _HomeState extends State<Home> {
     return turnoCards;
   }
 
+ //FUNCION FORMATO DE FECHA
   String _formatDate(String inputDate) {
     final dateParts = inputDate.split('/');
     final day = dateParts[0].padLeft(2, '0');
@@ -206,6 +211,7 @@ class _HomeState extends State<Home> {
     );
   }
 
+ //FUNCION MOSTTRAR DATROS EN LA UI
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -337,6 +343,7 @@ class _HomeState extends State<Home> {
     );
   }
 
+ //FUNCION MOSTRAR TURNO
 Widget _buildTurnoCard(BuildContext context, Turno turnoData) {
   final isInitDate = isSameDay(
       DateTime.parse(_formatDate(turnoData.init_date_at)), _selectedDay);

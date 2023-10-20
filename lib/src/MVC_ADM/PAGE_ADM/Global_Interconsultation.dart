@@ -14,7 +14,7 @@ import 'package:flutter_html/flutter_html.dart';
 import '../../models/doctor.dart';
 import '../../models/pacienteDM.dart';
 import '../../services/push_notification_services.dart';
-
+ 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await PushNotificatonServices.initializeApp();
@@ -54,6 +54,7 @@ class _MedShiftState extends State<MedShift> {
   List<DoctorDM> _doctores = [];
   List<Map<String, dynamic>> _services = [];
 
+ //FUNCION DE CARGAR LOS DATOS GUARDADOS - SHARED-PREDERENCE
   Future<String?> _loadLoginData(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -107,6 +108,7 @@ class _MedShiftState extends State<MedShift> {
     return tokenBD;
   }
 
+ //FUNCION LLAMADA A LA API - DE PACIENTES
   Future<List<PacienteDM>> _postPaciente(
       BuildContext context, String clinicId, String serviceId) async {
     const url =
@@ -222,6 +224,7 @@ class _MedShiftState extends State<MedShift> {
     }
   }
 
+ //FUNCION REFRESCAR
   Future<void> refreshData() async {
     try {
       doctorName = await _fetchDoctorName(
@@ -236,6 +239,7 @@ class _MedShiftState extends State<MedShift> {
     }
   }
 
+ //FUNCION LLAMADA A LA API - DE MEDICOS
   Future<String?> _fetchDoctorName(String clinicId, String serviceId) async {
     final apiUrl = 'https://notimed.sanpablo.com.pe:8443/api/clinic/schedules';
 
@@ -302,6 +306,7 @@ class _MedShiftState extends State<MedShift> {
     }
   }
 
+ //MOSTRAR DATOS EN LA UI
   @override
   Widget build(BuildContext context) {
     final List<Clinic> clinics = Provider.of<LoginProvider>(context).clinics;
@@ -460,8 +465,7 @@ class _MedShiftState extends State<MedShift> {
                     : null, // Oculta ambos dropdowns cuando no se muestran
               ),
 
-              // Añade un botón de flecha para mostrar/ocultar ambos dropdowns juntos
-// Botón para mostrar/ocultar resultados de pacientes con texto
+              // Botón para mostrar/ocultar resultados de pacientes con texto
               Row(
                 children: [
                   IconButton(
@@ -547,6 +551,7 @@ class _MedShiftState extends State<MedShift> {
     );
   }
 
+ //FUNCION DE MOSTRAR MEDICO DE TURNO X ESPECIALIDAD
   Widget buildDoctorWidget(DoctorDM doctorData) {
     return Padding(
       padding: const EdgeInsets.all(4),
@@ -621,6 +626,7 @@ class _MedShiftState extends State<MedShift> {
     );
   }
 
+  //FUNCION DE MOSTRAR INFORMACION DEL PACIENTE - BARRA DE PROGRESO
   Widget buildPacienteWidget(PacienteDM pacienteData) {
     // Obtén la hora actual
     final now = DateTime.now();
@@ -638,7 +644,7 @@ class _MedShiftState extends State<MedShift> {
         (minutesDifference / (3 * 60)).clamp(0.0, 1.0); // 3 horas
 
     // Define el color de la barra de progreso basado en el tiempo transcurrido
-    Color progressColor = Colors.deepPurple;
+    Color progressColor = Colors.green;
 
     if (progressValue >= 0.5) {
       progressColor = Colors.amber;
@@ -648,17 +654,21 @@ class _MedShiftState extends State<MedShift> {
     }
 
     // Define el texto basado en el tiempo transcurrido
-    String progressText = 'Dentro del tiempo de respuesta';
-    Color progressTextColor = Colors.deepPurple;
+    String progressText = 'Tiempo Transcurrido';
+    Color progressTextColor = Colors.black;
 
     if (progressValue >= 0.5) {
-      progressText = 'Tiempo máximo de respuesta por acabar';
-      progressTextColor = Colors.amber;
+      progressText = 'Tiempo Transcurrido';
+      progressTextColor = Colors.black;
     }
     if (progressValue >= 0.75) {
-      progressText = 'Se excede al tiempo máximo de respuesta';
-      progressTextColor = Colors.red;
+      progressText = 'Tiempo Transcurrido';
+      progressTextColor = Colors.black;
     }
+
+    // Define el tiempo transcurrido en formato personalizado
+    String timeElapsed =
+        '$hoursDifference horas - ${minutesDifference % 60} minutos';
 
     return Padding(
       padding: const EdgeInsets.all(4),
@@ -700,16 +710,10 @@ class _MedShiftState extends State<MedShift> {
                         style: const TextStyle(
                           fontSize: 18,
                           color: Colors.deepPurple,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       const Text(''),
-                      Text(
-                        'SERVICIO: ${pacienteData.solicited_service}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
-                        ),
-                      ),
                       Text(
                         'HABITACION: ${pacienteData.room}',
                         style: const TextStyle(
@@ -750,15 +754,27 @@ class _MedShiftState extends State<MedShift> {
                             AlwaysStoppedAnimation<Color>(progressColor),
                       ),
                       const SizedBox(height: 4),
-                      Center(
-                        child: Text(
-                          progressText,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
-                            color: progressTextColor,
+                      Row(
+                        children: [
+                          Text(
+                            progressText,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: progressTextColor,
+                            ),
                           ),
-                        ),
+                          const SizedBox(
+                              width:
+                                  8), // Espacio entre el texto y el tiempo transcurrido
+                          Text(
+                            '$timeElapsed',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors
+                                  .black, // Puedes cambiar el color si lo deseas
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
