@@ -7,8 +7,8 @@ class LoginData {
   String? password;
   String? tokenFB;
   String? dni;
-  String? email;
-  String? phone;
+  String? email = null;
+  String? phone = null;
   String? tokenBD;
   int type_doctor;
   List<Clinic>? clinics; // Cambio en la declaración de clinics

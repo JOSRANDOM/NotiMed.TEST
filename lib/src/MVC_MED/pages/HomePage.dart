@@ -56,13 +56,13 @@ class _HomeState extends State<Home> {
     });
   }
 
- //FUNCION INICIALIZACION
+  //FUNCION INICIALIZACION
   Future<void> _initializeData() async {
     await _loadLoginData(); // Esperar a que _loadLoginData se complete
     // Aquí puedes realizar otras operaciones de inicialización
   }
 
- //FUNCION CARGAR DATOS GUARDADOS
+  //FUNCION CARGAR DATOS GUARDADOS
   Future<String?> _loadLoginData() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -116,7 +116,7 @@ class _HomeState extends State<Home> {
     return tokenBD;
   }
 
- //FUNCION LLAMADA A LA API - DE MEDICOS
+  //FUNCION LLAMADA A LA API - DE MEDICOS
   Future<void> _postTurnoConFecha(
       BuildContext context, DateTime fechaSeleccionada) async {
     const url = 'https://notimed.sanpablo.com.pe:8443/api/schedules';
@@ -152,7 +152,7 @@ class _HomeState extends State<Home> {
     }
   }
 
- //FUNCION LLAMADA A LA API - DE CLINICAS
+  //FUNCION LLAMADA A LA API - DE CLINICAS
   void _handleTurnoData(String clinicName, Map<String, dynamic> element) {
     if (!_groupedTurnos.containsKey(clinicName)) {
       _groupedTurnos[clinicName] = [];
@@ -185,7 +185,7 @@ class _HomeState extends State<Home> {
     return turnoCards;
   }
 
- //FUNCION FORMATO DE FECHA
+  //FUNCION FORMATO DE FECHA
   String _formatDate(String inputDate) {
     final dateParts = inputDate.split('/');
     final day = dateParts[0].padLeft(2, '0');
@@ -211,7 +211,7 @@ class _HomeState extends State<Home> {
     );
   }
 
- //FUNCION MOSTTRAR DATROS EN LA UI
+  //FUNCION MOSTTRAR DATROS EN LA UI
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -322,6 +322,32 @@ class _HomeState extends State<Home> {
                           ],
                         ),
                       );
+                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 200,
+                              height: 150,
+                              child: Lottie.network(
+                                'https://lottie.host/24626ee2-7ed9-4abb-a356-8c2c6f820f2e/z7N1XgJtlC.json', // URL de la animación Lottie
+                                width: 200,
+                                height: 200,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            const SizedBox(
+                                height:
+                                    20), // Espacio entre la animación y el texto
+                            const Text(
+                              'No tiene turno para la fecha selecionada', // Mensaje de texto
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.black),
+                            ),
+                          ],
+                        ),
+                      );
                     } else {
                       return ListView.builder(
                         // Usar ListView.builder para una mejor eficiencia
@@ -343,58 +369,57 @@ class _HomeState extends State<Home> {
     );
   }
 
- //FUNCION MOSTRAR TURNO
-Widget _buildTurnoCard(BuildContext context, Turno turnoData) {
-  final isInitDate = isSameDay(
-      DateTime.parse(_formatDate(turnoData.init_date_at)), _selectedDay);
-  final fechaMostrada = isInitDate
-      ? turnoData.init_date_at
-      : turnoData.end_date_at;
+  //FUNCION MOSTRAR TURNO
+  Widget _buildTurnoCard(BuildContext context, Turno turnoData) {
+    final isInitDate = isSameDay(
+        DateTime.parse(_formatDate(turnoData.init_date_at)), _selectedDay);
+    final fechaMostrada =
+        isInitDate ? turnoData.init_date_at : turnoData.end_date_at;
 
-  return Padding(
-    padding: const EdgeInsets.all(8.0),
-    child: IntrinsicHeight(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.8,
-        margin: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(30),
-        ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: IntrinsicHeight(
+        child: Container(
+          width: MediaQuery.of(context).size.width * 0.8,
+          margin: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(30),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  color: Colors.deepPurple,
-                ),
-                child: Wrap(
-                  spacing: 100, // Espacio entre los elementos
-                  children: [
-                    Text(
-                      ' $fechaMostrada',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 15,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  width: double.infinity,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    color: Colors.deepPurple,
+                  ),
+                  child: Wrap(
+                    spacing: 100, // Espacio entre los elementos
+                    children: [
+                      Text(
+                        ' $fechaMostrada',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                        ),
                       ),
-                    ),
-                    Text(
-                      ' ${turnoData.clinic_name}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
+                      Text(
+                        ' ${turnoData.clinic_name}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
               Padding(
                 padding: const EdgeInsets.only(left: 20, top: 5),
                 child: Row(

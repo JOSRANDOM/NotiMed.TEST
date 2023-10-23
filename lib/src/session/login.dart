@@ -21,6 +21,7 @@ import '../utill/version management/Version.dart';
 
 void main() async {
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive);
+
   runApp(
     MultiProvider(
       providers: [
@@ -51,123 +52,123 @@ class LoginPage extends StatefulWidget {
 }
 
 class LoginPageState extends State<LoginPage> {
-
-
+  bool dialogShown = false;
 
   void realizarSolicitudLogin(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  // Validar versiones llamando a VersionAPI
-  bool versionMatch = await const VersionAPI().validateAppVersion(context);
+    // Validar versiones llamando a VersionAPI
+    bool versionMatch = await const VersionAPI().validateAppVersion(context);
 
-  if (versionMatch) { 
-        const url = 'https://notimed.sanpablo.com.pe:8443/api/auth/login';
+    if (versionMatch) {
+      const url = 'https://notimed.sanpablo.com.pe:8443/api/auth/login';
 
-    final usernameDM = usernameController.text;
-    final passwordDM = passwordController.text;
-    final tokenFB = await FirebaseMessaging.instance.getToken();
+      final usernameDM = usernameController.text;
+      final passwordDM = passwordController.text;
+      final tokenFB = await FirebaseMessaging.instance.getToken();
 
-    final response = await http.post(Uri.parse(url), body: {
-      'username': usernameDM,
-      'password': passwordDM,
-      'token': tokenFB,
-    });
+      final response = await http.post(Uri.parse(url), body: {
+        'username': usernameDM,
+        'password': passwordDM,
+        'token': tokenFB,
+      });
 
-    if (response.statusCode == 200) {
-      final responseBody = json.decode(response.body);
+      if (response.statusCode == 200) {
+        final responseBody = json.decode(response.body);
 
-      // Versiones coinciden, continuar con el inicio de sesión
-      var user = responseBody['user'];
-      var name = user['name'];
-      var cmp = user['cmp'];
-      var tokenFB = await FirebaseMessaging.instance.getToken();
-      var dni = user['document_number'];
-      var email = user['email'];
-      var phone = user['phone'];
-      var type_doctor = user['type_doctor'];
-      var tokenBD = responseBody['token'];
+        // Versiones coinciden, continuar con el inicio de sesión
+        var user = responseBody['user'];
+        var name = user['name'];
+        var cmp = user['cmp'];
+        var tokenFB = await FirebaseMessaging.instance.getToken();
+        var dni = user['document_number'];
+        var email = user['email'] ?? ""; // Asegurar que email no sea null
+        var phone = user['phone'] ?? ""; // Asegurar que phone no sea null
+        var type_doctor = user['type_doctor'];
+        var tokenBD = responseBody['token'];
 
-      List<Clinic> clinics = [];
-      if (user['clinics'] != null) {
-        var clinicData = user['clinics'] as List<dynamic>;
-        clinics = clinicData
-            .map((clinic) => Clinic(
-                  clinic['id'],
-                  clinic['name'],
-                  clinic['name_short'],
-                  clinic['color'],
-                ))
-            .toList();
+        List<Clinic> clinics = [];
+        if (user['clinics'] != null) {
+          var clinicData = user['clinics'] as List<dynamic>;
+          clinics = clinicData
+              .map((clinic) => Clinic(
+                    clinic['id'],
+                    clinic['name'],
+                    clinic['name_short'],
+                    clinic['color'],
+                  ))
+              .toList();
+        } else {
+          // Si clinics es nulo, asigna una lista vacía como valor predeterminado
+          clinics = [];
+        }
+
+        // Serializar la lista de clínicas a JSON
+        final clinicsJson =
+            jsonEncode(clinics.map((clinic) => clinic.toJson()).toList());
+
+        final loginData = LoginData(usernameDM, name, cmp, passwordDM, tokenFB,
+            dni, email, phone, tokenBD, type_doctor, clinics);
+        final loginProvider =
+            Provider.of<LoginProvider>(context, listen: false);
+        loginProvider.setLoginData(loginData);
+
+        // Guardar las credenciales en SharedPreferences
+        await prefs.setString('username', usernameDM);
+        await prefs.setString('password', passwordDM);
+        await prefs.setString('name', name!);
+        await prefs.setString('tokenFB', tokenFB!);
+        await prefs.setString('document_number', dni);
+        await prefs.setString('email', email);
+        await prefs.setString('phone', phone);
+        await prefs.setString('token', tokenBD!);
+        await prefs.setString('cmp', cmp);
+        await prefs.setInt('type_doctor', type_doctor);
+        await prefs.setString('clinics', clinicsJson);
+
+        await prefs.setBool('isSessionActive', true);
+
+        if (type_doctor == 1) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const homePageMD()),
+          );
+        } else if (type_doctor == 2) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const homePageADM()),
+          );
+        } else if (type_doctor == 3) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const ListPatientHOSP()),
+          );
+        }
+
+        // La solicitud fue exitosa
+        print('Inicio de sesión exitoso');
+        print('usuario: ${response.body}');
+        print(loginData.tokenFB);
+        print(loginData.tokenBD);
+        print(loginData.name);
+        print('CLINICAS: ${loginData.clinics}');
       } else {
-        // Si clinics es nulo, asigna una lista vacía como valor predeterminado
-        clinics = [];
+        _mostrarAlerta(context);
+
+        // Ocurrió un error en la solicitud
+        print('Error: ${response.statusCode}');
+        print('Error: ${response.body}');
+        print('fallo en conexion');
       }
-
-      // Serializar la lista de clínicas a JSON
-      final clinicsJson =
-          jsonEncode(clinics.map((clinic) => clinic.toJson()).toList());
-
-      final loginData = LoginData(usernameDM, name, cmp, passwordDM, tokenFB,
-          dni, email, phone, tokenBD, type_doctor, clinics);
-      final loginProvider = Provider.of<LoginProvider>(context, listen: false);
-      loginProvider.setLoginData(loginData);
-
-      // Guardar las credenciales en SharedPreferences
-      await prefs.setString('username', usernameDM);
-      await prefs.setString('password', passwordDM);
-      await prefs.setString('name', name!);
-      await prefs.setString('tokenFB', tokenFB!);
-      await prefs.setString('document_number', dni);
-      await prefs.setString('email', email);
-      await prefs.setString('phone', phone);
-      await prefs.setString('token', tokenBD!);
-      await prefs.setString('cmp', cmp);
-      await prefs.setInt('type_doctor', type_doctor);
-      await prefs.setString('clinics', clinicsJson);
-
-      await prefs.setBool('isSessionActive', true);
-
-      if (type_doctor == 1) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const homePageMD()),
-        );
-      } else if (type_doctor == 2) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const homePageADM()),
-        );
-      } else if (type_doctor == 3) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const ListPatientHOSP()),
-        );
-      }
-
-      // La solicitud fue exitosa
-      print('Inicio de sesión exitoso');
-      print('usuario: ${response.body}');
-      print(loginData.tokenFB);
-      print(loginData.tokenBD);
-      print(loginData.name);
-      print('CLINICAS: ${loginData.clinics}');
     } else {
-      _mostrarAlerta(context);
-
-      // Ocurrió un error en la solicitud
-      print('Error: ${response.statusCode}');
-      print('Error: ${response.body}');
-      print('fallo en conexion');
+      // Las versiones no coinciden, mostrar cuadro de diálogo de actualización
+      mostrarDialogActualizarApp(context);
     }
-   } else {
-    // Las versiones no coinciden, mostrar cuadro de diálogo de actualización
-    mostrarDialogActualizarApp(context);
-  }
 
-      // Definir un callback que puede ser llamado desde _MedShiftState
-  void realizarSolicitudLoginCallback(BuildContext context) {
-    realizarSolicitudLogin(context);
-  }
+    // Definir un callback que puede ser llamado desde _MedShiftState
+    void realizarSolicitudLoginCallback(BuildContext context) {
+      realizarSolicitudLogin(context);
+    }
   }
 
   void _mostrarAlerta(BuildContext context) {

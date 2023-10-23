@@ -6,6 +6,7 @@ import 'package:app_notificador/src/MVC_MED/pages/UserPage.dart';
 import 'package:app_notificador/src/MVC_MED/pages/messager.dart';
 import 'package:app_notificador/src/services/provider.dart';
 import 'package:app_notificador/src/MVC_MED/pages/ConsultationPage.dart';
+import 'package:app_notificador/src/utill/ShowDialogComplete.dart';
 //import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -65,66 +66,62 @@ class _homePageMD extends State<homePageMD> {
     secureScreen();
   }
 
-Future<String?> _loadLoginData() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<String?> _loadLoginData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  String? username = prefs.getString('username');
-  String? name = prefs.getString('name');
-  String? tokenBD = prefs.getString('token');
-  String? password = prefs.getString('password');
-  String? tokenFB = prefs.getString('tokenFB');
-  String? dni = prefs.getString('document_number');
-  String? phone = prefs.getString('phone');
-  String? email = prefs.getString('email');
-  String? cmp = prefs.getString('cmp');
-  String? clinicsJson = prefs.getString('clinics');
-  int? type_doctor = prefs.getInt('type_doctor');
+    String? username = prefs.getString('username');
+    String? name = prefs.getString('name');
+    String? tokenBD = prefs.getString('token');
+    String? password = prefs.getString('password');
+    String? tokenFB = prefs.getString('tokenFB');
+    String? dni = prefs.getString('document_number');
+    String? phone = prefs.getString('phone');
+    String? email = prefs.getString('email');
+    String? cmp = prefs.getString('cmp');
+    String? clinicsJson = prefs.getString('clinics');
+    int? type_doctor = prefs.getInt('type_doctor');
 
-  if (username != null &&
-      name != null &&
-      tokenBD != null &&
-      password != null &&
-      tokenFB != null &&
-      dni != null &&
-      phone != null) {
-    List<Clinic> clinics = [];
-    if (clinicsJson != null) {
-      final List<dynamic> clinicData = json.decode(clinicsJson);
-      clinics = clinicData
-          .map((clinic) => Clinic(
-                clinic['id'],
-                clinic['name'],
-                clinic['name_short'],
-                clinic['color'],
-              ))
-          .toList();
+    if (username != null &&
+        name != null &&
+        tokenBD != null &&
+        password != null &&
+        tokenFB != null &&
+        dni != null &&
+        phone != null) {
+      List<Clinic> clinics = [];
+      if (clinicsJson != null) {
+        final List<dynamic> clinicData = json.decode(clinicsJson);
+        clinics = clinicData
+            .map((clinic) => Clinic(
+                  clinic['id'],
+                  clinic['name'],
+                  clinic['name_short'],
+                  clinic['color'],
+                ))
+            .toList();
+      }
+
+      final loginData = LoginData(
+        username,
+        name,
+        tokenBD,
+        password,
+        tokenFB,
+        dni,
+        phone,
+        cmp,
+        email,
+        type_doctor!,
+        clinics, // Asigna la lista de clínicas deserializadas
+      );
+      context.read<LoginProvider>().setLoginData(loginData);
     }
-
-    final loginData = LoginData(
-      username,
-      name,
-      tokenBD,
-      password,
-      tokenFB,
-      dni,
-      phone,
-      cmp,
-      email,
-      type_doctor!,
-      clinics, // Asigna la lista de clínicas deserializadas
-    );
-    context.read<LoginProvider>().setLoginData(loginData);
+    return tokenBD;
   }
-  return tokenBD;
-}
-
 
   Future<List<Usuario>> _postUsuario() async {
-    
     const url = 'https://notimed.sanpablo.com.pe:8443/api/profile';
-
     final String? tokenBD = await _loadLoginData();
-
     final response = await http.post(
       Uri.parse(url),
       headers: {'Authorization': 'Bearer $tokenBD'},
@@ -134,10 +131,15 @@ Future<String?> _loadLoginData() async {
       String body = utf8.decode(response.bodyBytes);
       final jsonData = jsonDecode(body);
 
+      if (jsonData['data']['email'] == null ||
+          jsonData['data']['email'] == '' ||
+          jsonData['data']['phone'] == null ||
+          jsonData['data']['phone'] == '') {
+        // Email o phone está vacío o nulo, mostrar un ShowDialog
+        ShowDialogComplete(context);
+      }
+
       List<Usuario> usuarios = [];
-
-      print(jsonData['data']);
-
       usuarios.add(Usuario(
         jsonData['data']['name'],
         jsonData['data']['cmp'],
@@ -193,12 +195,13 @@ Future<String?> _loadLoginData() async {
                       ? Icons.close
                       : Icons.add), // Cambiar el ícono según el estado
                 ),
-                const SizedBox(height: 16.0), // Espacio entre los botones flotantes
+                const SizedBox(
+                    height: 16.0), // Espacio entre los botones flotantes
 
                 // Botón 1 - Editar Calendario
                 AnimatedContainer(
-                  duration:
-                      const Duration(milliseconds: 300), // Duración de la animación
+                  duration: const Duration(
+                      milliseconds: 300), // Duración de la animación
                   height: isExpanded
                       ? 56.0
                       : 0.0, // Altura 0 para ocultar, 56 para mostrar
@@ -218,12 +221,13 @@ Future<String?> _loadLoginData() async {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16.0), // Espacio entre los botones flotantes
+                const SizedBox(
+                    height: 16.0), // Espacio entre los botones flotantes
 
                 // Botón 2 - Messenger SP
                 AnimatedContainer(
-                  duration:
-                      const Duration(milliseconds: 300), // Duración de la animación
+                  duration: const Duration(
+                      milliseconds: 300), // Duración de la animación
                   height: isExpanded
                       ? 56.0
                       : 0.0, // Altura 0 para ocultar, 56 para mostrar
@@ -485,5 +489,4 @@ Future<String?> _loadLoginData() async {
       ),
     );
   }
-
 }

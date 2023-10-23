@@ -11,6 +11,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 //import 'package:permission_handler/permission_handler.dart';
 
@@ -21,6 +22,9 @@ import 'src/MVC_MED/navegatorBar_MED.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await PushNotificatonServices.initializeApp();
+
+    // Solicitar permisos al abrir la aplicación por primera vez
+  await requestPermissions();
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) async {
@@ -107,6 +111,14 @@ void main() async {
   });
 }
 
+Future<void> requestPermissions() async {
+  final permissions = [
+    Permission.notification,
+    Permission.accessNotificationPolicy,
+  ];
+
+  await permissions.request();
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});

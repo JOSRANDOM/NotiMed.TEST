@@ -17,6 +17,7 @@ import '../models/user.dart';
 
 import '../services/push_notification_services.dart';
 import '../utill/IDI.dart';
+import '../utill/ShowDialogComplete.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -125,6 +126,14 @@ Future<String?> _loadLoginData() async {
     if (response.statusCode == 200) {
       String body = utf8.decode(response.bodyBytes);
       final jsonData = jsonDecode(body);
+
+            if (jsonData['data']['email'] == null ||
+          jsonData['data']['email'] == '' ||
+          jsonData['data']['phone'] == null ||
+          jsonData['data']['phone'] == '') {
+        // Email o phone está vacío o nulo, mostrar un ShowDialog
+        ShowDialogComplete(context);
+      }
 
       List<Usuario> usuarios = [];
 

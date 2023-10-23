@@ -14,7 +14,7 @@ import 'package:flutter_html/flutter_html.dart';
 import '../../models/doctor.dart';
 import '../../models/pacienteDM.dart';
 import '../../services/push_notification_services.dart';
- 
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await PushNotificatonServices.initializeApp();
@@ -54,7 +54,7 @@ class _MedShiftState extends State<MedShift> {
   List<DoctorDM> _doctores = [];
   List<Map<String, dynamic>> _services = [];
 
- //FUNCION DE CARGAR LOS DATOS GUARDADOS - SHARED-PREDERENCE
+  //FUNCION DE CARGAR LOS DATOS GUARDADOS - SHARED-PREDERENCE
   Future<String?> _loadLoginData(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -108,7 +108,7 @@ class _MedShiftState extends State<MedShift> {
     return tokenBD;
   }
 
- //FUNCION LLAMADA A LA API - DE PACIENTES
+  //FUNCION LLAMADA A LA API - DE PACIENTES
   Future<List<PacienteDM>> _postPaciente(
       BuildContext context, String clinicId, String serviceId) async {
     const url =
@@ -224,7 +224,7 @@ class _MedShiftState extends State<MedShift> {
     }
   }
 
- //FUNCION REFRESCAR
+  //FUNCION REFRESCAR
   Future<void> refreshData() async {
     try {
       doctorName = await _fetchDoctorName(
@@ -239,7 +239,7 @@ class _MedShiftState extends State<MedShift> {
     }
   }
 
- //FUNCION LLAMADA A LA API - DE MEDICOS
+  //FUNCION LLAMADA A LA API - DE MEDICOS
   Future<String?> _fetchDoctorName(String clinicId, String serviceId) async {
     final apiUrl = 'https://notimed.sanpablo.com.pe:8443/api/clinic/schedules';
 
@@ -306,7 +306,7 @@ class _MedShiftState extends State<MedShift> {
     }
   }
 
- //MOSTRAR DATOS EN LA UI
+  //MOSTRAR DATOS EN LA UI
   @override
   Widget build(BuildContext context) {
     final List<Clinic> clinics = Provider.of<LoginProvider>(context).clinics;
@@ -551,7 +551,7 @@ class _MedShiftState extends State<MedShift> {
     );
   }
 
- //FUNCION DE MOSTRAR MEDICO DE TURNO X ESPECIALIDAD
+  //FUNCION DE MOSTRAR MEDICO DE TURNO X ESPECIALIDAD
   Widget buildDoctorWidget(DoctorDM doctorData) {
     return Padding(
       padding: const EdgeInsets.all(4),
@@ -613,6 +613,15 @@ class _MedShiftState extends State<MedShift> {
                       'Fin de Turno     ${doctorData.end_hour_at} - ${doctorData.end_date_at}',
                       style: const TextStyle(
                         color: Colors.white,
+                        fontSize: 12,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      '${doctorData.service_name} ',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
                         fontSize: 12,
                       ),
                     ),
@@ -715,7 +724,16 @@ class _MedShiftState extends State<MedShift> {
                       ),
                       const Text(''),
                       Text(
-                        'HABITACION: ${pacienteData.room}',
+                        'ORIGEN: ${pacienteData.episode_type_name}',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Text(
+                        pacienteData.room!.isNotEmpty
+                            ? 'HABITACION: ${pacienteData.room}'
+                            : '',
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.black,
