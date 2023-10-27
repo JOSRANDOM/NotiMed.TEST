@@ -41,7 +41,7 @@ class MedShift extends StatefulWidget {
 late Future<List<PacienteDM>> _paciente;
 late Future<List<PacienteDM>> _doctores;
 
-class _MedShiftState extends State<MedShift> {
+class _MedShiftState extends State<MedShift> with WidgetsBindingObserver {
   String? doctorName;
   bool _showDropdowns = true;
   bool _showDoctorResults =
@@ -53,6 +53,26 @@ class _MedShiftState extends State<MedShift> {
   List<PacienteDM> _paciente = [];
   List<DoctorDM> _doctores = [];
   List<Map<String, dynamic>> _services = [];
+
+    @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+    @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+    @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // La aplicación ha vuelto a estar en primer plano
+      refreshData();
+    }
+  }
 
   //FUNCION DE CARGAR LOS DATOS GUARDADOS - SHARED-PREDERENCE
   Future<String?> _loadLoginData(BuildContext context) async {
@@ -240,6 +260,7 @@ class _MedShiftState extends State<MedShift> {
       print("Error al obtener doctorName: $e");
     }
   }
+  
 
   //FUNCION LLAMADA A LA API - DE MEDICOS
   Future<String?> _fetchDoctorName(String clinicId, String serviceId) async {
