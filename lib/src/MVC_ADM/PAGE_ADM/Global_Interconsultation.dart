@@ -23,7 +23,7 @@ Future<void> main() async {
       create: (context) => LoginProvider(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: "NOTIMED - HOME",
+        title: "NOTIMED",
         initialRoute: 'home',
         routes: {
           'home': (_) => const MedShift(),
@@ -150,40 +150,42 @@ class _MedShiftState extends State<MedShift> {
 
       if (jsonData['data'] != null) {
         jsonData['data'].forEach((pacienteData) {
-          // Verificar si los campos son null antes de acceder a ellos
-          String orderAt =
-              pacienteData['order_at'] ?? ''; // Ejemplo de verificación
-          String orderHourAt =
-              pacienteData['order_hour_at'] ?? ''; // Ejemplo de verificación
+          if (pacienteData['episode_type_name'] == 'URGENCIAS') {
+            // Verificar si los campos son null antes de acceder a ellos
+            String orderAt =
+                pacienteData['order_at'] ?? ''; // Ejemplo de verificación
+            String orderHourAt =
+                pacienteData['order_hour_at'] ?? ''; // Ejemplo de verificación
 
-          pacientes.add(PacienteDM(
-            orderAt,
-            orderHourAt,
-            pacienteData['episode'] ?? '',
-            pacienteData['episode_type_name'] ?? '',
-            pacienteData['order_status'] ?? '',
-            pacienteData['clinic_history'] ?? '',
-            pacienteData['interconsulting_type_name'] ?? '',
-            pacienteData['request_service'] ?? '',
-            pacienteData['request_specialist'] ?? '',
-            pacienteData['solicited_service'] ?? '',
-            pacienteData['solicited_service_id'] ?? '',
-            pacienteData['service_id'] ?? '',
-            pacienteData['patient_name'] ?? '',
-            pacienteData['patient_name_short'] ?? '',
-            pacienteData['patient_age'] ??
-                0, // Cambiar 0 al valor predeterminado adecuado
-            pacienteData['room'] ??
-                '', // Cambiar '' al valor predeterminado adecuado
-            pacienteData['last_notification_at'] ??
-                '', // Cambiar '' al valor predeterminado adecuado
-            pacienteData['description'] ??
-                '', // Cambiar '' al valor predeterminado adecuado
-            pacienteData['priority'] ??
-                0, // Cambiar 0 al valor predeterminado adecuado
-            pacienteData['elapsed_time_hours'] ??
-                0, // Cambiar 0 al valor predeterminado adecuado
-          ));
+            pacientes.add(PacienteDM(
+              orderAt,
+              orderHourAt,
+              pacienteData['episode'] ?? '',
+              pacienteData['episode_type_name'] ?? '',
+              pacienteData['order_status'] ?? '',
+              pacienteData['clinic_history'] ?? '',
+              pacienteData['interconsulting_type_name'] ?? '',
+              pacienteData['request_service'] ?? '',
+              pacienteData['request_specialist'] ?? '',
+              pacienteData['solicited_service'] ?? '',
+              pacienteData['solicited_service_id'] ?? '',
+              pacienteData['service_id'] ?? '',
+              pacienteData['patient_name'] ?? '',
+              pacienteData['patient_name_short'] ?? '',
+              pacienteData['patient_age'] ??
+                  0, // Cambiar 0 al valor predeterminado adecuado
+              pacienteData['room'] ??
+                  '', // Cambiar '' al valor predeterminado adecuado
+              pacienteData['last_notification_at'] ??
+                  '', // Cambiar '' al valor predeterminado adecuado
+              pacienteData['description'] ??
+                  '', // Cambiar '' al valor predeterminado adecuado
+              pacienteData['priority'] ??
+                  0, // Cambiar 0 al valor predeterminado adecuado
+              pacienteData['elapsed_time_hours'] ??
+                  0, // Cambiar 0 al valor predeterminado adecuado
+            ));
+          }
         });
       }
 
@@ -725,15 +727,6 @@ class _MedShiftState extends State<MedShift> {
                       const Text(''),
                       Text(
                         'ORIGEN: ${pacienteData.episode_type_name}',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
-                        ),
-                      ),
-                      Text(
-                        pacienteData.room!.isNotEmpty
-                            ? 'HABITACION: ${pacienteData.room}'
-                            : '',
                         style: const TextStyle(
                           fontSize: 14,
                           color: Colors.black,

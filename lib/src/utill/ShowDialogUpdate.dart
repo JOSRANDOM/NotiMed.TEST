@@ -34,7 +34,7 @@ void mostrarDialogActualizarApp(BuildContext context) {
               ),
               onPressed: () {
                 // Aquí redirige al navegador web al enlace proporcionado
-                _launcherURL("www.notimed.sanpablo.com.pe");
+                _launcherURL("notimed-sanpablo.solera.pe");
               },
               child: const Text(
                 'Actualizar',

@@ -1,7 +1,7 @@
 // ignore_for_file: file_names, camel_case_types, library_private_types_in_public_api, avoid_print, non_constant_identifier_names, use_build_context_synchronously
 
 import 'dart:convert';
-import 'package:app_notificador/src/MVC_ADM/PAGE_ADM/Med_Guard.dart';
+//import 'package:app_notificador/src/MVC_ADM/PAGE_ADM/Med_Guard.dart';
 import 'package:app_notificador/src/services/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +18,7 @@ import '../utill/ShowDialogComplete.dart';
 import '../utill/ShowDialogLogout.dart';
 
 import 'PAGE_ADM/Global_Interconsultation.dart';
+import 'PAGE_ADM/ListPatient_ADM.dart';
 import 'PAGE_ADM/UserPageADM.dart';
 
 Future<void> main() async {
@@ -216,6 +217,7 @@ class _homePageADM extends State<homePageADM> {
                 unselectedLabelColor: Colors.orange,
                 tabs: [
                   //PAGINA DE GUARDIAS
+                  /*
                   Tab(
                     icon: Icon(Icons.calendar_month, color: Colors.deepPurple),
                     child: Text(
@@ -226,12 +228,23 @@ class _homePageADM extends State<homePageADM> {
                       ),
                     ),
                   ),
-
+*/
                   //PAGINA DE INTERCONSULTAS
                   Tab(
                     icon: Icon(Icons.add_alert_sharp, color: Colors.deepPurple),
                     child: Text(
-                      'INTERCONSULTAS',
+                      'INTERCONSULTAS EMG',
+                      style: TextStyle(
+                        color: Colors.deepPurple,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                                    //PAGINA DE INTERCONSULTAS
+                  Tab(
+                    icon: Icon(Icons.add_home_work_rounded, color: Colors.deepPurple),
+                    child: Text(
+                      'INTERCONSULTAS HOSP',
                       style: TextStyle(
                         color: Colors.deepPurple,
                         fontSize: 12,
@@ -357,7 +370,7 @@ class _homePageADM extends State<homePageADM> {
               ),
             ),
             body: const TabBarView(
-              children: [MedGuard(), MedShift()],
+              children: [/*MedGuard(),*/ MedShift(), ListPatientADM()],
             ),
           ),
         ),

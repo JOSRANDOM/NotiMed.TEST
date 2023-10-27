@@ -23,8 +23,12 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await PushNotificatonServices.initializeApp();
 
-    // Solicitar permisos al abrir la aplicación por primera vez
-  await requestPermissions();
+  // Solicitar permisos al abrir la aplicación por primera vez
+  final status = await requestPermissions();
+  if (!status!.isGranted) {
+    // Si los permisos no se otorgan, cierra la aplicación
+    return;
+  }
 
   SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
       .then((_) async {
@@ -111,14 +115,24 @@ void main() async {
   });
 }
 
-Future<void> requestPermissions() async {
+Future<PermissionStatus?> requestPermissions() async {
   final permissions = [
     Permission.notification,
     Permission.accessNotificationPolicy,
   ];
 
-  await permissions.request();
+  final statuses = await permissions.request();
+
+  // Comprobar si todos los permisos se otorgan
+  if (statuses[Permission.notification]!.isGranted &&
+      statuses[Permission.accessNotificationPolicy]!.isGranted) {
+    return PermissionStatus.granted;
+  }
+
+  // Al menos un permiso no se otorgó, devuelve el estado
+  return statuses[Permission.notification];
 }
+
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
