@@ -41,7 +41,8 @@ class ListPatientADM extends StatefulWidget {
 late Future<List<PacienteDM>> _paciente;
 late Future<List<PacienteDM>> _doctores;
 
-class _ListPatientADMState extends State<ListPatientADM>with WidgetsBindingObserver {
+class _ListPatientADMState extends State<ListPatientADM>
+    with WidgetsBindingObserver {
   String? doctorName;
   bool _showDropdowns = true;
   bool _showDoctorResults =
@@ -52,9 +53,9 @@ class _ListPatientADMState extends State<ListPatientADM>with WidgetsBindingObser
   late String serviceId;
   List<PacienteDM> _paciente = [];
   List<DoctorDM> _doctores = [];
-  List<Map<String, dynamic>> _services = [];
+  Map<String, Map<String, dynamic>> _services = {};
 
-    @override
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
@@ -132,7 +133,7 @@ class _ListPatientADMState extends State<ListPatientADM>with WidgetsBindingObser
   Future<List<PacienteDM>> _postPaciente(
       BuildContext context, String clinicId, String serviceId) async {
     const url =
-        'https://notimed.sanpablo.com.pe:8443/api/clinic/interconsultings';
+        'https://notimed.sanpablo.com.pe:8443/api/clinic/interconsultings-prueba';
 
     final String? tokenBD = await _loadLoginData(context);
 
@@ -146,11 +147,11 @@ class _ListPatientADMState extends State<ListPatientADM>with WidgetsBindingObser
 
     // Actualiza serviceId con el valor correcto
     if (selectedService != null) {
-      final selectedServiceMap = _services.firstWhere(
-        (service) => service['nombre'] == selectedService,
-        orElse: () => {'id': '0'},
+      final selectedServiceEntry = _services.entries.firstWhere(
+        (entry) => entry.value['nombre'] == selectedService,
+        orElse: () => MapEntry('0', {'id': '0'}),
       );
-      serviceId = selectedServiceMap['id'].toString();
+      serviceId = selectedServiceEntry.value['id'].toString();
     }
 
     final response = await http.post(
@@ -209,25 +210,24 @@ class _ListPatientADMState extends State<ListPatientADM>with WidgetsBindingObser
         });
       }
 
-      // Procesa la lista de servicios y almacénala en _services
-      if (jsonData['services'] != null) {
-        _services = List<Map<String, dynamic>>.from(jsonData['services']);
+      if (jsonData['services'] != null && jsonData['services'] is Map) {
+        final Map<String, dynamic> serviciosMap = jsonData['services'];
+
+        // Filtra los servicios que tienen 'amount_h' mayor que 0
+        final filteredServices = serviciosMap.entries.where((entry) {
+          final serviceData = entry.value;
+          return serviceData['amount_h'] > 0;
+        });
+
+        _services = {};
+
+        for (var entry in filteredServices) {
+          final serviceData = entry.value;
+          final id = entry.key;
+          final nombre = serviceData['name'];
+          _services[id] = {'nombre': nombre, 'id': id};
+        }
       }
-
-      // Modifica el código para almacenar los nombres y los IDs de los servicios
-      final List<Map<String, dynamic>> servicios = jsonData['services'] != null
-          ? List<Map<String, dynamic>>.from(jsonData['services'])
-          : [];
-
-      // Crear una lista de Mapas que contienen el nombre y el ID del servicio
-      final serviciosConID = servicios.map((servicio) {
-        final nombre = servicio['name'];
-        final id = servicio['id'];
-        return {'nombre': nombre, 'id': id};
-      }).toList();
-
-      // Almacena la lista de servicios en _services
-      _services = serviciosConID;
 
       setState(() {
         _paciente = pacientes;
@@ -237,7 +237,7 @@ class _ListPatientADMState extends State<ListPatientADM>with WidgetsBindingObser
       print('reques: ${response.request}');
       print('headers: ${response.headers}');
       print('Data from response: ${json.decode(response.body)['data']}');
-      print('Data from response: ${json.decode(response.body)['services']}');
+      print('service response: ${json.decode(response.body)['services']}');
 
       return pacientes;
     } else {
@@ -270,9 +270,9 @@ class _ListPatientADMState extends State<ListPatientADM>with WidgetsBindingObser
     final DateTime initAt = DateTime.now();
     final DateTime endAt = DateTime.now().add(const Duration(days: 1));
 
-    // Actualiza serviceId con el valor correcto
+// Actualiza serviceId con el valor correcto
     if (selectedService != null) {
-      final selectedServiceMap = _services.firstWhere(
+      final selectedServiceMap = _services.values.firstWhere(
         (service) => service['nombre'] == selectedService,
         orElse: () => {'id': '0'},
       );
@@ -318,8 +318,8 @@ class _ListPatientADMState extends State<ListPatientADM>with WidgetsBindingObser
       setState(() {
         _doctores = doctores;
       });
-      print('Error: ${response.statusCode}');
-      print('Error: ${response.body}');
+      print('Estado de la respuesta: ${response.statusCode}');
+      print('Respuesta: ${response.body}');
       return doctorName;
     } else {
       print('Error: ${response.statusCode}');
@@ -332,6 +332,14 @@ class _ListPatientADMState extends State<ListPatientADM>with WidgetsBindingObser
   @override
   Widget build(BuildContext context) {
     final List<Clinic> clinics = Provider.of<LoginProvider>(context).clinics;
+
+    // Calcula el número de pacientes con diferencia mayor a 3 horas
+    final int patientsOver3Hours = _paciente.where((pacienteData) {
+      final apiDateTime = DateTime.parse(pacienteData.last_notification_at);
+      final timeDifference = DateTime.now().difference(apiDateTime);
+      final hoursDifference = timeDifference.inHours;
+      return hoursDifference > 3;
+    }).length;
 
     return LiquidPullToRefresh(
       onRefresh: refreshData,
@@ -424,16 +432,12 @@ class _ListPatientADMState extends State<ListPatientADM>with WidgetsBindingObser
                             child: Padding(
                               padding: const EdgeInsets.only(left: 8),
                               child: DropdownButton<String>(
-                                isExpanded:
-                                    true, // Ajusta el menú para que ocupe todo el ancho disponible
-                                itemHeight: null,
-                                isDense:
-                                    false, // Permite múltiples líneas para elementos largos
-                                hint: const Text('selecciona un servicio'),
+                                isExpanded: true,
+                                hint: const Text('Selecciona un servicio'),
                                 value: selectedService,
                                 borderRadius: BorderRadius.circular(10),
                                 dropdownColor: Colors.white,
-                                items: _services.map((service) {
+                                items: _services.values.map((service) {
                                   final serviceName = service['nombre'];
                                   return DropdownMenuItem<String>(
                                     value: serviceName,
@@ -447,7 +451,6 @@ class _ListPatientADMState extends State<ListPatientADM>with WidgetsBindingObser
                                 }).toList(),
                                 icon: const Icon(Icons.arrow_drop_down),
                                 underline: Container(
-                                  // Cambiar el color de la línea debajo del botón desplegable
                                   height: 2,
                                   color: Colors.transparent,
                                 ),
@@ -461,19 +464,21 @@ class _ListPatientADMState extends State<ListPatientADM>with WidgetsBindingObser
                                     clinicId = parts[0];
 
                                     if (newValue != null) {
-                                      final selectedServiceMap =
-                                          _services.firstWhere(
-                                        (service) =>
-                                            service['nombre'] == newValue,
-                                        orElse: () => {'id': '0'},
+                                      final selectedServiceEntry =
+                                          _services.entries.firstWhere(
+                                        (entry) =>
+                                            entry.value['nombre'] == newValue,
+                                        orElse: () => const MapEntry(
+                                            '0', <String, dynamic>{}),
                                       );
-                                      serviceId =
-                                          selectedServiceMap['id'].toString();
+                                      serviceId = selectedServiceEntry
+                                          .key; // Reemplaza '0' con el ID del servicio seleccionado
+                                      print(
+                                          'Servicio seleccionado: $newValue, ID: $serviceId');
                                     }
 
                                     await _postPaciente(
                                         context, clinicId, serviceId);
-
                                     await _fetchDoctorName(clinicId, serviceId);
                                   }
                                 },
@@ -551,21 +556,48 @@ class _ListPatientADMState extends State<ListPatientADM>with WidgetsBindingObser
                 ),
               ),
 
-              // Muestra el número de resultados
-              Center(
-                  child: Container(
-                      width: 150,
-                      height: 20,
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        color: Colors.deepPurple,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Contador de resultados
+                  Container(
+                    width: 150,
+                    height: 20,
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      color: Colors.deepPurple,
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Total: ${_paciente.length}',
+                        style: const TextStyle(color: Colors.white),
                       ),
-                      child: Center(
-                        child: Text(
-                          'Resultados: ${_paciente.length}',
-                          style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  const SizedBox(width: 10), // Espacio entre los contadores
+                  // Contador en rojo para pacientes con más de 3 horas de diferencia
+                  Container(
+                    width: 150,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                      color: patientsOver3Hours > 0
+                          ? Colors.red
+                          : Colors.red,
+                    ),
+                    child: Center(
+                      child: Text(
+                        'vencidas: $patientsOver3Hours',
+                        style: TextStyle(
+                          color: patientsOver3Hours > 0
+                              ? Colors.white
+                              : Colors.white,
                         ),
-                      ))),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),

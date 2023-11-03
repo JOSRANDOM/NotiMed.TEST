@@ -7,7 +7,7 @@ import 'package:app_notificador/src/services/provider.dart';
 import 'package:app_notificador/src/utill/Logout.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_windowmanager/flutter_windowmanager.dart';
+//import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -56,7 +56,7 @@ class _homePageHP extends State<homePageHP> {
     });
     _usuario = _postUsuario();
     _loadLoginData();
-    secureScreen();
+    //secureScreen();
   }
 
 Future<String?> _loadLoginData() async {
@@ -157,11 +157,11 @@ Future<String?> _loadLoginData() async {
     }
   }
 
-  secureScreen() async {
+  /*secureScreen() async {
     await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
     await FlutterWindowManager.addFlags(
         FlutterWindowManager.FLAG_KEEP_SCREEN_ON);
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {

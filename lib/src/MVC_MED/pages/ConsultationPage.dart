@@ -36,59 +36,58 @@ class _HomeState extends State<Interconsulta> {
   }
 
   // ignore: body_might_complete_normally_nullable
-Future<String?> _loadLoginData() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
+  Future<String?> _loadLoginData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-  String? username = prefs.getString('username');
-  String? name = prefs.getString('name');
-  String? tokenBD = prefs.getString('token');
-  String? password = prefs.getString('password');
-  String? tokenFB = prefs.getString('tokenFB');
-  String? dni = prefs.getString('document_number');
-  String? phone = prefs.getString('phone');
-  String? email = prefs.getString('email');
-  String? cmp = prefs.getString('cmp');
-  String? clinicsJson = prefs.getString('clinics');
-  int? type_doctor = prefs.getInt('type_doctor');
+    String? username = prefs.getString('username');
+    String? name = prefs.getString('name');
+    String? tokenBD = prefs.getString('token');
+    String? password = prefs.getString('password');
+    String? tokenFB = prefs.getString('tokenFB');
+    String? dni = prefs.getString('document_number');
+    String? phone = prefs.getString('phone');
+    String? email = prefs.getString('email');
+    String? cmp = prefs.getString('cmp');
+    String? clinicsJson = prefs.getString('clinics');
+    int? type_doctor = prefs.getInt('type_doctor');
 
-  if (username != null &&
-      name != null &&
-      tokenBD != null &&
-      password != null &&
-      tokenFB != null &&
-      dni != null &&
-      phone != null) {
-    List<Clinic> clinics = [];
-    if (clinicsJson != null) {
-      final List<dynamic> clinicData = json.decode(clinicsJson);
-      clinics = clinicData
-          .map((clinic) => Clinic(
-                clinic['id'],
-                clinic['name'],
-                clinic['name_short'],
-                clinic['color'],
-              ))
-          .toList();
+    if (username != null &&
+        name != null &&
+        tokenBD != null &&
+        password != null &&
+        tokenFB != null &&
+        dni != null &&
+        phone != null) {
+      List<Clinic> clinics = [];
+      if (clinicsJson != null) {
+        final List<dynamic> clinicData = json.decode(clinicsJson);
+        clinics = clinicData
+            .map((clinic) => Clinic(
+                  clinic['id'],
+                  clinic['name'],
+                  clinic['name_short'],
+                  clinic['color'],
+                ))
+            .toList();
+      }
+
+      final loginData = LoginData(
+        username,
+        name,
+        tokenBD,
+        password,
+        tokenFB,
+        dni,
+        phone,
+        cmp,
+        email,
+        type_doctor!,
+        clinics, // Asigna la lista de clínicas deserializadas
+      );
+      context.read<LoginProvider>().setLoginData(loginData);
     }
-
-    final loginData = LoginData(
-      username,
-      name,
-      tokenBD,
-      password,
-      tokenFB,
-      dni,
-      phone,
-      cmp,
-      email,
-      type_doctor!,
-      clinics, // Asigna la lista de clínicas deserializadas
-    );
-    context.read<LoginProvider>().setLoginData(loginData);
+    return tokenBD;
   }
-  return tokenBD;
-}
-
 
   late Future<List<Paciente>> _paciente;
 
@@ -164,10 +163,10 @@ Future<String?> _loadLoginData() async {
       debugShowCheckedModeBanner: false,
       title: 'NOTIMED',
       home: WillPopScope(
-      onWillPop: () async {  
-        return false;
-      },
-      child: Scaffold(
+        onWillPop: () async {
+          return false;
+        },
+        child: Scaffold(
           backgroundColor: Colors.white,
           body: Center(
             child: Expanded(
@@ -184,7 +183,8 @@ Future<String?> _loadLoginData() async {
                       future: _paciente,
                       builder: (BuildContext context,
                           AsyncSnapshot<List<Paciente>> snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
                           return const Center(
                             child: CircularProgressIndicator(
                               valueColor:
@@ -201,16 +201,16 @@ Future<String?> _loadLoginData() async {
                                   width: 200,
                                   height: 150,
                                   child: Lottie.network(
-                                  'https://lottie.host/18d935ef-9547-4a4c-b38e-09787ed6dbac/l5OvPNglfK.json', // URL de la animación Lottie
-                                  width: 200,
-                                  height: 200,
-                                  fit: BoxFit.cover,
-                                ),
+                                    'https://lottie.host/18d935ef-9547-4a4c-b38e-09787ed6dbac/l5OvPNglfK.json', // URL de la animación Lottie
+                                    width: 200,
+                                    height: 200,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
                                 const SizedBox(
                                     height:
                                         20), // Espacio entre la animación y el texto
-                               const Text(
+                                const Text(
                                   'SIN CONEXIÓN', // Mensaje de texto
                                   style: TextStyle(
                                     fontSize: 18,
@@ -220,7 +220,8 @@ Future<String?> _loadLoginData() async {
                               ],
                             ),
                           );
-                        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                        } else if (!snapshot.hasData ||
+                            snapshot.data!.isEmpty) {
                           return Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -263,113 +264,195 @@ Future<String?> _loadLoginData() async {
   }
 
 //llamada a la consulta
-List<Widget> _pacientes(List<Paciente> data) {
-  List<Widget> pacienteWidgets = [];
+  List<Widget> _pacientes(List<Paciente> data) {
+    List<Widget> pacienteWidgets = [];
 
-  for (var pacienteData in data) {
-    Widget pacienteWidget = Padding(
-      padding: const EdgeInsets.all(4),
-      child: GestureDetector(
-        onTap: () {
-          _showDialog(context, pacienteData);
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            border: Border.all(color: Colors.deepPurple, width: 0),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  width: double.infinity,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
-                    color: Colors.deepPurple,
-                  ),
-                  child: const Text(
-                    'INTERCONSULTA PENDIENTE',
-                    style: TextStyle(color: Colors.white),
+    for (var pacienteData in data) {
+      final now = DateTime.now();
+
+      // Parsea la fecha y hora de la API en un objeto DateTime
+      final apiDateTime = DateTime.parse(pacienteData.last_notification_at);
+
+      // Calcula la diferencia en minutos y horas
+      final timeDifference = now.difference(apiDateTime);
+      final minutesDifference = timeDifference.inMinutes;
+      final hoursDifference = timeDifference.inHours;
+
+      // Calcula un valor entre 0 y 1 basado en el tiempo transcurrido
+      double progressValue =
+          (minutesDifference / (3 * 60)).clamp(0.0, 1.0); // 3 horas
+
+      // Define el color de la barra de progreso basado en el tiempo transcurrido
+      Color progressColor = Colors.green;
+
+      if (progressValue >= 0.5) {
+        progressColor = Colors.amber;
+      }
+      if (progressValue >= 0.75) {
+        progressColor = Colors.red;
+      }
+
+      // Define el texto basado en el tiempo transcurrido
+      String progressText = 'Tiempo Transcurrido';
+      Color progressTextColor = Colors.black;
+
+      if (progressValue >= 0.5) {
+        progressText = 'Tiempo Transcurrido';
+        progressTextColor = Colors.black;
+      }
+      if (progressValue >= 0.75) {
+        progressText = 'Tiempo Transcurrido';
+        progressTextColor = Colors.black;
+      }
+
+      // Define el tiempo transcurrido en formato personalizado
+      String timeElapsed =
+          '$hoursDifference horas - ${minutesDifference % 60} minutos';
+      Widget pacienteWidget = Padding(
+        padding: const EdgeInsets.all(4),
+        child: GestureDetector(
+          onTap: () {
+            _showDialog(context, pacienteData);
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+              border: Border.all(color: Colors.deepPurple, width: 0),
+            ),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    width: double.infinity,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(20)),
+                      color: Colors.deepPurple,
+                    ),
+                    child: const Text(
+                      'INTERCONSULTA PENDIENTE',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
                 ),
-              ),
 
-              // Llama al nombre de la clínica
-              Row(
-                children: [
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        pacienteData.clinicName, // Usa clinic_name aquí
-                        style: const TextStyle(
-                          color: Colors.deepPurple,
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              // Llama al número de HC
-              Row(
-                children: [
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'HC: ${pacienteData.clinic_history}',
-                        style: const TextStyle(
-                          color: Colors.purple,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              // Llama al nombre del paciente
-              Row(
-                children: [
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.all(10),
+                // Llama al nombre de la clínica
+                Row(
+                  children: [
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
                         child: Text(
-                          pacienteData.patient_name_short,
+                          pacienteData.clinicName, // Usa clinic_name aquí
                           style: const TextStyle(
-                            fontSize: 17,
-                            color: Colors.black,
+                            color: Colors.deepPurple,
+                            fontSize: 16,
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
 
-              // Llama a la habitación del paciente
-              Row(
-                children: [
-                  const SizedBox(width: 20),
-                  if (pacienteData.room != null)
+                // Llama al número de HC
+                Row(
+                  children: [
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'HC: ${pacienteData.clinic_history}',
+                          style: const TextStyle(
+                            color: Colors.purple,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Llama al nombre del paciente
+                Row(
+                  children: [
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: const EdgeInsets.all(10),
+                          child: Text(
+                            pacienteData.patient_name_short,
+                            style: const TextStyle(
+                              fontSize: 17,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Llama a la habitación del paciente
+                Row(
+                  children: [
+                    const SizedBox(width: 20),
+                    if (pacienteData.room != null)
+                      Expanded(
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Column(
+                            children: [
+                              Text(
+                                'HABITACION:  ${pacienteData.room} ',
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+
+                // Llama donde se originó la notificación (HOSPITALIZACIÓN - URGENCIA)
+                Row(
+                  children: [
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'ORIGEN: ${pacienteData.episode_type_name}',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                // Llama al tipo de interconsulta
+                Row(
+                  children: [
+                    const SizedBox(width: 20),
                     Expanded(
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Column(
                           children: [
                             Text(
-                              'HABITACION:  ${pacienteData.room} ',
+                              'TIPO:  ${pacienteData.interconsulting_type_name} ',
                               style: const TextStyle(
+                                fontSize: 12,
                                 color: Colors.black,
                               ),
                             ),
@@ -377,105 +460,98 @@ List<Widget> _pacientes(List<Paciente> data) {
                         ),
                       ),
                     ),
-                ],
-              ),
+                  ],
+                ),
 
-              // Llama donde se originó la notificación (HOSPITALIZACIÓN - URGENCIA)
-              Row(
-                children: [
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'ORIGEN: ${pacienteData.episode_type_name}',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 15,
+                // Llama a la fecha de creación
+                Row(
+                  children: [
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'FECHA Y HORA DE INTERCONSULTA: ${pacienteData.order_at}',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
 
-              // Llama al tipo de interconsulta
-              Row(
-                children: [
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Column(
-                        children: [
-                          Text(
-                            'TIPO:  ${pacienteData.interconsulting_type_name} ',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.black,
+                const Text(''),
+
+                // Llama a la especialidad solicitada
+                Row(
+                  children: [
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Column(
+                          children: [
+                            Text(
+                              ' ${pacienteData.solicited_service}',
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              // Llama a la fecha de creación
-              Row(
-                children: [
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text(
-                        'FECHA Y HORA DE INTERCONSULTA: ${pacienteData.order_at}',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
+                          ],
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-
-             const Text(''),
-
-              // Llama a la especialidad solicitada
-              Row(
-                children: [
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.center,
-                      child: Column(
-                        children: [
-                          Text(
-                            ' ${pacienteData.solicited_service}',
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
+                  ],
+                ),
+                const Text(''),
+                LinearProgressIndicator(
+                  minHeight: 15,
+                  value: progressValue,
+                  backgroundColor: Colors.grey,
+                  borderRadius: BorderRadius.circular(10),
+                  valueColor: AlwaysStoppedAnimation<Color>(progressColor),
+                ),
+                const SizedBox(height: 4),
+                Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment
+                        .center, // Centrar los elementos del Row
+                    children: [
+                      Text(
+                        progressText,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: progressTextColor,
+                        ),
                       ),
-                    ),
+                      const SizedBox(
+                          width:
+                              8), // Espacio entre el texto y el tiempo transcurrido
+                      Text(
+                        '$timeElapsed',
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors
+                              .black, // Puedes cambiar el color si lo deseas
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    pacienteWidgets.add(IntrinsicHeight(child: pacienteWidget));
+      pacienteWidgets.add(IntrinsicHeight(child: pacienteWidget));
+    }
+
+    return pacienteWidgets;
   }
-
-  return pacienteWidgets;
-}
 
 //FUNCION DE INFORMAACION ADICIONAL
   void _showDialog(BuildContext context, Paciente pacienteData) {
@@ -491,13 +567,15 @@ List<Widget> _pacientes(List<Paciente> data) {
             width: 300, // Ancho deseado
             height: 250, // Altura deseada
             decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(10.0)), // Borde redondeado
+              borderRadius:
+                  BorderRadius.all(Radius.circular(10.0)), // Borde redondeado
             ),
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('H.C: ${pacienteData.clinic_history}',
+                  Text(
+                    'H.C: ${pacienteData.clinic_history}',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -505,7 +583,9 @@ List<Widget> _pacientes(List<Paciente> data) {
                   ),
                   Text('Origen: ${pacienteData.episode_type_name}'),
                   Text('Habitación: ${pacienteData.room ?? ""}'),
-                  SizedBox(height: 10), // Espacio entre los datos y el contenido HTML
+                  SizedBox(
+                      height:
+                          10), // Espacio entre los datos y el contenido HTML
                   Html(data: pacienteData.description),
                 ],
               ),
@@ -528,5 +608,4 @@ List<Widget> _pacientes(List<Paciente> data) {
       },
     );
   }
-
 }
