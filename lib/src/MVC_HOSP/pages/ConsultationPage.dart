@@ -130,6 +130,8 @@ Future<String?> _loadLoginData() async {
                   pacienteData['room'],
                   pacienteData['last_notification_at'],
                   pacienteData['description'],
+                  pacienteData['order_date_at'],
+                  pacienteData['order_hour_at'],
                   clinicName,
                 ));
               });

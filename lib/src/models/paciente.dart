@@ -19,6 +19,9 @@ class Paciente {
   String last_notification_at ;
   String description ;
   final String clinicName;
+  String order_date_at ;
+  String order_hour_at ;
+  
   
   Paciente(
     this.order_at,
@@ -37,6 +40,8 @@ class Paciente {
      this.last_notification_at, 
      this.description,
      this.clinicName,
+     this.order_date_at,
+     this.order_hour_at,
 
   );
 
