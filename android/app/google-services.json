@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "522972345536",
+    "project_id": "appnotificador-dart-4c63e",
+    "storage_bucket": "appnotificador-dart-4c63e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:522972345536:android:1f1999b83832ebebbba925",
+        "android_client_info": {
+          "package_name": "com.example.app_notificador"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "522972345536-l5il6p0aier7pe8n1ieqrcvqp2i9qeu7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbFxMpfacwjqo7aD07YY5CBnUBB_W8Rrc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "522972345536-l5il6p0aier7pe8n1ieqrcvqp2i9qeu7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
